@@ -9,7 +9,7 @@ block content
         p Summit will evolve into a project dashboard
 
     div
-        table.table
+        table.table.table-bordered
             thead
                 tr
                     th Build ID
