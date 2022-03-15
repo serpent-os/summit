@@ -9,8 +9,10 @@ html
 
     body
         // Top navigation
-        nav.navbar.navbar-dark.bg-primary
-            a.navbar-brand.px-2 Summit
+        nav.navbar.navbar-dark.bg-dark
+            a.navbar-brand.px-2
+                img(src="https://serpentos.com/img/white_notext_0.5x.png", height="75%")
+                span.px-2 Summit
 
         div.container-fluid
             div.row
@@ -21,6 +23,8 @@ html
                                 a.nav-link.active(href="#") Home
 
                 main.pt-3.col-md-9.col-lg-10(role="main")
+                    block notifications
+
                     div.card
                         div.card-body.pt-3
                             block content

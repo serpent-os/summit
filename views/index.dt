@@ -3,10 +3,12 @@ extends base
 block title
     title Welcome
 
+block notifications
+    div.alert.alert-warning(role="alert")
+        h4.alert-title Under construction
+        div.text-muted Summit is currently under construction and is not suitable for use in production.
+
 block content
-    div
-        h4 Building a new dashboard
-        p Summit will evolve into a project dashboard
 
     div
         table.table.table-bordered
