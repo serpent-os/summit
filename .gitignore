@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/summit
+summit.so
+summit.dylib
+summit.dll
+summit.a
+summit.lib
+summit-test-*
+*.exe
+*.o
+*.obj
+*.lst
