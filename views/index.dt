@@ -1,0 +1,8 @@
+extends base
+
+block title
+    title Welcome
+
+block body
+    main
+        h1 Work in progress
