@@ -4,16 +4,21 @@ html
         block title
             title Under construction
 
-        // Minified tabler CSS
-        link(rel="stylesheet", href="https://unpkg.com/@tabler/core@1.0.0-beta9/dist/css/tabler.min.css")
+        // Minified UIKit CSS
+        link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/css/uikit.min.css")
     body
-        // Navigation
-        nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
-            div.container-xl
-                a.navbar-brand(href="#") Summit
-                // Add navigation..
-        div.container.my-3
-            block content
+        // Top navigation
+        div.uk-section.uk-section-xsmall.uk-section-secondary
+            div.uk-container.uk-container-xsmall.uk-container-expand
+                nav.uk-navbar-container.uk-navbar-transparent(uk-navbar)
+                    div.uk-navbar-left
+                        a.uk-logo Summit
+                        span.uk-muted &nbsp; Serpent OS Dashboard
 
-    // Minified tabler.js 
-    script(src="https://unpkg.com/@tabler/core@1.0.0-beta9/dist/js/tabler.min.js")
+        main
+            div.uk-container
+                block content
+
+    // Minified UIKit JS 
+    script(src="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/js/uikit.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/js/uikit-icons.min.js")

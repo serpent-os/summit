@@ -4,6 +4,4 @@ block title
     title Welcome
 
 block content
-    main
-        div.container
-            h1 Work in progress
+    h2 Plugging away...
