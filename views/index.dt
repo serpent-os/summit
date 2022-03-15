@@ -8,8 +8,8 @@ block content
         h4 Building a new dashboard
         p Summit will evolve into a project dashboard
 
-    div.uk-card.uk-card-body.uk-card-default
-        table.uk-table
+    div
+        table.table
             thead
                 tr
                     th Build ID
