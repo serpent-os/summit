@@ -8,16 +8,29 @@ html
         link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/css/uikit.min.css")
     body
         // Top navigation
-        div.uk-section.uk-section-xsmall.uk-section-secondary
+        div.uk-section.uk-section-xsmall.uk-section-primary
             div.uk-container.uk-container-xsmall.uk-container-expand
                 nav.uk-navbar-container.uk-navbar-transparent(uk-navbar)
                     div.uk-navbar-left
                         a.uk-logo Summit
-                        span.uk-muted &nbsp; Serpent OS Dashboard
+                        small.uk-muted.uk-margin-left Serpent OS Dashboard
 
         main
-            div.uk-container
-                block content
+            div.uk-margin-top.uk-grid-divider.uk-height-1-1(uk-grid)
+                // Sidebar
+                div.uk-width-auto
+                    div.uk-container.uk-container-medium.uk-container-expand
+                        ul.uk-nav.uk-nav-default(uk-nav)
+                            li.uk-active: a(href="#") Home
+                            h5.uk-heading-divider Builds
+                            li: a(href="#") Other
+                            h5.uk-heading-divider Documentation
+                            li: a(href="#") Packaging for Serpent OS
+                            li: a(href="#") Submitting your package
+                // Page
+                div.uk-width-expand
+                    div.uk-container
+                        block content
 
     // Minified UIKit JS 
     script(src="https://cdn.jsdelivr.net/npm/uikit@3.12.2/dist/js/uikit.min.js")

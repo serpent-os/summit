@@ -4,4 +4,17 @@ block title
     title Welcome
 
 block content
-    h2 Plugging away...
+    div
+        h4 Building a new dashboard
+        p Summit will evolve into a project dashboard
+
+    div.uk-card.uk-card-body.uk-card-default
+        table.uk-table
+            thead
+                tr
+                    th Build ID
+                    th Package
+            tbody
+                tr
+                    td 001112
+                    td nano
