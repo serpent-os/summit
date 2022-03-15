@@ -3,6 +3,7 @@ extends base
 block title
     title Welcome
 
-block body
+block content
     main
-        h1 Work in progress
+        div.container
+            h1 Work in progress
