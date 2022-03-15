@@ -6,7 +6,7 @@ html
 
         // Minified tabler CSS
         link(rel="stylesheet", href="https://unpkg.com/@tabler/core@1.0.0-beta9/dist/css/tabler.min.css")
-    body.theme-light
+    body
         // Navigation
         nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
             div.container-xl
