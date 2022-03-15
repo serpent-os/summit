@@ -19,8 +19,13 @@ html
                 nav.col-md-2.pt-3
                     div.sidebar-sticky
                         ul.nav.flex-column
+                            h4 Navigation
                             li.nav-item
                                 a.nav-link.active(href="#") Home
+                            li.nav-item: a.nav-link(href="#") Builds
+                            h4.py-2 Documentation
+                            li.nav-item: a.nav-link(href="#") Packaging
+                            li.nav-item: a.nav-link(href="#") Important stuff
 
                 main.pt-3.col-md-9.col-lg-10(role="main")
                     block notifications
