@@ -9,7 +9,7 @@ html
 
     body
         // Top navigation
-        nav.navbar.navbar-dark.bg-dark
+        nav.navbar.navbar-dark.bg-primary
             a.navbar-brand.px-2
                 img(src="https://serpentos.com/img/white_notext_0.5x.png", height="75%")
                 span.px-2 Summit
