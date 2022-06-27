@@ -4,7 +4,7 @@
 	],
 	"copyright": "Copyright © 2022, Serpent OS Developers",
 	"dependencies": {
-		"vibe-d": "~>0.9"
+		"vibe-d": "~master"
 	},
 	"description": "Web dashboard for Serpent OS",
 	"license": "Zlib",
