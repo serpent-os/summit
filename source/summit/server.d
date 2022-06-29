@@ -31,6 +31,7 @@ public final class SummitServer
         settings.port = 8080;
         settings.bindAddresses = ["localhost",];
         settings.disableDistHost = true;
+        settings.serverString = "summit.serpentos/0.0.0";
 
         /* Configure vibe.d to listen HTTP */
         listener = listenHTTP(settings, router);
