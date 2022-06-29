@@ -32,7 +32,7 @@ public final class SummitServer
         settings.bindAddresses = ["localhost",];
 
         /* Configure vibe.d to listen HTTP */
-        listenHTTP(settings, router);
+        listener = listenHTTP(settings, router);
     }
 
     /**
@@ -42,6 +42,10 @@ public final class SummitServer
     {
         /* We specifically do *not* use runApplication as we control
            our own privileges etc. */
+        scope (exit)
+        {
+            listener.stopListening();
+        }
         return runEventLoop();
     }
 
@@ -49,5 +53,6 @@ private:
 
     URLRouter router;
     HTTPServerSettings settings;
+    HTTPListener listener;
 
 }
