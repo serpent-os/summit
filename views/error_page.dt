@@ -1,0 +1,6 @@
+html
+    head
+        title ONOEZ!
+    body
+        h1 ERMAGAH ERROR #{error.code}
+        pre #{error.debugMessage}

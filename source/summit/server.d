@@ -18,6 +18,16 @@ module summit.server;
 import vibe.vibe;
 
 /**
+ * Render error_page.dt with the error struct
+ */
+public static void globalErrorHandler(HTTPServerRequest req,
+        HTTPServerResponse res, HTTPServerErrorInfo error) @system
+{
+    /* TODO: Specific error page options based on code? */
+    return res.render!("error_page.dt", error);
+}
+
+/**
  * Main vibe.d process
  */
 public final class SummitServer
@@ -32,6 +42,7 @@ public final class SummitServer
         settings.bindAddresses = ["localhost",];
         settings.disableDistHost = true;
         settings.serverString = "summit.serpentos/0.0.0";
+        settings.errorPageHandler = toDelegate(&globalErrorHandler);
 
         /* Configure vibe.d to listen HTTP */
         listener = listenHTTP(settings, router);
