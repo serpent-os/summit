@@ -30,6 +30,7 @@ public final class SummitServer
         settings = new HTTPServerSettings();
         settings.port = 8080;
         settings.bindAddresses = ["localhost",];
+        settings.disableDistHost = true;
 
         /* Configure vibe.d to listen HTTP */
         listener = listenHTTP(settings, router);
