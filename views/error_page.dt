@@ -1,7 +1,7 @@
 extends root
 
 block title
-    title Dashboard Error
+    title Dashboard - Error
 block content
     div.align-middle.align-center.container.container-fluid.mx-3.py-5
         h1 Sorry about that
