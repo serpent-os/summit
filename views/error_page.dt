@@ -3,7 +3,9 @@ extends root
 block title
     title Dashboard Error
 block content
-    div.align-middle.container.container-fluid.mx-3.py-5
+    div.align-middle.align-center.container.container-fluid.mx-3.py-5
         h1 Sorry about that
         p We hit error code #[strong #{error.code}] while you were navigating
         pre #{error.debugMessage}
+        hr
+        a.btn.btn-secondary(href="/") Return to the main view
