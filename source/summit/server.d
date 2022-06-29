@@ -19,6 +19,11 @@ import vibe.vibe;
 
 /**
  * Render error_page.dt with the error struct
+ *
+ * Params:
+ *      req   = Request to the method
+ *      res   = Response for the method
+ *      error = The error in questio
  */
 public static void globalErrorHandler(HTTPServerRequest req,
         HTTPServerResponse res, HTTPServerErrorInfo error) @system
@@ -33,6 +38,10 @@ public static void globalErrorHandler(HTTPServerRequest req,
 public final class SummitServer
 {
 
+    /** 
+     * Construct a new SummitServer which will handle
+     * correct initialisation and only needs to `.run()`
+     */
     this()
     {
         router = new URLRouter();
@@ -50,6 +59,8 @@ public final class SummitServer
 
     /**
      * Run server to completion
+     *
+     * Returns: Error code of execution, or 0 if none
      */
     int run() @safe
     {
