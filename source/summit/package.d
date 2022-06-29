@@ -5,22 +5,14 @@
  */
 
 /**
- * main
+ * summit
  *
- * Main entry point into summit app
+ * Module namespace imports
  *
  * Authors: Copyright © 2020-2022 Serpent OS Developers
  * License: Zlib
  */
 
-module main;
+module summit;
 
-import summit;
-
-/**
- * Simply run simmit
- */
-int main(string[] args)
-{
-    return new SummitServer().run();
-}
+public import summit.server;
