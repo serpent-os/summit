@@ -1,0 +1,16 @@
+html
+    head
+        block title
+            title Undefined title...
+
+        // TODO: Vendor
+        link(rel="stylesheet", href="https://unpkg.com/@tabler/core@1.0.0-beta10/dist/css/tabler.min.css")
+
+    body
+        main
+            div.container
+                block content
+                    h1 undefined content
+
+    // TODO: Vendor
+    script(src="https://unpkg.com/@tabler/core@1.0.0-beta10/dist/js/tabler.min.js")

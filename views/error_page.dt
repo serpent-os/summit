@@ -1,6 +1,9 @@
-html
-    head
-        title ONOEZ!
-    body
-        h1 ERMAGAH ERROR #{error.code}
+extends root
+
+block title
+    title ONOEZ!
+block content
+    div.align-middle.container.container-fluid.mx-3.py-5
+        h1 Sorry about that
+        p We hit error code #[strong #{error.code}] while you were navigating
         pre #{error.debugMessage}
