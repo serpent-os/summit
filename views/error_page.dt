@@ -3,9 +3,12 @@ extends root
 block title
     title Dashboard - Error
 block content
-    div.align-middle.align-center.container.container-fluid.mx-3.py-5
-        h1 Sorry about that
-        p We hit error code #[strong #{error.code}] while you were navigating
-        pre #{error.message}
-        hr
-        a.btn.btn-secondary(href="/") Return to the main view
+    div.container
+        div.row.justify-content-center
+
+            div.card.col-sm-6
+                div.card-status-top.bg-warning
+                div.card-body
+                    h3.card-title Sorry about this...
+                    p.card-text.text-muted While navigating, we hit the following error: #[code #{error.code} - #{error.message}]
+                    a.btn(href="/") Return to the main view
