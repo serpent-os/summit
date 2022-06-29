@@ -12,9 +12,11 @@ html
 
     body
         main
-            div.container-fluid.py-5
-                block content
-                    h1 undefined content
+            div.container-fluid.py-0.px-0.my-0.mx-0
+                include primary_navigation
+                div.container-fluid.py-5
+                    block content
+                        h1 undefined content
 
     // TODO: Vendor
     script(src="https://unpkg.com/@tabler/core@1.0.0-beta10/dist/js/tabler.min.js")

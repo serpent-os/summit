@@ -1,0 +1,4 @@
+nav.navbar.navbar-expand-lg.bg-dark.shadow
+    div.container-fluid
+        // Logo
+        a.navbar-brand.logo.text-white(href="/") Dashboard
