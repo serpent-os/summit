@@ -14,3 +14,5 @@
  */
 
 module summit.sections;
+
+public import summit.sections.home;

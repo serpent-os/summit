@@ -15,6 +15,7 @@
 
 module summit.server;
 
+import summit.sections;
 import vibe.vibe;
 
 /**
@@ -44,7 +45,6 @@ public final class SummitServer
      */
     this()
     {
-        router = new URLRouter();
         /* TODO: Load stuff from config */
         settings = new HTTPServerSettings();
         settings.port = 8080;
@@ -52,6 +52,10 @@ public final class SummitServer
         settings.disableDistHost = true;
         settings.serverString = "summit.serpentos/0.0.0";
         settings.errorPageHandler = toDelegate(&globalErrorHandler);
+
+        /* Set up sections */
+        router = new URLRouter();
+        router.registerWebInterface(new HomeSection());
 
         /* Configure vibe.d to listen HTTP */
         listener = listenHTTP(settings, router);

@@ -16,3 +16,4 @@
 module summit;
 
 public import summit.server;
+public import summit.sections;
