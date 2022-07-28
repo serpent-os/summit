@@ -1,5 +1,0 @@
-extends root
-block title
-    title Dashboard - Home
-block content
-    h4 WIP
