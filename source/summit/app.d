@@ -26,6 +26,7 @@ import std.file : exists, mkdir;
 
 import summit.models;
 import summit.web;
+import summit.rest;
 
 /**
  * Main entry point from the server side, storing our
@@ -72,8 +73,10 @@ public final class SummitApp
         /* Bring up our core routes */
         router = new URLRouter();
         auto web = new Web();
-        auto webRoot = router.registerWebInterface(web);
-        web.configure(webRoot);
+        web.configure(router);
+
+        auto api = new BaseAPI();
+        api.configure(router);
 
         /* Enable file sharing from static/ */
         fileSettings = new HTTPFileServerSettings();
@@ -81,6 +84,11 @@ public final class SummitApp
         router.get("/static/*", serveStaticFiles("static", fileSettings));
 
         router.rebuild();
+
+        debug
+        {
+            import std.stdio : writeln;
+        }
     }
 
     /**

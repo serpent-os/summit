@@ -27,8 +27,9 @@ import summit.web.projects;
 {
     void configure(URLRouter root) @safe
     {
-        root.registerWebInterface(new ProjectsWeb());
-        root.registerWebInterface(new NamespacesWeb());
+        auto webRoot = root.registerWebInterface(this);
+        webRoot.registerWebInterface(new ProjectsWeb());
+        webRoot.registerWebInterface(new NamespacesWeb());
     }
 
     /**
