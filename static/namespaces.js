@@ -45,7 +45,7 @@ function refreshView(list)
                                 </div>
                             </div>
                         </div>`;
-            });
+            }).join("");
             newHTML += `
                 <div class="col-6">
                     <div class="card shadow-sm">
