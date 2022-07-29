@@ -42,6 +42,19 @@ import std.typecons : Nullable;
     @path("/:path") @method(HTTPMethod.GET)
     void view(string _path) @safe
     {
-        render!("namespaces/index.dt", path);
+        render!("namespaces/index.dt", _path);
+    }
+
+    @path("/:path/:project") @method(HTTPMethod.GET)
+    void viewProject(string _path, string _project) @safe
+    {
+        render!("namespaces/index.dt", _path, _project);
+    }
+
+    @path("/:path/:project/:package") @method(HTTPMethod.GET)
+    void viewPackage(string _path, string _project, string _package)
+    {
+        render!("namespaces/index.dt", _path, _project, _package);
+
     }
 }
