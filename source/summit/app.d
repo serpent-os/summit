@@ -57,7 +57,7 @@ public final class SummitApp
 
         /* Ensure all models exist */
         auto err = appDB.update((scope tx) @safe {
-            return tx.createModel!(User, Group, Token);
+            return tx.createModel!(User, Group, Token, Project);
         });
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 

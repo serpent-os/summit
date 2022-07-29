@@ -18,3 +18,4 @@ module summit.models;
 public import summit.models.group;
 public import summit.models.user;
 public import summit.models.token;
+public import summit.models.project;
