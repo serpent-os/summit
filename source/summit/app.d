@@ -17,6 +17,11 @@ module summit.app;
 
 import vibe.d;
 import summit.sessionstore;
+import moss.db.keyvalue;
+import moss.db.keyvalue.interfaces;
+import moss.db.keyvalue.orm;
+
+import summit.models;
 
 /**
  * Main entry point from the server side, storing our
@@ -37,6 +42,14 @@ public final class SummitApp
         settings.sessionIdCookie = "summit/session_id";
         settings.sessionOptions = SessionOption.httpOnly | SessionOption.secure;
         settings.sessionStore = new DBSessionStore("lmdb://session");
+
+        /* Get our app db open */
+        appDB = Database.open("lmdb://app", DatabaseFlags.CreateIfNotExists)
+            .tryMatch!((Database db) => db);
+
+        /* Ensure all models exist */
+        auto err = appDB.update((scope tx) @safe { return tx.createModel!(User); });
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
         router = new URLRouter();
     }
@@ -62,4 +75,5 @@ private:
     URLRouter router;
     HTTPServerSettings settings;
     HTTPListener listener;
+    Database appDB;
 }
