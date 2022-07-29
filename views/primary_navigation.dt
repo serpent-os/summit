@@ -1,0 +1,14 @@
+nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
+    div.container
+        // Logo
+        a.navbar-brand.logo(href="/")
+            svg.primaryLogo.logo.text-azure(width="32px", height="32px")
+                use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-dashboard")
+            span.logo.px-2 #[span.subtitle.text-muted Summit] Dashboard
+        button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#primaryNavigation", aria-controls="primaryNavigation", aria-expanded="false")
+            span.navbar-toggler-icon.text-white
+        div.collapse.navbar-collapse(id="primaryNavigation")
+
+        div.d-flex
+            // login form
+            a#accountButton.btn(href="#") Log in
