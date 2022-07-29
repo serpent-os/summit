@@ -79,6 +79,8 @@ public final class SummitApp
         fileSettings = new HTTPFileServerSettings();
         fileSettings.serverPathPrefix = "/static";
         router.get("/static/*", serveStaticFiles("static", fileSettings));
+
+        router.rebuild();
     }
 
     /**
