@@ -24,6 +24,7 @@ import moss.db.keyvalue.orm;
 import std.file : exists, mkdir;
 
 import summit.models;
+import summit.web;
 
 /**
  * Main entry point from the server side, storing our
@@ -60,6 +61,7 @@ public final class SummitApp
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
         router = new URLRouter();
+        router.registerWebInterface(new Web());
     }
 
     /**
