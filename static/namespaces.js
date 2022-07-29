@@ -34,30 +34,33 @@ function refreshView(list)
     {
         let newHTML = '';
         object.forEach((namespace) => {
-            const p = namespace.projects.map(p => `<div class="list-group-item">
-<div class="row">
-<div class="col">
-    <a href="/~/${namespace.ns.name}/${p.name}">${namespace.ns.name} / ${p.name} </a>
-</div>
-<div class="col">
-    ${p.summary}
-</div>
-
-</div></div>`)
+            const p = namespace.projects.map(p => {
+                return `<div class="list-group-item">
+                            <div class="row">
+                                <div class="col">
+                                    <a href="/~/${namespace.ns.name}/${p.name}">${namespace.ns.name} / ${p.name} </a>
+                                </div>
+                                <div class="col">
+                                    ${p.summary}
+                                </div>
+                            </div>
+                        </div>`;
+            });
             newHTML += `
                 <div class="col-6">
-                <div class="card shadow-sm">
-                    <div class="card-header">
-                        <h3 class="card-title"><a href="/~/${namespace.ns.name}">${namespace.ns.name}</a> - <span class="text-muted">${namespace.ns.summary}</span></h3>
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h3 class="card-title"><a href="/~/${namespace.ns.name}">${namespace.ns.name}</a> - <span class="text-muted">${namespace.ns.summary}</span></h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="markdown text-center">${namespace.ns.description}</div>
+                        </div>
+                        <div class="list-group list-group-flush justify-text-center">
+                            <div class="list-group-header">Projects</div>
+                            ${p}
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="markdown text-center">${namespace.ns.description}</div>
-                    </div>
-                    <div class="list-group list-group-flush justify-text-center">
-                        <div class="list-group-header">Projects</div>
-                        ${p}
-                    </div>
-                </div></div>`;
+                </div>`;
         });
         list.innerHTML = newHTML;
     }).catch((error) => console.log(error));
