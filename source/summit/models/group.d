@@ -26,8 +26,7 @@ public import moss.db.keyvalue.orm;
 public alias GroupIdentifier = uint64_t;
 
 /**
- * A User is the most basic type we have, and
- * represents an access policy.
+ * A Group is a collection of users
  */
 public @Model struct Group
 {
@@ -35,7 +34,7 @@ public @Model struct Group
     /**
      * Unique identifier for the group
      */
-    @PrimaryKey @AutoIncrement UserIdentifier id;
+    @PrimaryKey @AutoIncrement GroupIdentifier id;
 
     /**
      * Unique name
