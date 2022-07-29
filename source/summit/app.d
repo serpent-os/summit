@@ -124,9 +124,13 @@ unit of development is organised into projects matching our [GitLab instance](ht
 ![serpent](/static/black_withtext_4x.png)
 ");
         Project[] projects = [
-            Project(0, "core", 0, "Really fundamental packages"),
+            Project(0, "base", 0, "Core recipes (non booting)"),
+            Project(0, "freedesktop", 0, "Freedesktop (XDG) compatibility + software"),
             Project(0, "gnome", 0, "GNOME software + libraries"),
+            Project(0, "hardware", 0, "Hardware enabling"),
+            Project(0, "kernel", 0, "Upstream kernel packaging for Serpent OS"),
             Project(0, "plasma", 0, "Plasma desktop + software"),
+            Project(0, "toolchain", 0, "Core Serpent OS tooclhains"),
         ];
 
         auto err = appDB.update((scope tx) @safe {
