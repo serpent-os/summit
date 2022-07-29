@@ -48,7 +48,9 @@ public final class SummitApp
             .tryMatch!((Database db) => db);
 
         /* Ensure all models exist */
-        auto err = appDB.update((scope tx) @safe { return tx.createModel!(User); });
+        auto err = appDB.update((scope tx) @safe {
+            return tx.createModel!(User, Group);
+        });
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
         router = new URLRouter();

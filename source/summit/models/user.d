@@ -16,6 +16,7 @@
 module summit.models.user;
 
 public import std.stdint : uint8_t, uint64_t;
+public import summit.models.group : GroupIdentifier;
 
 public import moss.db.keyvalue.orm;
 
@@ -71,4 +72,9 @@ public @Model struct User
      * What kind of user is this.. ?
      */
     UserType type;
+
+    /**
+     * Groups that the user is a member of
+     */
+    GroupIdentifier[] groups;
 }

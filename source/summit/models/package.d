@@ -15,4 +15,5 @@
 
 module summit.models;
 
+public import summit.models.group;
 public import summit.models.user;
