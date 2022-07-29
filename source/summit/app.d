@@ -21,6 +21,8 @@ import moss.db.keyvalue;
 import moss.db.keyvalue.interfaces;
 import moss.db.keyvalue.orm;
 
+import std.file : exists, mkdir;
+
 import summit.models;
 
 /**
@@ -34,6 +36,10 @@ public final class SummitApp
      */
     this() @safe
     {
+        if (!"database".exists)
+        {
+            mkdir("database");
+        }
         settings = new HTTPServerSettings();
         settings.disableDistHost = true;
         settings.useCompressionIfPossible = true;
@@ -41,11 +47,11 @@ public final class SummitApp
         settings.port = 8081;
         settings.sessionIdCookie = "summit/session_id";
         settings.sessionOptions = SessionOption.httpOnly | SessionOption.secure;
-        settings.sessionStore = new DBSessionStore("lmdb://session");
+        settings.sessionStore = new DBSessionStore("lmdb://database/session");
 
         /* Get our app db open */
-        appDB = Database.open("lmdb://app", DatabaseFlags.CreateIfNotExists)
-            .tryMatch!((Database db) => db);
+        appDB = Database.open("lmdb://database/app",
+                DatabaseFlags.CreateIfNotExists).tryMatch!((Database db) => db);
 
         /* Ensure all models exist */
         auto err = appDB.update((scope tx) @safe {
