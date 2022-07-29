@@ -16,6 +16,7 @@
 module summit.app;
 
 import vibe.d;
+import summit.sessionstore;
 
 /**
  * Main entry point from the server side, storing our
@@ -35,9 +36,7 @@ public final class SummitApp
         settings.port = 8081;
         settings.sessionIdCookie = "summit.serpentos.session_id";
         settings.sessionOptions = SessionOption.httpOnly | SessionOption.secure;
-
-        /* TODO: Put this through lmdb */
-        settings.sessionStore = new MemorySessionStore();
+        settings.sessionStore = new DBSessionStore("lmdb://session");
 
         router = new URLRouter();
     }
