@@ -17,6 +17,9 @@ module summit.rest;
 
 import vibe.d;
 
+import summit.rest.namespaces;
+import moss.db.keyvalue;
+
 @path("api/v1") public interface BaseAPIv1
 {
     @path("version") @method(HTTPMethod.GET) string versionIdentifier() @safe;
@@ -27,9 +30,11 @@ import vibe.d;
  */
 public final class BaseAPI : BaseAPIv1
 {
-    @noRoute void configure(URLRouter root) @safe
+    @noRoute void configure(URLRouter root, Database appDB) @safe
     {
-        root.registerRestInterface(this);
+        auto apiRoot = root.registerRestInterface(this);
+        auto nsAPI = new NamespacesAPI();
+        nsAPI.configure(apiRoot, appDB);
     }
 
     override string versionIdentifier() @safe
