@@ -34,7 +34,7 @@ public final class SummitApp
         settings.useCompressionIfPossible = true;
         settings.bindAddresses = ["127.0.0.1"];
         settings.port = 8081;
-        settings.sessionIdCookie = "summit.serpentos.session_id";
+        settings.sessionIdCookie = "summit/session_id";
         settings.sessionOptions = SessionOption.httpOnly | SessionOption.secure;
         settings.sessionStore = new DBSessionStore("lmdb://session");
 
