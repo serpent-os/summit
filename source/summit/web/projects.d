@@ -5,28 +5,26 @@
  */
 
 /**
- * summit.web
+ * summit.projects;
  *
- * Root for all Web UI
+ * The projects web UI
  *
  * Authors: Copyright © 2020-2022 Serpent OS Developers
  * License: Zlib
  */
 
-module summit.web;
+module summit.web.projects;
 
 import vibe.d;
-
-import summit.web.projects;
 
 /**
  * Web interface providing the UI experience
  */
-@path("/") public final class Web
+@path("projects") public final class ProjectsWeb
 {
-    void configure(URLRouter root) @safe
+    this() @safe
     {
-        root.registerWebInterface(new ProjectsWeb());
+
     }
 
     /**
@@ -34,6 +32,6 @@ import summit.web.projects;
      */
     void index()
     {
-        render!("index.dt");
+        render!("projects/index.dt");
     }
 }

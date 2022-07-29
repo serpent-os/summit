@@ -38,9 +38,12 @@ public final class SummitApp
      */
     this() @safe
     {
+        bool initDefaults;
+
         if (!"database".exists)
         {
             mkdir("database");
+            initDefaults = true;
         }
         settings = new HTTPServerSettings();
         settings.disableDistHost = true;
@@ -59,11 +62,18 @@ public final class SummitApp
         auto err = appDB.update((scope tx) @safe {
             return tx.createModel!(User, Group, Token, Project);
         });
+
+        if (initDefaults)
+        {
+            createDefaults();
+        }
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
         /* Bring up our core routes */
         router = new URLRouter();
-        router.registerWebInterface(new Web());
+        auto web = new Web();
+        auto webRoot = router.registerWebInterface(web);
+        web.configure(webRoot);
 
         /* Enable file sharing from static/ */
         fileSettings = new HTTPFileServerSettings();
@@ -89,6 +99,43 @@ public final class SummitApp
     }
 
 private:
+
+    /**
+     * TODO: Use fixtures!
+     */
+    void createDefaults() @safe
+    {
+        Group[] groups = [Group(0, "Core Team")];
+        Project[] projects = [
+            Project(0, "Serpent OS", "Official Serpent OS Development", "## Serpent OS
+
+This is the *official* [Serpent OS](https://serpentos.com) build project, housing
+all of our packages and updates.
+")
+        ];
+
+        auto err = appDB.update((scope tx) @safe {
+            foreach (group; groups)
+            {
+                auto err = group.save(tx);
+                if (!err.isNull)
+                {
+                    return err;
+                }
+            }
+            foreach (proj; projects)
+            {
+                auto err = proj.save(tx);
+                if (!err.isNull)
+                {
+                    return err;
+                }
+            }
+            return NoDatabaseError;
+        });
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+    }
+
     URLRouter router;
     HTTPServerSettings settings;
     HTTPListener listener;
