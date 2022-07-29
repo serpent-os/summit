@@ -18,6 +18,12 @@
 			"version": "8bc62db965ce3da0fb5652b024f66bfacd9b8cb6"
 		}
 	},
+	"versions": [
+		"VibeIdleCollect",
+		"VibeDisableCommandLineParsing",
+		"VibeNoDefaultArgs",
+		"VibeOutputCompactHTML"
+	],
 	"description": "Web dashboard for Serpent OS",
 	"license": "Zlib",
 	"name": "summit"
