@@ -17,6 +17,7 @@ module summit.web;
 
 import vibe.d;
 
+import summit.web.namespaces;
 import summit.web.projects;
 
 /**
@@ -27,6 +28,7 @@ import summit.web.projects;
     void configure(URLRouter root) @safe
     {
         root.registerWebInterface(new ProjectsWeb());
+        root.registerWebInterface(new NamespacesWeb());
     }
 
     /**
