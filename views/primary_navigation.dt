@@ -1,3 +1,11 @@
+- import std.typecons : Tuple;
+- import std.string : startsWith;
+- alias NavigationItem = Tuple!(string, "path", string, "name");
+- static NavigationItem[] navItems = [
+-   NavigationItem("/", "Home"),
+-   NavigationItem("/~", "Namespaces"),
+- ];
+
 nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
     div.container
         // Logo
@@ -8,6 +16,13 @@ nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
         button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#primaryNavigation", aria-controls="primaryNavigation", aria-expanded="false")
             span.navbar-toggler-icon.text-white
         div.collapse.navbar-collapse(id="primaryNavigation")
+            ul.navbar-nav
+                - foreach (item; navItems)
+                - {
+                    - string className = (req.path == item.path || req.path.startsWith(item.path ~ "/")) ? "nav-link active" : "nav-link";
+                    li.nav-item
+                        a(class=className, aria-current="page", href=item.path) #{item.name}
+                - }
 
         div.d-flex
             // login form
