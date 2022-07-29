@@ -2,4 +2,8 @@ extends root
 
 block content
     div.container
-        h3 hey hey namespaces
+        div#namespacesList
+
+block scripts
+
+    script(src="/static/namespaces.js", defer, async, module="true")

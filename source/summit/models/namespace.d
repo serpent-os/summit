@@ -42,6 +42,16 @@ public @Model struct Namespace
     @Indexed string name;
 
     /**
+     * Brief into to a namespace
+     */
+    string summary;
+
+    /**
+     * Description / README.md of a namespace
+     */
+    string description;
+
+    /**
      * All the users within our group
      */
     ProjectIdentifier[] projects;

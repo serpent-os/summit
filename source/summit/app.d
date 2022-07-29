@@ -116,13 +116,17 @@ private:
     void createDefaults() @safe
     {
         Group[] groups = [Group(0, "Core Team")];
-        Namespace coreNamespace = Namespace(0, "serpent-os");
-        Project[] projects = [
-            Project(0, "core", 0, "Core packages", "## Serpent OS
+        Namespace coreNamespace = Namespace(0, "serpent-os", "Official development", "
+Official namespace for all [Serpent OS](https://serpentos.com) development. Each major
+unit of development is organised into projects matching our [GitLab instance](https://gitlab.com/serpent-os/).
 
-This is the *official* [Serpent OS](https://serpentos.com) build project, housing
-all of our packages and updates.
-")
+
+![serpent](/static/black_withtext_4x.png)
+");
+        Project[] projects = [
+            Project(0, "core", 0, "Really fundamental packages"),
+            Project(0, "gnome", 0, "GNOME software + libraries"),
+            Project(0, "plasma", 0, "Plasma desktop + software"),
         ];
 
         auto err = appDB.update((scope tx) @safe {

@@ -56,10 +56,12 @@ public final class NamespacesAPI : NamespacesAPIv1
             {
                 RenderNamespaceItem current;
                 current.ns = ns;
+                current.ns.description = filterMarkdown(current.ns.description);
                 foreach (proj; ns.projects)
                 {
                     Project p;
                     p.load(tx, proj);
+                    p.description = filterMarkdown(p.description);
                     current.projects ~= p;
                 }
                 ret ~= current;
