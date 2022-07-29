@@ -30,6 +30,9 @@ import moss.db.keyvalue;
  */
 public final class BaseAPI : BaseAPIv1
 {
+    /**
+     * Prepare the BaseAPI for integration
+     */
     @noRoute void configure(URLRouter root, Database appDB) @safe
     {
         auto apiRoot = root.registerRestInterface(this);

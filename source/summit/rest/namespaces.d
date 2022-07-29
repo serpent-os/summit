@@ -22,14 +22,30 @@ import summit.models.project;
 import moss.db.keyvalue;
 import std.array : array;
 
+/**
+ * A premapped renderable namespace with projects.
+ */
 public struct RenderNamespaceItem
 {
+    /**
+     * Real Namespace model
+     */
     Namespace ns;
+
+    /**
+     * Preloaded projects
+     */
     Project[] projects;
 }
 
+/**
+ * The Namespaces API
+ */
 @path("api/v1/namespaces") public interface NamespacesAPIv1
 {
+    /**
+     * List all known namespaces
+     */
     @path("list") @method(HTTPMethod.GET) RenderNamespaceItem[] list() @safe;
 }
 
@@ -38,6 +54,9 @@ public struct RenderNamespaceItem
  */
 public final class NamespacesAPI : NamespacesAPIv1
 {
+    /**
+     * Integrate into the root API
+     */
     @noRoute void configure(URLRouter root, Database appDB) @safe
     {
         this.appDB = appDB;
@@ -47,6 +66,8 @@ public final class NamespacesAPI : NamespacesAPIv1
     /**
      * Render the namespace into something nice for listing, complete with
      * resolved projects.
+     *
+     * Returns: slice of RenderNamespaceItem
      */
     override RenderNamespaceItem[] list() @safe
     {
