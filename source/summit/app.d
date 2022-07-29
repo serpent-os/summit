@@ -60,7 +60,7 @@ public final class SummitApp
 
         /* Ensure all models exist */
         auto err = appDB.update((scope tx) @safe {
-            return tx.createModel!(User, Group, Token, Project);
+            return tx.createModel!(User, Group, Token, Project, Namespace);
         });
 
         if (initDefaults)
@@ -106,8 +106,9 @@ private:
     void createDefaults() @safe
     {
         Group[] groups = [Group(0, "Core Team")];
+        Namespace coreNamespace = Namespace(0, "serpent-os");
         Project[] projects = [
-            Project(0, "Serpent OS", "Official Serpent OS Development", "## Serpent OS
+            Project(0, "core", 0, "Core packages", "## Serpent OS
 
 This is the *official* [Serpent OS](https://serpentos.com) build project, housing
 all of our packages and updates.
@@ -115,6 +116,14 @@ all of our packages and updates.
         ];
 
         auto err = appDB.update((scope tx) @safe {
+            /* Create ID for namespace */
+            {
+                auto err = coreNamespace.save(tx);
+                if (!err.isNull)
+                {
+                    return err;
+                }
+            }
             foreach (group; groups)
             {
                 auto err = group.save(tx);
@@ -125,13 +134,15 @@ all of our packages and updates.
             }
             foreach (proj; projects)
             {
+                proj.namespace = coreNamespace.id;
                 auto err = proj.save(tx);
                 if (!err.isNull)
                 {
                     return err;
                 }
+                coreNamespace.projects ~= proj.id;
             }
-            return NoDatabaseError;
+            return coreNamespace.save(tx);
         });
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
     }

@@ -16,7 +16,7 @@
 module summit.models.project;
 
 public import std.stdint : uint8_t, uint64_t;
-
+public import summit.models.namespace : NamespaceIdentifier;
 public import moss.db.keyvalue.orm;
 
 /**
@@ -39,6 +39,11 @@ public @Model struct Project
      * Unique name
      */
     @Indexed string name;
+
+    /**
+     * A Project belongs in exactly *one* namespace
+     */
+    NamespaceIdentifier namespace;
 
     /**
      * Brief summary of the project
