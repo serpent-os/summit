@@ -16,6 +16,7 @@
 module summit.app;
 
 import vibe.d;
+import vibe.http.fileserver;
 import summit.sessionstore;
 import moss.db.keyvalue;
 import moss.db.keyvalue.interfaces;
@@ -60,8 +61,14 @@ public final class SummitApp
         });
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
+        /* Bring up our core routes */
         router = new URLRouter();
         router.registerWebInterface(new Web());
+
+        /* Enable file sharing from static/ */
+        fileSettings = new HTTPFileServerSettings();
+        fileSettings.serverPathPrefix = "/static";
+        router.get("/static/*", serveStaticFiles("static", fileSettings));
     }
 
     /**
@@ -85,5 +92,6 @@ private:
     URLRouter router;
     HTTPServerSettings settings;
     HTTPListener listener;
+    HTTPFileServerSettings fileSettings;
     Database appDB;
 }
