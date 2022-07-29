@@ -4,6 +4,7 @@
 - static NavigationItem[] navItems = [
 -   NavigationItem("/", "Home"),
 -   NavigationItem("/~", "Namespaces"),
+-   NavigationItem("/builders", "Builders"),
 - ];
 
 nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
