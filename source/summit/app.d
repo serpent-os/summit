@@ -116,7 +116,7 @@ private:
     void createDefaults() @safe
     {
         Group[] groups = [Group(0, "Core Team")];
-        Namespace coreNamespace = Namespace(0, "serpent-os", "Official development", "
+        Namespace coreNamespace = Namespace(0, "serpent-os", "Official package builds for Serpent OS", "
 Official namespace for all [Serpent OS](https://serpentos.com) development. Each major
 unit of development is organised into projects matching our [GitLab instance](https://gitlab.com/serpent-os/).
 

@@ -50,10 +50,10 @@ function refreshView(list)
                 <div class="col-6">
                     <div class="card shadow-sm">
                         <div class="card-header">
-                            <h3 class="card-title"><a href="/~/${namespace.ns.name}">${namespace.ns.name}</a> - <span class="text-muted">${namespace.ns.summary}</span></h3>
+                            <h3 class="card-title"><a href="/~/${namespace.ns.name}">${namespace.ns.name}</a></h3>
                         </div>
                         <div class="card-body">
-                            <div class="markdown text-center">${namespace.ns.description}</div>
+                            <p>${namespace.ns.summary}
                         </div>
                         <div class="list-group list-group-flush justify-text-center">
                             <div class="list-group-header">Projects</div>
