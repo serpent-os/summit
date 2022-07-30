@@ -1,0 +1,9 @@
+/**
+ * Help center our "dialogs" (wizards etc)
+ */
+.main-view {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	min-height: 60vh;
+}
