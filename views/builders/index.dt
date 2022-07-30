@@ -1,5 +1,8 @@
 extends root
 
+block title
+    title Summit - Builders
+
 block content
     div.container
         div#buildersList

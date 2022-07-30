@@ -1,5 +1,8 @@
 extends root
 
+block title
+    title Summit - Namespaces
+
 block content
     div.container
         div#namespacesList
