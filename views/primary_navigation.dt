@@ -27,4 +27,4 @@ nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
 
         div.d-flex
             // login form
-            a#accountButton.btn(href="#") Log in
+            a#accountButton.btn(href="/accounts/login") Log in
