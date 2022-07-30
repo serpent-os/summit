@@ -35,7 +35,7 @@ public @Model struct BuildJob
      * Unique identifier for the group
      */
     @PrimaryKey @AutoIncrement BuildJobIdentifier id;
-    
+
     /**
      * What are we building, exactly?
      */
