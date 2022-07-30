@@ -47,13 +47,13 @@ function refreshView(list)
                         </div>`;
             }).join("");
             newHTML += `
-                <div class="col-6">
+                <div class="col-10 col-md-6">
                     <div class="card shadow-sm">
                         <div class="card-header">
                             <h3 class="card-title"><a href="/~/${namespace.ns.name}">${namespace.ns.name}</a></h3>
                         </div>
                         <div class="card-body">
-                            <p>${namespace.ns.summary}
+                            <div class="markdown text-wrap text-center">${namespace.ns.description}</div>
                         </div>
                         <div class="list-group list-group-flush justify-text-center">
                             <div class="list-group-header">Projects</div>

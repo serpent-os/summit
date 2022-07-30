@@ -4,8 +4,9 @@ block title
     title Summit - Namespaces
 
 block content
-    div.container
-        div#namespacesList
+    div.main-view.justify-content-center
+        div.container
+            div.row.d-flex.align-self-center.justify-content-center#namespacesList
 
 block scripts
 
