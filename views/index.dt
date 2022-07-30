@@ -25,15 +25,13 @@ block content
                         h3.card-title Recent builds
 
                     div.list-group.list-group-flush#listGroupBuilds
-                        div.list-group-item
-                            div.row.d-flex
-                                p Thingy happened
+
             div.col-md-4.col-sm-12
                 div.card
                     div.card-header
                         h3.card-title New packages
 
                     div.list-group.list-group-flush#listGroupPackages
-                        div.list-group-item
-                            div.row.d-flex
-                                p A thingy!
+
+block scripts
+    script(src="/static/jobs.js", defer, async, type="module")

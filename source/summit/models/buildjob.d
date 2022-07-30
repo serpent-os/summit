@@ -25,6 +25,16 @@ public import moss.db.keyvalue.orm;
  */
 public alias BuildJobIdentifier = uint64_t;
 
+public enum JobStatus : uint8_t
+{
+    Pending = 0,
+    Accepted,
+    Building,
+    Syncing,
+    Finished,
+    Failed,
+}
+
 /**
  * A Build Job is an actual buildable thingy in the queue
  */
@@ -50,4 +60,6 @@ public @Model struct BuildJob
      * Who submitted the build?
      */
     UserIdentifier submitter;
+
+    JobStatus status;
 }

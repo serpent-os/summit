@@ -30,6 +30,11 @@ import std.array : array;
      * List all active jobs
      */
     @path("list_active") @method(HTTPMethod.GET) BuildJob[] listActive() @safe;
+
+    /**
+     * Create a new build job
+     */
+    @path("create") @method(HTTPMethod.PUT) void create(string target, string reference) @safe;
 }
 
 /**
@@ -53,7 +58,32 @@ public final class BuildJobsAPI : BuildJobsAPIv1
      */
     override BuildJob[] listActive() @safe
     {
-        return null;
+        BuildJob[] jobs;
+        appDB.view((in tx) @safe {
+            /* TODO: Filter */
+            jobs = tx.list!BuildJob().array;
+            return NoDatabaseError;
+        });
+        return jobs;
+    }
+
+    /**
+     * Create a new build job
+     */
+    override void create(string target, string reference) @safe
+    {
+        BuildJob job;
+        job.reference = reference;
+        job.resource = target;
+        auto err = appDB.update((scope tx) => job.save(tx));
+        runTask(() @safe {
+            sleep(2.seconds);
+            auto err = appDB.update((scope tx) {
+                job.status = JobStatus.Failed;
+                return job.save(tx);
+            });
+        });
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
     }
 
 private:
