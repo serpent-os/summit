@@ -20,6 +20,7 @@ import vibe.d;
 import summit.models.buildjob;
 import moss.db.keyvalue;
 import std.array : array;
+import std.algorithm : reverse;
 
 /**
  * The BuildJobs API
@@ -62,6 +63,7 @@ public final class BuildJobsAPI : BuildJobsAPIv1
         appDB.view((in tx) @safe {
             /* TODO: Filter */
             jobs = tx.list!BuildJob().array;
+            jobs.reverse();
             return NoDatabaseError;
         });
         return jobs;
