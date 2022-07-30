@@ -13,6 +13,7 @@ html
 
     body.d-flex.flex-column.min-vh-100.theme-dark-auto
         include primary_navigation
+        block banner
         main
             div.container-fluid.py-0.px-0.my-0.mx-0
                 div.container-fluid.py-5

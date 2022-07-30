@@ -1,5 +1,36 @@
 extends root
 
+block banner
+    div.container-fluid.bg-azure.text-dark.border-bottom.shadow
+        div.container-xl.py-4
+            div.row.d-flex
+                div.col-auto
+                    img(src="/static/white_notext_4x.png", width="141.60px", height="125.40px")
+                div.col.px-5.mx-5
+                    h1 Awww yeah, we did it.
+                    p.text-lead Serpent OS has been in development for the past #[i two years].#[br ]
+                        | Now, we're launching our infrastructure and you can be part of something #[strong amazing].
+                    a.btn.btn-outline-light(href="#") Read more
+        
 block content
     div.container
-        h3 let build this again
+
+        div.row
+            div.col-md-8.col-sm-12
+                div.card
+                    div.card-header
+                        h3.card-title Recent builds
+
+                    div.list-group.list-group-flush#listGroupBuilds
+                        div.list-group-item
+                            div.row.d-flex
+                                p Thingy happened
+            div.col-md-4.col-sm-12
+                div.card
+                    div.card-header
+                        h3.card-title New packages
+
+                    div.list-group.list-group-flush#listGroupPackages
+                        div.list-group-item
+                            div.row.d-flex
+                                p A thingy!
