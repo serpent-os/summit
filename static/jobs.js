@@ -34,12 +34,18 @@ const StatusMap = Object.freeze({
     'Failed': `<div class="badge bg-red-lt">Failed</div>`,
 });
 
+/**
+ * Insert a placeholder on ready
+ */
 window.addEventListener('DOMContentLoaded', function(ev)
 {
     const jobList = this.document.getElementById('listGroupBuilds');
     jobList.innerHTML = renderPlaceholder();
 });
 
+/**
+ * Refresh job lists periodically
+ */
 window.addEventListener('load', function(ev)
 {
     const jobList = this.document.getElementById('listGroupBuilds');
@@ -49,6 +55,9 @@ window.addEventListener('load', function(ev)
     refreshPackages(pkgList);
 });
 
+/**
+ * Render an individual job
+ */
 function renderJob(job)
 {
     const statusType = parseInt(job.status);
@@ -79,6 +88,9 @@ function renderJob(job)
     `;
 }
 
+/**
+ * Render the joblist placeholder
+ */
 function renderPlaceholder()
 {
     return `
@@ -120,6 +132,9 @@ function refreshJobs(jobList)
     }).catch((error) => console.log(error));
 }
 
+/**
+ * Refresh the new-packages list
+ */
 function refreshPackages(pkgList)
 {
     pkgList.innerHTML = `
