@@ -53,7 +53,7 @@ function refreshView(list)
                             <h3 class="card-title"><a href="/~/${namespace.ns.name}">${namespace.ns.name}</a></h3>
                         </div>
                         <div class="card-body">
-                            <div class="markdown text-wrap text-center">${namespace.ns.description}</div>
+                            <div class="markdown text-wrap">${namespace.ns.description}</div>
                         </div>
                         <div class="list-group list-group-flush justify-text-center">
                             <div class="list-group-header">Projects</div>

@@ -121,8 +121,8 @@ private:
 Official namespace for all [Serpent OS](https://serpentos.com) development. Each major
 unit of development is organised into projects matching our [GitLab instance](https://gitlab.com/serpent-os/).
 
-
-![serpent](/static/black_withtext_4x.png)
+Note that in order to **push a build** you will need commit + tag access. Otherwise you can
+send a merge request via GitLab, and a maintainer will push the build for you.
 ");
         Project[] projects = [
             Project(0, "base", 0, "Core recipes (non booting)"),
