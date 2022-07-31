@@ -26,6 +26,8 @@ import moss.db.keyvalue.orm;
 
 import vibe.d;
 
+import libsodium;
+
 /**
  * The AccountManager hosts all account management within
  * its own DB tree.
@@ -51,4 +53,43 @@ public final class AccountManager
 private:
 
     Database userDB;
+}
+
+/**
+ * Generate sodium hash from input
+ */
+static private string generateSodiumHash(in string password) @safe
+{
+    char[crypto_pwhash_STRBYTES] ret;
+    auto inpBuffer = password.toStringz;
+    int rc = () @trusted {
+        return crypto_pwhash_str(ret, cast(char*) inpBuffer, password.length,
+                crypto_pwhash_OPSLIMIT_INTERACTIVE, crypto_pwhash_MEMLIMIT_INTERACTIVE);
+    }();
+
+    if (rc != 0)
+    {
+        return null;
+    }
+    return ret.fromStringz.dup;
+}
+
+/**
+ * Verify a password matches the given stored hash
+ */
+static private bool sodiumHashMatch(in string hash, in string userPassword) @safe
+in
+{
+    assert(hash.length <= crypto_pwhash_STRBYTES);
+}
+do
+{
+    return () @trusted {
+        char[crypto_pwhash_STRBYTES] buf;
+        auto pwPtr = hash.toStringz;
+        auto userPtr = userPassword.toStringz;
+        buf[0 .. hash.length + 1] = pwPtr[0 .. hash.length + 1];
+
+        return crypto_pwhash_str_verify(buf, userPtr, userPassword.length);
+    }() == 0;
 }
