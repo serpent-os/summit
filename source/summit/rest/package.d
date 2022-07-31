@@ -17,6 +17,7 @@ module summit.rest;
 
 import vibe.d;
 
+import summit.rest.builders;
 import summit.rest.buildjobs;
 import summit.rest.namespaces;
 import moss.db.keyvalue;
@@ -41,6 +42,8 @@ public final class BaseAPI : BaseAPIv1
         nsAPI.configure(apiRoot, appDB);
         auto jobAPI = new BuildJobsAPI();
         jobAPI.configure(apiRoot, appDB);
+        auto bAPI = new BuilderAPI();
+        bAPI.configure(apiRoot, appDB);
     }
 
     override string versionIdentifier() @safe
