@@ -11,6 +11,17 @@ html
         link(rel="stylesheet", href="/static/tabler/css/tabler.min.css")
         link(rel="stylesheet", href="/static/custom.css")
 
+        // Favicons
+        link(rel="shortcut icon", href="/static/img/favicon.ico")
+        link(rel="icon", sizes="16x16", href="/static/img/favicon.ico")
+        link(rel="icon", type="image/svg+xml", href="/static/img/favicon.svg")
+        link(rel="icon", type="image/png", sizes="196x196", href="/static/img/favicon-196x196.png")
+        link(rel="icon", type="image/png", sizes="160x160", href="/static/img/favicon-160x160.png")
+        link(rel="icon", type="image/png", sizes="96x96", href="/static/img/favicon-96x96.png")
+        link(rel="icon", type="image/png", sizes="64x64", href="/static/img/favicon-64x64.png")
+        link(rel="icon", type="image/png", sizes="32x32", href="/static/img/favicon-32x32.png")
+        link(rel="icon", type="image/png", sizes="16x16", href="/static/img/favicon-16x16.png")
+
     body.d-flex.flex-column.min-vh-100.theme-dark-auto
         include primary_navigation
         block banner
