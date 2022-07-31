@@ -20,12 +20,14 @@ block content
                             form(method="post", action="/accounts/login")
                                 div.row.mb-2
                                     div
-                                        label.text-muted(for="username") Username
-                                        input#username.form-control(name="username", type="text", required, minlength="4")
+                                        div.input-icon
+                                            span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-user")
+                                            input#username.form-control(name="username", placeholder="The username you signed up with", type="text", required, minlength="4")
                                 div.row.mb-2
                                     div
-                                        label.text-muted(for="password") Password
-                                        input#password.form-control(name="password", type="password", required, minlength="6")
+                                        div.input-icon
+                                            span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-lock")
+                                            input#password.form-control(name="password", type="password", placeholder="Enter your password", required, minlength="6")
                                 div.row.mb-2
                                     div.py-3
                                         button.form-control.btn.btn-primary(type="submit") Login
