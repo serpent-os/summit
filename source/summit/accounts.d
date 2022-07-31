@@ -109,6 +109,8 @@ public final class AccountManager
         /* You can haz User now */
         if (err.isNull)
         {
+            /* No hash for u */
+            lookup.hashedPassword = null;
             return SumType!(User, DatabaseError)(lookup);
         }
         return SumType!(User, DatabaseError)(err);
