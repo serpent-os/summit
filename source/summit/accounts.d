@@ -15,18 +15,15 @@
 
 module summit.accounts;
 
-import summit.models.group;
-import summit.models.token;
-import summit.models.user;
-
+import libsodium;
 import moss.db.keyvalue;
 import moss.db.keyvalue.errors;
 import moss.db.keyvalue.interfaces;
 import moss.db.keyvalue.orm;
-
+import summit.models.group;
+import summit.models.token;
+import summit.models.user;
 import vibe.d;
-
-import libsodium;
 
 /**
  * The AccountManager hosts all account management within
@@ -48,6 +45,35 @@ public final class AccountManager
         /* Ensure model exists */
         auto err = userDB.update((scope tx) => tx.createModel!(User, Group, Token));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+    }
+
+    /**
+     * Attempt to register the user.
+     *
+     * Params:
+     *      username = New user identifier
+     *      password = New password
+     * Returns: Nullable database error
+     */
+    DatabaseResult registerUser(string username, string password) @safe
+    {
+        /* Make sure nobody exists wit that username. */
+        {
+            User lookupUser;
+            immutable err = userDB.view((in tx) => lookupUser.load!"username"(tx, username));
+            if (err.isNull)
+            {
+                return DatabaseResult(DatabaseError(DatabaseErrorCode.BucketExists,
+                        "User already exists"));
+            }
+        }
+
+        /* Register the new user */
+        auto user = User();
+        user.hashedPassword = generateSodiumHash(password);
+        user.username = username;
+        user.type = UserType.Standard;
+        return userDB.update((scope tx) => user.save(tx));
     }
 
 private:
