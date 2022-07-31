@@ -1,0 +1,30 @@
+extends root
+
+block title
+    title Login to Summit
+
+block content
+    div.main-view.justify-content-center
+        div.container
+            div.row.d-flex.align-self-center.justify-content-center
+                div.col-8.col-md-5
+                    div.card.shadow-sm
+                        div.card-status.bg-azure.card-status-top
+                        div.card-body.mb-2
+                            h3.card-title.justify-content-center.align-self-center
+                                div.d-flex
+                                    svg.icon.align-self-center: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-login")
+                                    div &nbsp; Login to Summit
+                            p.text-muted.text-wrap.py-3 Gain access to the Serpent OS build infrastructure. 
+                                | If you don't have an account yet, you can #[a(href="/accounts/register") register one] now.
+                            form(method="post", action="/accounts/login")
+                                div.row.mb-2
+                                    div
+                                        label.text-muted(for="username") Username
+                                        input#username.form-control(type="text", required, minlength="4")
+                                div.row.mb-2
+                                    div
+                                        label.text-muted(for="password") Password
+                                        input#password.form-control(type="password", required, minlength="6")
+                        div.card-footer
+                            button.form-control.btn.btn-primary(type="submit") Login
