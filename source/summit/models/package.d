@@ -15,7 +15,7 @@
 
 module summit.models;
 
-public import summit.models.builders;
+public import summit.models.builder;
 public import summit.models.buildjob;
 public import summit.models.group;
 public import summit.models.namespace;
