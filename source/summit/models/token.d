@@ -30,8 +30,22 @@ public alias TokenIdentifier = uint64_t;
  */
 public enum TokenType : uint8_t
 {
+    /**
+     * Issued solely for API use
+     */
     RemoteAccess,
+
+    /**
+     * Issued for a session, ensures timeouts
+     * work correctly, etc.
+     */
     Session,
+
+    /**
+     * API refresh token, required to grab a new token
+     * when the current one is expired.
+     */
+    Refresh,
 }
 
 /**
