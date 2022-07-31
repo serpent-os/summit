@@ -61,7 +61,7 @@ public final class SummitApp
 
         /* Ensure all models exist */
         auto err = appDB.update((scope tx) @safe {
-            return tx.createModel!(User, Group, Token, Project, Namespace, BuildJob);
+            return tx.createModel!(User, Group, Token, Project, Namespace, Builder, BuildJob);
         });
 
         if (initDefaults)
