@@ -7,7 +7,7 @@ block content
     div.main-view.justify-content-center
         div.container
             div.row.d-flex.align-self-center.justify-content-center
-                div.col-8.col-md-5
+                div.col-10.col-md-5
                     div.card.shadow-sm
                         div.card-status.bg-azure.card-status-top
                         div.card-body.mb-2
