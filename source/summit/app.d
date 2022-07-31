@@ -24,6 +24,7 @@ import moss.db.keyvalue.orm;
 
 import std.file : exists, mkdir;
 
+import summit.accounts;
 import summit.models;
 import summit.web;
 import summit.rest;
@@ -56,13 +57,16 @@ public final class SummitApp
         settings.sessionStore = new DBSessionStore("lmdb://database/session");
         settings.serverString = "summit/0.0.1";
 
+        /* Open the accounts DB */
+        accountManager = new AccountManager("lmdb://database/accounts");
+
         /* Get our app db open */
         appDB = Database.open("lmdb://database/app",
                 DatabaseFlags.CreateIfNotExists).tryMatch!((Database db) => db);
 
         /* Ensure all models exist */
         auto err = appDB.update((scope tx) @safe {
-            return tx.createModel!(User, Group, Token, Project, Namespace, Builder, BuildJob);
+            return tx.createModel!(Token, Project, Namespace, Builder, BuildJob);
         });
 
         if (initDefaults)
@@ -116,7 +120,6 @@ private:
      */
     void createDefaults() @safe
     {
-        Group[] groups = [Group(0, "Core Team")];
         Namespace coreNamespace = Namespace(0, "serpent-os",
                 "Official package builds for Serpent OS", "
 Official namespace for all [Serpent OS](https://serpentos.com) development. Each major
@@ -144,14 +147,6 @@ send a merge request via GitLab, and a maintainer will push the build for you.
                     return err;
                 }
             }
-            foreach (group; groups)
-            {
-                auto err = group.save(tx);
-                if (!err.isNull)
-                {
-                    return err;
-                }
-            }
             foreach (proj; projects)
             {
                 proj.namespace = coreNamespace.id;
@@ -172,4 +167,5 @@ send a merge request via GitLab, and a maintainer will push the build for you.
     HTTPListener listener;
     HTTPFileServerSettings fileSettings;
     Database appDB;
+    AccountManager accountManager;
 }
