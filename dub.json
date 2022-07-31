@@ -8,7 +8,7 @@
 		"vibe-d:tls": ">=0.9.5",
 		"openssl": "~>3.1",
 		"moss-core": ">=0.0.1",
-        "moss-db": ">=0.0.1",
+		"moss-db": ">=0.0.2",
 		"jwtd": {
 			"repository": "git+https://gitlab.com/serpent-os/dlang/jwtd.git",
 			"version": "028fc4fc086b87108a2223ed489c3b502fd9c7f4"
