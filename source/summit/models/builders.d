@@ -75,6 +75,16 @@ public @Model struct Builder
     uint16_t port;
 
     /**
+     * The visible display name
+     */
+    string displayName;
+
+    /**
+     * List of contacts for the builder
+     */
+    string[] adminContact;
+
+    /**
      * We track the status when looking for active builders.
      */
     BuilderStatus status;
