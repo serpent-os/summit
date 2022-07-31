@@ -54,6 +54,7 @@ public final class SummitApp
         settings.sessionIdCookie = "summit/session_id";
         settings.sessionOptions = SessionOption.httpOnly | SessionOption.secure;
         settings.sessionStore = new DBSessionStore("lmdb://database/session");
+        settings.serverString = "summit/0.0.1";
 
         /* Get our app db open */
         appDB = Database.open("lmdb://database/app",
