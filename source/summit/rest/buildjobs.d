@@ -78,6 +78,7 @@ public final class BuildJobsAPI : BuildJobsAPIv1
         job.reference = reference;
         job.resource = target;
         auto err = appDB.update((scope tx) => job.save(tx));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
         runTask(() @safe {
             sleep(2.seconds);
             auto err = appDB.update((scope tx) {
@@ -85,7 +86,6 @@ public final class BuildJobsAPI : BuildJobsAPIv1
                 return job.save(tx);
             });
         });
-        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
     }
 
 private:
