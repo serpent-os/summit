@@ -68,9 +68,11 @@ import summit.accounts;
      *      password = New password
      *      confirmPassword = Ensure passwords match
      *      email = Users email address (validation)
+     *      policy = Must be true to accept privacy policy
      */
     @path("register") @method(HTTPMethod.POST) void registerUser(ValidUsername username,
-            ref ValidPassword password, ref Confirm!"password" confirmPassword, ValidEmail email) @safe
+            ref ValidPassword password, ref Confirm!"password" confirmPassword,
+            ValidEmail email, bool policy) @safe
     {
         auto pw = password.toString;
         auto pw2 = confirmPassword.toString;

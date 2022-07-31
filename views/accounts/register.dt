@@ -1,0 +1,48 @@
+extends root
+
+block title
+    title Summit - Register Account
+
+block content
+    div.main-view.justify-content-center
+        div.container
+            div.row.d-flex.align-self-center.justify-content-center
+                div.col-10.col-md-5
+                    div.card.shadow-sm
+                        div.card-status.bg-azure.card-status-top
+                        div.card-body.mb-2
+                            h3.card-title.justify-content-center.align-self-center
+                                div.d-flex
+                                    svg.icon.align-self-center: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-user-check")
+                                    div &nbsp; Register with Summit
+                            p.text-muted.text-wrap.py-3 Sign up for an account with Summit to gain access to the build infrastructure. Come on in, we have cookies.
+                            form(method="post", action="/accounts/register")
+                                div.row.mb-2
+                                    div
+                                        div.input-icon
+                                            span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-user")
+                                            input#username.form-control(name="username", type="text", placeholder="Pick a unique username", required, minlength="4")
+                                div.row.mb-2
+                                    div
+                                        div.input-icon
+                                            span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-mail")
+                                            input#emailAddress.form-control(name="emailAddress", type="email", placeholder="Valid email address", required)
+                                div.row.mb-2
+                                    div
+                                        div.input-icon
+                                            span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-lock")
+                                            input#password.form-control(name="password", type="password", placeholder="Type your password", required, minlength="6")
+                                div.row.mb-2
+                                    div
+                                        div.input-icon
+                                            span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-lock")
+                                            input#confirmPassword.form-control(name="confirmPassword", type="password", placeholder="And confirm your password", required, minlength="6")
+                                hr
+                                div.row.mb-2
+                                    div
+                                        label.form-check
+                                            input.form-check-input(type="checkbox", name="policy", required)
+                                            span.form-check-label I have read and accept the #[a(href="") privacy policy]
+                                div.row.mb-2
+                                    div.py-3
+                                        button.form-control.btn.btn-primary(type="submit") Register
