@@ -1,7 +1,7 @@
 extends root
 
 block title
-    title Summit - Home
+    title Summit
 
 block banner
     div.container-fluid.bg-azure.text-dark.border-bottom.shadow
