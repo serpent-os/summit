@@ -76,6 +76,44 @@ public final class AccountManager
         return userDB.update((scope tx) => user.save(tx));
     }
 
+    /**
+     * Check if authentication works via the DB
+     *
+     * To prevent brute force we'll never admit if a username exists.
+     *
+     * Params:
+     *      username = Registered username
+     *      password = Registered password
+     * Returns: Nullable database error
+     */
+    SumType!(User, DatabaseError) authenticateUser(string username, string password) @safe
+    {
+        User lookup;
+        static auto noUser = DatabaseResult(DatabaseError(DatabaseErrorCode.BucketNotFound,
+                "Username or password incorrect"));
+
+        immutable err = userDB.view((in tx) @safe {
+            /* Check if the user exists first :) */
+            immutable err = lookup.load!"username"(tx, username);
+            if (!err.isNull)
+            {
+                return noUser;
+            }
+            /* Check the password is right */
+            if (!sodiumHashMatch(lookup.hashedPassword, password))
+            {
+                return noUser;
+            }
+            return NoDatabaseError;
+        });
+        /* You can haz User now */
+        if (err.isNull)
+        {
+            return SumType!(User, DatabaseError)(lookup);
+        }
+        return SumType!(User, DatabaseError)(err);
+    }
+
 private:
 
     Database userDB;
