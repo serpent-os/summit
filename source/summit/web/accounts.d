@@ -25,6 +25,15 @@ import summit.accounts;
 {
 
     /**
+     * Configure this module for account management
+     */
+    @noRoute void configure(URLRouter root, AccountManager accountManager) @safe
+    {
+        root.registerWebInterface(this);
+        this.accountManager = accountManager;
+    }
+
+    /**
      * Provide the basic registration form
      */
     @path("register") @method(HTTPMethod.GET) void register() @safe
@@ -83,4 +92,8 @@ import summit.accounts;
             unlockString(pw2);
         }
     }
+
+private:
+
+    AccountManager accountManager;
 }

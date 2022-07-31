@@ -78,7 +78,7 @@ public final class SummitApp
         /* Bring up our core routes */
         router = new URLRouter();
         auto web = new Web();
-        web.configure(router);
+        web.configure(router, accountManager);
 
         auto api = new BaseAPI();
         api.configure(router, appDB);

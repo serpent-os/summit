@@ -22,6 +22,8 @@ import summit.web.builders;
 import summit.web.namespaces;
 import summit.web.projects;
 
+import summit.accounts;
+
 /**
  * Web interface providing the UI experience
  */
@@ -30,10 +32,11 @@ import summit.web.projects;
     /**
      * Configure the web UI portions
      */
-    void configure(URLRouter root) @safe
+    void configure(URLRouter root, AccountManager accountsManager) @safe
     {
         auto webRoot = root.registerWebInterface(this);
-        webRoot.registerWebInterface(new AccountsWeb());
+        auto accts = new AccountsWeb();
+        accts.configure(webRoot, accountsManager);
         webRoot.registerWebInterface(new BuildersWeb());
         webRoot.registerWebInterface(new ProjectsWeb());
         webRoot.registerWebInterface(new NamespacesWeb());
