@@ -26,6 +26,48 @@ import summit.models.user;
 import vibe.d;
 
 /**
+ * Attempt to determine authentication from the current web context
+ *
+ * Note this is not the same thing as authorisation, that is handled
+ * by tokens and permissions.
+ */
+public struct SummitAuthentication
+{
+    /**
+     * Construct a SummitAuthenticaiton helper from the given
+     * HTTP connection
+     * To make use of this, simply construct and return the type from
+     * your APIs authenticate(req, res) method and it will do the rest.
+     */
+    this(scope HTTPServerRequest req, scope HTTPServerResponse res) @safe
+    {
+        throw new HTTPStatusException(HTTPStatus.forbidden, "no permissions implemented sorry");
+    }
+
+    /**
+     * Remote access tokens - sessions are invalid.
+     *
+     * Returns: true if using a remote access token
+     */
+    pure bool isRemoteAccess() @safe @nogc nothrow
+    {
+        return false;
+    }
+}
+
+/**
+ * Generate boilerplate needed to get authentication working
+ */
+mixin template AppAuthenticator()
+{
+    @noRoute public SummitAuthentication authenticate(scope HTTPServerRequest req,
+            scope HTTPServerResponse res) @safe
+    {
+        return SummitAuthentication(req, res);
+    }
+}
+
+/**
  * The AccountManager hosts all account management within
  * its own DB tree.
  */

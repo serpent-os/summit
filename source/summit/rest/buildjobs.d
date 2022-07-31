@@ -16,6 +16,9 @@
 module summit.rest.buildjobs;
 
 import vibe.d;
+import vibe.web.auth;
+
+import summit.accounts : AppAuthenticator, SummitAuthentication;
 
 import summit.models.buildjob;
 import moss.db.keyvalue;
@@ -25,17 +28,18 @@ import std.algorithm : reverse;
 /**
  * The BuildJobs API
  */
-@path("api/v1/buildjobs") public interface BuildJobsAPIv1
+@requiresAuth @path("api/v1/buildjobs") public interface BuildJobsAPIv1
 {
     /**
      * List all active jobs
      */
-    @path("list_active") @method(HTTPMethod.GET) BuildJob[] listActive() @safe;
+    @noAuth @path("list_active") @method(HTTPMethod.GET) BuildJob[] listActive() @safe;
 
     /**
      * Create a new build job
      */
-    @path("create") @method(HTTPMethod.PUT) void create(string target, string reference) @safe;
+    @auth(Role.remoteAccess) @path("create") @method(HTTPMethod.PUT) void create(
+            string target, string reference) @safe;
 }
 
 /**
@@ -51,6 +55,8 @@ public final class BuildJobsAPI : BuildJobsAPIv1
         this.appDB = appDB;
         root.registerRestInterface(this);
     }
+
+    mixin AppAuthenticator;
 
     /**
      * Grab all the active build jobs
