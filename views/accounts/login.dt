@@ -21,10 +21,11 @@ block content
                                 div.row.mb-2
                                     div
                                         label.text-muted(for="username") Username
-                                        input#username.form-control(type="text", required, minlength="4")
+                                        input#username.form-control(name="username", type="text", required, minlength="4")
                                 div.row.mb-2
                                     div
                                         label.text-muted(for="password") Password
-                                        input#password.form-control(type="password", required, minlength="6")
-                        div.card-footer
-                            button.form-control.btn.btn-primary(type="submit") Login
+                                        input#password.form-control(name="password", type="password", required, minlength="6")
+                                div.row.mb-2
+                                    div.py-3
+                                        button.form-control.btn.btn-primary(type="submit") Login
