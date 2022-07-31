@@ -16,6 +16,7 @@
 module summit.web.accounts;
 
 import vibe.d;
+import summit.accounts;
 
 /**
  * Web interface providing the UI experience
@@ -47,9 +48,15 @@ import vibe.d;
      *      username = Account ID to login with
      *      password = The account plaintext password.
      */
-    @path("login") @method(HTTPMethod.POST) void loginUser(ValidUsername username,
-            ValidPassword password) @safe
+    @path("login") @method(HTTPMethod.POST) void loginUser(ref ValidUsername username,
+            ref ValidPassword password) @safe
     {
+        auto pw = password.toString;
+        lockString(pw);
+        scope (exit)
+        {
+            unlockString(pw);
+        }
     }
 
     /**
@@ -63,7 +70,16 @@ import vibe.d;
      *      email = Users email address (validation)
      */
     @path("register") @method(HTTPMethod.POST) void registerUser(ValidUsername username,
-            ValidPassword password, Confirm!"password" confirmPassword, ValidEmail email) @safe
+            ref ValidPassword password, ref Confirm!"password" confirmPassword, ValidEmail email) @safe
     {
+        auto pw = password.toString;
+        auto pw2 = confirmPassword.toString;
+        lockString(pw);
+        lockString(pw2);
+        scope (exit)
+        {
+            unlockString(pw);
+            unlockString(pw2);
+        }
     }
 }

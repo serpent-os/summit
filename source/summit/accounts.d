@@ -159,3 +159,31 @@ do
         return crypto_pwhash_str_verify(buf, userPtr, userPassword.length);
     }() == 0;
 }
+
+/**
+ * Lock a region of memory
+ *
+ * Params:
+ *      inp = Region of memory to lock
+ */
+public static void lockString(ref string inp) @safe
+{
+    () @trusted {
+        auto rc = sodium_mlock(cast(void*) inp.ptr, inp.length);
+        enforceHTTP(rc == 0, HTTPStatus.internalServerError, "Failed to sodium_mlock string");
+    }();
+}
+
+/**
+ * Unlock and zero memory
+ *
+ * Params:
+ *      inp = Region of memory to unlock
+ */
+public static void unlockString(ref string inp) @safe
+{
+    () @trusted {
+        auto rc = sodium_munlock(cast(void*) inp.ptr, inp.length);
+        enforceHTTP(rc == 0, HTTPStatus.internalServerError, "Failed to sodium_munlock string");
+    }();
+}
