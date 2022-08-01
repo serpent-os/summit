@@ -81,7 +81,7 @@ public final class SummitApp
         web.configure(router, accountManager);
 
         auto api = new BaseAPI();
-        api.configure(router, appDB);
+        api.configure(router, appDB, accountManager);
 
         /* Enable file sharing from static/ */
         fileSettings = new HTTPFileServerSettings();

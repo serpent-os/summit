@@ -18,8 +18,7 @@ module summit.rest.buildjobs;
 import vibe.d;
 import vibe.web.auth;
 
-import summit.accounts : AppAuthenticator, SummitAuthentication;
-
+import summit.accounts;
 import summit.models.buildjob;
 import moss.db.keyvalue;
 import std.array : array;
@@ -50,8 +49,9 @@ public final class BuildJobsAPI : BuildJobsAPIv1
     /**
      * Integrate into the root API
      */
-    @noRoute void configure(URLRouter root, Database appDB) @safe
+    @noRoute void configure(URLRouter root, Database appDB, AccountManager accountManager) @safe
     {
+        this.accountManager = accountManager;
         this.appDB = appDB;
         root.registerRestInterface(this);
     }
@@ -97,4 +97,5 @@ public final class BuildJobsAPI : BuildJobsAPIv1
 private:
 
     Database appDB;
+    AccountManager accountManager;
 }

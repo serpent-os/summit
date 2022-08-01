@@ -17,6 +17,7 @@ module summit.rest;
 
 import vibe.d;
 
+import summit.accounts;
 import summit.rest.builders;
 import summit.rest.buildjobs;
 import summit.rest.namespaces;
@@ -35,13 +36,13 @@ public final class BaseAPI : BaseAPIv1
     /**
      * Prepare the BaseAPI for integration
      */
-    @noRoute void configure(URLRouter root, Database appDB) @safe
+    @noRoute void configure(URLRouter root, Database appDB, AccountManager accountManager) @safe
     {
         auto apiRoot = root.registerRestInterface(this);
         auto nsAPI = new NamespacesAPI();
         nsAPI.configure(apiRoot, appDB);
         auto jobAPI = new BuildJobsAPI();
-        jobAPI.configure(apiRoot, appDB);
+        jobAPI.configure(apiRoot, appDB, accountManager);
         auto bAPI = new BuilderAPI();
         bAPI.configure(apiRoot, appDB);
     }

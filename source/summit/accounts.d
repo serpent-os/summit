@@ -39,7 +39,8 @@ public struct SummitAuthentication
      * To make use of this, simply construct and return the type from
      * your APIs authenticate(req, res) method and it will do the rest.
      */
-    this(scope HTTPServerRequest req, scope HTTPServerResponse res) @safe
+    this(scope return AccountManager accountManager, scope HTTPServerRequest req,
+            scope HTTPServerResponse res) @safe
     {
         throw new HTTPStatusException(HTTPStatus.forbidden, "no permissions implemented sorry");
     }
@@ -57,13 +58,15 @@ public struct SummitAuthentication
 
 /**
  * Generate boilerplate needed to get authentication working
+ *
+ * You will need an accountManager instance available.
  */
 mixin template AppAuthenticator()
 {
     @noRoute public SummitAuthentication authenticate(scope HTTPServerRequest req,
             scope HTTPServerResponse res) @safe
     {
-        return SummitAuthentication(req, res);
+        return SummitAuthentication(accountManager, req, res);
     }
 }
 
