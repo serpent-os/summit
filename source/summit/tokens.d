@@ -75,7 +75,7 @@ public struct TokenHeader
     /**
      * Encode as JSON
      */
-    auto encode() @safe
+    auto encoded() @safe
     {
         return this.serializeToJsonString();
     }
