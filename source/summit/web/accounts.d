@@ -19,6 +19,26 @@ import vibe.d;
 import summit.accounts;
 
 /**
+ * We know we're logged in when WebSession says so.
+ * These methods are safe to use from templates,
+ * however do NOT use from the REST API.
+ *
+ * Basically it just has a loggedIn var + a token.
+ */
+public struct WebSession
+{
+    /**
+     * Are we logged in?
+     */
+    SessionVar!(bool, "loggedIn") loggedIn;
+
+    /** 
+     * Allows access to some REST APIs.
+     */
+    SessionVar!(string, "accessToken") accessToken;
+}
+
+/**
  * Web interface providing the UI experience
  */
 @path("accounts") public final class AccountsWeb
@@ -91,6 +111,16 @@ import summit.accounts;
             unlockString(pw);
             unlockString(pw2);
         }
+    }
+
+    /**
+     * End the current session
+     * TODO: Revoke session tokens
+     */
+    @path("logout") @method(HTTPMethod.GET) void logout() @safe
+    {
+        terminateSession();
+        redirect("/");
     }
 
 private:

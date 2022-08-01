@@ -1,5 +1,6 @@
 - import std.typecons : Tuple;
 - import std.string : startsWith;
+- import summit.web.accounts : WebSession;
 - alias NavigationItem = Tuple!(string, "path", string, "name");
 - static NavigationItem[] navItems = [
 -   NavigationItem("/", "Home"),
@@ -27,4 +28,9 @@ nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
 
         div.d-flex
             // login form
-            a#accountButton.btn(href="/accounts/login") Log in
+            - if (WebSession().loggedIn)
+            - {
+                a#accountButton.btn(href="/accounts/logout") Log out
+            - } else {
+                a#accountButton.btn(href="/accounts/login") Log in
+            - }
