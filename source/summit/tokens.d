@@ -192,6 +192,33 @@ public struct Token
     }
 
     /**
+     * Sign and encode as a valid JWT
+     */
+    SumType!(string, TokenError) sign(in TokenSecretKey secretKey) @safe
+    {
+        immutable partial = () @trusted {
+            return cast(string)(Base64URLNoPadding.encode(cast(ubyte[]) header.encoded())
+                    ~ "." ~ Base64URLNoPadding.encode(cast(ubyte[]) payload.encoded()));
+        }();
+        auto message = () @trusted { return cast(ubyte[]) partial; }();
+        TokenSignature sig;
+        ulong length = crypto_sign_BYTES;
+        auto rc = () @trusted {
+            return crypto_sign_detached(sig.ptr, &length, message.ptr,
+                    message.length, secretKey.ptr);
+        }();
+        if (rc != 0)
+        {
+            return SumType!(string, TokenError)(TokenError(TokenErrorCode.SigningFailed,
+                    "Failed to sign key"));
+        }
+        return () @trusted {
+            return SumType!(string, TokenError)(
+                    cast(string)(partial ~ "." ~ Base64URLNoPadding.encode(sig)));
+        }();
+    }
+
+    /**
      * Verify this token against the loaded signature
      *
      * Params:
@@ -276,4 +303,22 @@ public struct TokenSigningPair
                 "Failed to construct a new TokenSigningPair");
         return pair;
     }
+}
+
+unittest
+{
+    auto pair = TokenSigningPair.create(createSeed());
+    auto testToken = Token();
+    testToken.payload.sub = "some user";
+    testToken.payload.exp = (Clock.currTime() + 3.hours).toUnixTime();
+    testToken.payload.iat = Clock.currTime().toUnixTime();
+
+    testToken.sign(pair.secretKey).match!((string jwt) {
+        Token.decode(jwt).match!((TokenError err) { assert(0 == 1, err.message); }, (Token tk) {
+            import std.stdio : writeln;
+
+            writeln(jwt);
+            assert(tk.verify(pair.publicKey));
+        });
+    }, (TokenError err) { assert(0 == 1, err.message); });
 }
