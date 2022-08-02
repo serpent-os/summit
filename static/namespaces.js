@@ -107,17 +107,23 @@ function refreshNamespacesView(list)
                         </div>`;
             }).join("");
             newHTML += `
-                <div class="col-10 col-md-6">
+                <div class="col-md-6">
                     <div class="card shadow-sm">
-                        <div class="card-header">
-                            <h3 class="card-title"><a href="/~/${namespace.ns.slug}">${namespace.ns.name}</a></h3>
-                        </div>
                         <div class="card-body">
-                            <div class="markdown text-wrap">${namespace.ns.description}</div>
+                            <h3 class="card-title"><a href="/~/${namespace.ns.slug}">${namespace.ns.name}</a></h3>
+                            <div class="markdown text-wrap">${namespace.ns.summary}</div>
                         </div>
                         <div class="list-group list-group-flush justify-text-center">
                             <div class="list-group-header">Projects</div>
                             ${p}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-teal-lt">
+                        <div class="card-body">
+                            <h3 class="card-title">Coming soon(ish) &trade;</h3>
+                            <div class="markdown text-wrap">We plan to allow users to create their own namespaces!</div>
                         </div>
                     </div>
                 </div>`;

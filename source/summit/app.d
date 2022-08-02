@@ -121,7 +121,8 @@ private:
     void createDefaults() @safe
     {
         string desc = import("ns.md");
-        Namespace coreNamespace = Namespace(0, "serpent-os", "Serpent OS", "Official development", desc);
+        Namespace coreNamespace = Namespace(0, "serpent-os", "Serpent OS",
+                "Official development", desc);
         Project[] projects = [
             Project(0, "base", "Base", 0, "Core recipes (non booting)"),
             Project(0, "freedesktop", "Freedesktop", 0,
