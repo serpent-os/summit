@@ -120,7 +120,7 @@ private:
      */
     void createDefaults() @safe
     {
-        Namespace coreNamespace = Namespace(0, "serpent-os",
+        Namespace coreNamespace = Namespace(0, "serpent-os", "Serpent OS",
                 "Official package builds for Serpent OS", "
 Official namespace for all [Serpent OS](https://serpentos.com) development. Each major
 unit of development is organised into projects matching our [GitLab instance](https://gitlab.com/serpent-os/).
@@ -129,13 +129,14 @@ Note that in order to **push a build** you will need commit + tag access. Otherw
 send a merge request via GitLab, and a maintainer will push the build for you.
 ");
         Project[] projects = [
-            Project(0, "base", 0, "Core recipes (non booting)"),
-            Project(0, "freedesktop", 0, "Freedesktop (XDG) compatibility + software"),
-            Project(0, "gnome", 0, "GNOME software + libraries"),
-            Project(0, "hardware", 0, "Hardware enabling"),
-            Project(0, "kernel", 0, "Upstream kernel packaging for Serpent OS"),
-            Project(0, "plasma", 0, "Plasma desktop + software"),
-            Project(0, "toolchain", 0, "Core Serpent OS tooclhains"),
+            Project(0, "base", "Base", 0, "Core recipes (non booting)"),
+            Project(0, "freedesktop", "Freedesktop", 0,
+                    "Freedesktop (XDG) compatibility + software"),
+            Project(0, "gnome", "GNOME", 0, "GNOME software + libraries"),
+            Project(0, "hardware", "Hardware", 0, "Hardware enabling"),
+            Project(0, "kernel", "Kernel", 0, "Upstream kernel packaging for Serpent OS"),
+            Project(0, "plasma", "Plasma / KDE", 0, "Plasma desktop + software"),
+            Project(0, "toolchain", "Toolchain", 0, "Core Serpent OS tooclhains"),
         ];
 
         auto err = appDB.update((scope tx) @safe {

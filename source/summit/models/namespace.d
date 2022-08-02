@@ -36,18 +36,23 @@ public @Model struct Namespace
      */
     @PrimaryKey @AutoIncrement NamespaceIdentifier id;
 
-    /**
-     * Unique name
+    /** 
+     * Unique slug for the whole instance
      */
-    @Indexed string name;
+    @Indexed string slug;
 
     /**
-     * Brief into to a namespace
+     * Display name
+     */
+    string name;
+
+    /**
+     * Brief details of the namespace
      */
     string summary;
 
     /**
-     * Description / README.md of a namespace
+     * Full on README.md of a namespace
      */
     string description;
 

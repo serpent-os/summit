@@ -106,7 +106,7 @@ public final class NamespacesAPI : NamespacesAPIv1
         Namespace ns;
         Project[] ret;
         auto err = appDB.view((in tx) @safe {
-            auto err = ns.load!"name"(tx, _namespace);
+            auto err = ns.load!"slug"(tx, _namespace);
             if (!err.isNull)
             {
                 return err;

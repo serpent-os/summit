@@ -43,7 +43,7 @@ const colors = [
     "bg-lime-lt",
 ];
 
-function renderProject(element)
+function renderProject(element, projectID)
 {
     const col = colors[Math.floor(Math.random() * colors.length)];
     return `<div class="list-group-item">
@@ -52,7 +52,7 @@ function renderProject(element)
                 <span class="avatar ${col}">${element.name[0]}</span>
             </div>
             <div class="col">
-                <a href="#" class="text-reset d-block">${element.name}</a>
+                <a href="/~/${projectID}/${element.slug}" class="text-reset d-block">${element.name}</a>
                 <div class="d-block text-muted">${element.summary}</div>
             </div>
         </div>
@@ -74,7 +74,7 @@ function refreshProjectsView(list, projectID)
         let newHTML = '';
         object.forEach((element) =>
         {
-            newHTML += renderProject(element);
+            newHTML += renderProject(element, projectID);
         });
         list.innerHTML = newHTML;
     }).catch((error) => console.log(error));
@@ -98,7 +98,7 @@ function refreshNamespacesView(list)
                 return `<div class="list-group-item">
                             <div class="row">
                                 <div class="col">
-                                    <a href="/~/${namespace.ns.name}/${p.name}">${namespace.ns.name} / ${p.name} </a>
+                                    <a href="/~/${namespace.ns.slug}/${p.name}">${namespace.ns.name} / ${p.name} </a>
                                 </div>
                                 <div class="col">
                                     ${p.summary}
@@ -110,7 +110,7 @@ function refreshNamespacesView(list)
                 <div class="col-10 col-md-6">
                     <div class="card shadow-sm">
                         <div class="card-header">
-                            <h3 class="card-title"><a href="/~/${namespace.ns.name}">${namespace.ns.name}</a></h3>
+                            <h3 class="card-title"><a href="/~/${namespace.ns.slug}">${namespace.ns.name}</a></h3>
                         </div>
                         <div class="card-body">
                             <div class="markdown text-wrap">${namespace.ns.description}</div>

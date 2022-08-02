@@ -36,10 +36,15 @@ public @Model struct Group
      */
     @PrimaryKey @AutoIncrement GroupIdentifier id;
 
-    /**
-     * Unique name
+    /** 
+     * Unique slug for the whole instance
      */
-    @Indexed string name;
+    @Indexed string slug;
+
+    /**
+     * Display name
+     */
+    string name;
 
     /**
      * All the users within our group

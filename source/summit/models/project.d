@@ -36,9 +36,14 @@ public @Model struct Project
     @PrimaryKey @AutoIncrement ProjectIdentifier id;
 
     /**
-     * Unique name
+     * Unique slug for entire instance
      */
-    @Indexed string name;
+    @Indexed string slug;
+
+    /**
+     * Display name
+     */
+    string name;
 
     /**
      * A Project belongs in exactly *one* namespace

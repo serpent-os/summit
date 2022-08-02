@@ -16,7 +16,7 @@ block content
                         ol.breadcrumb.py-1(aria-label="breadcrumbs")
                             li.breadcrumb-item: a(href="/") Home
                             li.breadcrumb-item: a(href="/~") Namespaces
-                            li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{namespace.name}") #{namespace.name}
+                            li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{namespace.slug}") #{namespace.name}
                         h2.page-title #{namespace.name}
 
         div.row.py-3
@@ -25,7 +25,7 @@ block content
                 div.card
                     div.card-header
                         h3.card-title Projects
-                    div.list-group.list-group-flush#namespacesList(summit:namespaceList="individual", summit:namespaceName=namespace.name)
+                    div.list-group.list-group-flush#namespacesList(summit:namespaceList="individual", summit:namespaceName=namespace.slug)
 
             div.col-10.col-md-4.py-1
                 div.card

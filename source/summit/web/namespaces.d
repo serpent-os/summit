@@ -57,7 +57,7 @@ import moss.db.keyvalue.orm;
     void view(string _path) @safe
     {
         Namespace namespace;
-        auto err = appDB.view((in tx) => namespace.load!"name"(tx, _path));
+        auto err = appDB.view((in tx) => namespace.load!"slug"(tx, _path));
         enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
         render!("namespaces/view.dt", namespace);
     }
