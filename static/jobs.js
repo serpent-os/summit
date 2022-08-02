@@ -70,7 +70,7 @@ function renderJob(job)
             <code><a href="#">#${job.id}</a></code>
         </div>
         <div class="col-auto">
-            <span class="avatar">SU</span>
+            <span class="avatar rounded-circle">S</span>
         </div>
         <div class="col">
             <div class="d-flex row">
