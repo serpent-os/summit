@@ -5,14 +5,14 @@
  */
 
 /**
- * summit.models.builders
+ * summit.models.builder
  *
  * Builder encapsulation
  *
  * Authors: Copyright © 2020-2022 Serpent OS Developers
  * License: Zlib
  */
-module summit.models.builders;
+module summit.models.builder;
 
 public import std.stdint : uint8_t, uint64_t;
 
