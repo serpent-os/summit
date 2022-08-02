@@ -6,7 +6,7 @@ block title
 block content
     div.main-view.justify-content-center
         div.container
-            div.row.d-flex.align-self-center.justify-content-center#namespacesList
+            div.row.d-flex.align-self-center.justify-content-center#namespacesList(summit:namespaceList="all")
 
 block scripts
 

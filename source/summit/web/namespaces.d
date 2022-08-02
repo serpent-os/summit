@@ -17,12 +17,26 @@ module summit.web.namespaces;
 
 import vibe.d;
 import std.typecons : Nullable;
+import summit.models.namespace;
+import moss.db.keyvalue;
+import moss.db.keyvalue.interfaces;
+import moss.db.keyvalue.errors;
+import moss.db.keyvalue.orm;
 
 /**
  * Web interface providing the UI experience
  */
 @path("~") public final class NamespacesWeb
 {
+
+    /**
+     * Configure this router for use
+     */
+    @noRoute void configure(URLRouter root, Database appDB) @safe
+    {
+        root.registerWebInterface(this);
+        this.appDB = appDB;
+    }
 
     /**
      * Render the landing page
@@ -42,7 +56,10 @@ import std.typecons : Nullable;
     @path("/:path") @method(HTTPMethod.GET)
     void view(string _path) @safe
     {
-        render!("namespaces/index.dt", _path);
+        Namespace namespace;
+        auto err = appDB.view((in tx) => namespace.load!"name"(tx, _path));
+        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
+        render!("namespaces/view.dt", namespace);
     }
 
     @path("/:path/:project") @method(HTTPMethod.GET)
@@ -57,4 +74,8 @@ import std.typecons : Nullable;
         render!("namespaces/index.dt", _path, _project, _package);
 
     }
+
+private:
+
+    Database appDB;
 }

@@ -20,6 +20,7 @@ import vibe.d;
 import summit.web.accounts;
 import summit.web.builders;
 import summit.web.namespaces;
+import moss.db.keyvalue;
 
 import summit.accounts;
 
@@ -31,11 +32,13 @@ import summit.accounts;
     /**
      * Configure the web UI portions
      */
-    void configure(URLRouter root, AccountManager accountsManager) @safe
+    @noRoute void configure(URLRouter root, Database appDB, AccountManager accountsManager) @safe
     {
         auto webRoot = root.registerWebInterface(this);
         auto accts = new AccountsWeb();
         accts.configure(webRoot, accountsManager);
+        auto ns = new NamespacesWeb();
+        ns.configure(webRoot, appDB);
         webRoot.registerWebInterface(new BuildersWeb());
         webRoot.registerWebInterface(new NamespacesWeb());
     }

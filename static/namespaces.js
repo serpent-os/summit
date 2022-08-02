@@ -15,12 +15,72 @@
 
 window.addEventListener('load', function(ev)
 {
+    /**
+     * Try to find the namespaces list
+     */
     const list = document.getElementById('namespacesList');
+    const purpose = list.getAttribute('summit:namespaceList');
 
-    refreshView(list);
+    switch (purpose)
+    {
+        case 'all':
+            refreshNamespacesView(list);
+            break;
+        case 'individual':
+            refreshProjectsView(list, list.getAttribute('summit:namespaceName'));
+            break;
+        default:
+            break;
+    }
 });
 
-function refreshView(list)
+const colors = [
+    "bg-azure-lt",
+    "bg-purple-lt",
+    "bg-red-lt",
+    "bg-teal-lt",
+    "bg-pink-lt",
+    "bg-lime-lt",
+];
+
+function renderProject(element)
+{
+    const col = colors[Math.floor(Math.random() * colors.length)];
+    return `<div class="list-group-item">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <span class="avatar ${col}">${element.name[0]}</span>
+            </div>
+            <div class="col">
+                <a href="#" class="text-reset d-block">${element.name}</a>
+                <div class="d-block text-muted">${element.summary}</div>
+            </div>
+        </div>
+</div>
+    `;
+}
+
+function refreshProjectsView(list, projectID)
+{
+    fetch('/api/v1/namespaces/' + projectID + '/projects', {
+        'credentials': 'include'
+    }).then((response) => {
+        if (!response.ok)
+        {
+            throw new Error("Couldn't fetch projects");
+        }
+        return response.json();
+    }).then((object) => {
+        let newHTML = '';
+        object.forEach((element) =>
+        {
+            newHTML += renderProject(element);
+        });
+        list.innerHTML = newHTML;
+    }).catch((error) => console.log(error));
+}
+
+function refreshNamespacesView(list)
 {
     fetch('/api/v1/namespaces/list', {
         'credentials': 'include'

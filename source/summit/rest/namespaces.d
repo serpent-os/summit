@@ -21,6 +21,7 @@ import summit.models.namespace;
 import summit.models.project;
 import moss.db.keyvalue;
 import std.array : array;
+import std.algorithm : map;
 
 /**
  * A premapped renderable namespace with projects.
@@ -47,6 +48,11 @@ public struct RenderNamespaceItem
      * List all known namespaces
      */
     @path("list") @method(HTTPMethod.GET) RenderNamespaceItem[] list() @safe;
+
+    /**
+     * List all projects within a namespace
+     */
+    @path(":namespace/projects") @method(HTTPMethod.GET) Project[] projects(string _namespace) @safe;
 }
 
 /**
@@ -89,6 +95,31 @@ public final class NamespacesAPI : NamespacesAPIv1
             }
             return NoDatabaseError;
         });
+        return ret;
+    }
+
+    /**
+     * List all projects within a namespace
+     */
+    override Project[] projects(string _namespace) @safe
+    {
+        Namespace ns;
+        Project[] ret;
+        auto err = appDB.view((in tx) @safe {
+            auto err = ns.load!"name"(tx, _namespace);
+            if (!err.isNull)
+            {
+                return err;
+            }
+            ret = ns.projects.map!((projectID) {
+                Project p;
+                p.load(tx, projectID);
+                return p;
+            }).array;
+            return NoDatabaseError;
+        });
+
+        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
         return ret;
     }
 
