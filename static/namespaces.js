@@ -98,7 +98,7 @@ function refreshNamespacesView(list)
                 return `<div class="list-group-item">
                             <div class="row">
                                 <div class="col">
-                                    <a href="/~/${namespace.ns.slug}/${p.name}">${namespace.ns.name} / ${p.name} </a>
+                                    <a href="/~/${namespace.ns.slug}/${p.slug}">${namespace.ns.name} / ${p.name} </a>
                                 </div>
                                 <div class="col">
                                     ${p.summary}
