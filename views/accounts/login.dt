@@ -1,7 +1,7 @@
 extends root
 
 block title
-    title Login to Summit
+    title Summit - Login
 
 block content
     div.main-view.justify-content-center
