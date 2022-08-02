@@ -29,6 +29,9 @@ window.addEventListener('load', function(ev)
         case 'individual':
             refreshProjectsView(list, list.getAttribute('summit:namespaceName'));
             break;
+        case 'repos':
+            refreshReposView(list, list.getAttribute('summit:namespaceName'), list.getAttribute('summit:projectName'));
+            break;
         default:
             break;
     }
@@ -130,4 +133,16 @@ function refreshNamespacesView(list)
         });
         list.innerHTML = newHTML;
     }).catch((error) => console.log(error));
+}
+
+function refreshReposView(list, namespaceID, projectID)
+{
+    list.innerHTML = `
+<div class="empty">
+    <div class="empty-icon">
+        <svg><use xlink:href="/static/tabler/tabler-sprite.svg#tabler-mood-crazy-happy" /></svg>
+    </div>
+    <div class="empty-title">Oh this is *so* new.</div>
+    <div class="empty-subtitle text-muted">Time to add your first repository!</div>
+</div>`;
 }

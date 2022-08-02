@@ -35,11 +35,6 @@ block content
                     div.card-header
                         h3.card-title Repositories
                     div.list-group.list-group-flush#namespacesList(summit:namespaceList="repos", summit:namespaceName=namespace.slug, summit:projectName=project.name)
-                        div.empty
-                            div.empty-icon
-                                svg: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-mood-crazy-happy")
-                            div.empty-title Oh this is *so* new.
-                            div.empty-subtitle.text-muted Time to add your first repository!
 
 block scripts
 
