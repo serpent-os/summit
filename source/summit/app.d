@@ -131,7 +131,7 @@ private:
             Project(0, "hardware", "Hardware", 0, "Hardware enabling"),
             Project(0, "kernel", "Kernel", 0, "Upstream kernel packaging for Serpent OS"),
             Project(0, "plasma", "Plasma / KDE", 0, "Plasma desktop + software"),
-            Project(0, "toolchain", "Toolchain", 0, "Core Serpent OS tooclhains"),
+            Project(0, "toolchain", "Toolchain", 0, "Core Serpent OS toolchains"),
         ];
 
         auto err = appDB.update((scope tx) @safe {
