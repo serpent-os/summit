@@ -120,14 +120,8 @@ private:
      */
     void createDefaults() @safe
     {
-        Namespace coreNamespace = Namespace(0, "serpent-os", "Serpent OS",
-                "Official package builds for Serpent OS", "
-Official namespace for all [Serpent OS](https://serpentos.com) development. Each major
-unit of development is organised into projects matching our [GitLab instance](https://gitlab.com/serpent-os/).
-
-Note that in order to **push a build** you will need commit + tag access. Otherwise you can
-send a merge request via GitLab, and a maintainer will push the build for you.
-");
+        string desc = import("ns.md");
+        Namespace coreNamespace = Namespace(0, "serpent-os", "Serpent OS", "Official development", desc);
         Project[] projects = [
             Project(0, "base", "Base", 0, "Core recipes (non booting)"),
             Project(0, "freedesktop", "Freedesktop", 0,

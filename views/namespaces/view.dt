@@ -30,8 +30,11 @@ block content
             div.col-10.col-md-4.py-1
                 div.card
                     div.card-header
-                        h3.card-title README.md
-            
+                        h3.card-title.justify-content-center.align-self-center
+                            div.d-flex
+                                svg.icon.align-self-center: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-book")
+                                div &nbsp; README.md
+
                     div.card-body
                         - auto md = filterMarkdown(namespace.description);
                         div.row.py-3
