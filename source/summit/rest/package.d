@@ -21,6 +21,7 @@ import summit.accounts;
 import summit.rest.builders;
 import summit.rest.buildjobs;
 import summit.rest.namespaces;
+import summit.rest.repositories;
 import moss.db.keyvalue;
 
 @path("api/v1") public interface BaseAPIv1
@@ -45,6 +46,8 @@ public final class BaseAPI : BaseAPIv1
         jobAPI.configure(apiRoot, appDB, accountManager);
         auto bAPI = new BuilderAPI();
         bAPI.configure(apiRoot, appDB);
+        auto rAPI = new RepositoryAPI();
+        rAPI.configure(apiRoot, appDB, accountManager);
     }
 
     override string versionIdentifier() @safe
