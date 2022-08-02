@@ -109,7 +109,7 @@ public final class AccountManager
             if (err.isNull)
             {
                 return DatabaseResult(DatabaseError(DatabaseErrorCode.BucketExists,
-                        "User already exists"));
+                        "That username isn't unavailable right now"));
             }
         }
 

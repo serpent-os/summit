@@ -1,0 +1,14 @@
+div#toaster.position-fixed.top-0.start-50.translate-middle-x.p-5(style="z-index: 11")
+
+    - import summit.web.accounts : WebSession;
+    - import std.range : empty;
+    - auto session = WebSession();
+    - if (!session.systemError.value.empty)
+    - {
+        div#systemError.toast.text-white.bg-warning.border-0(role="alert", aria-live="assertive", aria-atomic="true")
+            div.d-flex.align-items-center
+                div: svg.mx-2.text-white.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-alert-triangle")
+                div.col.toast-body!= session.systemError.value
+                a.btn-close.btn-close-white.mx-2(data-bs-dismiss="toast", aria-label="Close")
+        - session.systemError = null;
+    - }

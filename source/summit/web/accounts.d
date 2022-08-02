@@ -17,6 +17,8 @@ module summit.web.accounts;
 
 import vibe.d;
 import summit.accounts;
+import summit.models.user;
+import std.sumtype : match;
 
 /**
  * We know we're logged in when WebSession says so.
@@ -36,6 +38,12 @@ public struct WebSession
      * Allows access to some REST APIs.
      */
     SessionVar!(string, "accessToken") accessToken;
+
+    /**
+     * If an error is encountered, render a session specific
+     * notification.
+     */
+    SessionVar!(string, "systemError") systemError;
 }
 
 /**
@@ -86,6 +94,24 @@ public struct WebSession
         {
             unlockString(pw);
         }
+
+        bool failed;
+
+        /* Attempt login */
+        accountManager.authenticateUser(username, password).match!((User u) {
+            logInfo("User now logged in: %s", u.username);
+            setLoggedIn(u.username);
+            redirect("/");
+        }, (DatabaseError err) {
+            logError("User '%s' failed to authenticate: %s", username, err.message);
+            WebSession().systemError = err.message;
+            failed = true;
+        });
+
+        if (failed)
+        {
+            render!"accounts/login.dt";
+        }
     }
 
     /**
@@ -111,6 +137,20 @@ public struct WebSession
             unlockString(pw);
             unlockString(pw2);
         }
+
+        /* Register the user: TODO: Report the errors */
+        auto err = accountManager.registerUser(username, password);
+        if (!err.isNull)
+        {
+            logInfo("Registration failed for %s: %s", username, err.message);
+            WebSession().systemError = err.message;
+            render!"accounts/register.dt";
+            return;
+        }
+
+        logInfo("Registered new user: %s", username);
+        setLoggedIn(username);
+        redirect("/");
     }
 
     /**
@@ -124,6 +164,15 @@ public struct WebSession
     }
 
 private:
+
+    /**
+     * Update the users session to be logged in
+     */
+    @noRoute setLoggedIn(string username) @safe
+    {
+        auto session = WebSession();
+        session.loggedIn = true;
+    }
 
     AccountManager accountManager;
 }
