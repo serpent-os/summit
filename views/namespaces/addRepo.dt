@@ -5,4 +5,28 @@ div#addRepoDialog.modal.fade.modal-blur.hide(tabindex="-1")
                 h5.modal-title Add a repository
                 button.btn-close(type="button", data-bs-dismiss="modal", aria-label="close")
             div.modal-body
-                p I uh, forgot to add the form.   
+                form
+                    div.row
+                        div.mb-3
+                            label.py-1(for="password") Upstream
+                            div.input-icon
+                                span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-folder-plus")
+                                input#password.form-control(name="upstream", type="text", placeholder="https://gitlab.com/myorg/myrepo.git", required, minlength="6")
+
+                    div.row
+                        div.mb-3
+                            div.row.py-1: label(for="buildType") Build type
+                            div.form-selectgroup#buildType
+                                label.form-selectgroup-item
+                                    input.form-selectgroup-input(name="buildType", value="package", type="radio", checked)
+                                    span.form-selectgroup-label
+                                        svg.icon.me-1: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-package")
+                                        | Package (#[code stone.yml])
+                                label.form-selectgroup-item
+                                    input.form-selectgroup-input(name="buildType", value="image", type="radio", disabled)
+                                    span.form-selectgroup-label
+                                        svg.icon.me-1: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-disc")
+                                        | Image (unavailable)
+            div.modal-footer
+                a.btn Cancel
+                a.btn.btn-primary.ms-auto Add repository
