@@ -1,8 +1,0 @@
-extends root
-
-block title
-    title Summit - Projects
-
-block content
-    div.container
-        h3 hey hey projects

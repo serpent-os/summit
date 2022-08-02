@@ -20,7 +20,6 @@ import vibe.d;
 import summit.web.accounts;
 import summit.web.builders;
 import summit.web.namespaces;
-import summit.web.projects;
 
 import summit.accounts;
 
@@ -38,7 +37,6 @@ import summit.accounts;
         auto accts = new AccountsWeb();
         accts.configure(webRoot, accountsManager);
         webRoot.registerWebInterface(new BuildersWeb());
-        webRoot.registerWebInterface(new ProjectsWeb());
         webRoot.registerWebInterface(new NamespacesWeb());
     }
 
