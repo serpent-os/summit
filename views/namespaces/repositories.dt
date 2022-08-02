@@ -24,7 +24,7 @@ block content
                             button.btn.d-none.d-md-inline-flex
                                 svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-settings")
                                 | Project settings
-                            button.btn-azure.btn.d-none.d-md-inline-flex
+                            button.btn-azure.btn.d-none.d-md-inline-flex(data-bs-toggle="modal", data-bs-target="#addRepoDialog")
                                 svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-plus")
                                 | Add a repository
 
@@ -35,6 +35,11 @@ block content
                     div.card-header
                         h3.card-title Repositories
                     div.list-group.list-group-flush#namespacesList(summit:namespaceList="repos", summit:namespaceName=namespace.slug, summit:projectName=project.name)
+
+block dialogs
+
+    include namespaces/addRepo
+
 
 block scripts
 

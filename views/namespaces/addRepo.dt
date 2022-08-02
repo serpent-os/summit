@@ -1,0 +1,8 @@
+div#addRepoDialog.modal.fade.modal-blur.hide(tabindex="-1")
+    div.modal-dialog.modal-dialog-centered(role="document")
+        div.modal-content.shadow
+            div.modal-header
+                h5.modal-title Add a repository
+                button.btn-close(type="button", data-bs-dismiss="modal", aria-label="close")
+            div.modal-body
+                p I uh, forgot to add the form.   
