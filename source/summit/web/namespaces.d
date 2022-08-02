@@ -18,6 +18,7 @@ module summit.web.namespaces;
 import vibe.d;
 import std.typecons : Nullable;
 import summit.models.namespace;
+import summit.models.project;
 import moss.db.keyvalue;
 import moss.db.keyvalue.interfaces;
 import moss.db.keyvalue.errors;
@@ -65,7 +66,23 @@ import moss.db.keyvalue.orm;
     @path("/:path/:project") @method(HTTPMethod.GET)
     void viewProject(string _path, string _project) @safe
     {
-        render!("namespaces/index.dt", _path, _project);
+        Namespace namespace;
+        Project project;
+        auto err = appDB.view((in tx) @safe {
+            auto e1 = namespace.load!"slug"(tx, _path);
+            if (!e1.isNull)
+            {
+                return e1;
+            }
+            auto e2 = project.load!"slug"(tx, _project);
+            if (!e2.isNull)
+            {
+                return e2;
+            }
+            return NoDatabaseError;
+        });
+        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
+        render!("namespaces/repositories.dt", namespace, project);
     }
 
     @path("/:path/:project/:package") @method(HTTPMethod.GET)
