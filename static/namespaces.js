@@ -137,7 +137,20 @@ function refreshNamespacesView(list)
 
 function refreshReposView(list, namespaceID, projectID)
 {
-    list.innerHTML = `
+    fetch(`/api/v1/repositories/${namespaceID}/${projectID}/list`,
+    {
+        credentials: 'include',
+    }).then((response) => {
+        if (!response.ok)
+        {
+            throw new Error("Failed to fetch repository listing");
+        }
+        return response.json();
+    }).then((object) => {
+        /* Render a placeholder. */
+        if (object.length < 1)
+        {
+            list.innerHTML = `
 <div class="empty">
     <div class="empty-icon">
         <svg><use xlink:href="/static/tabler/tabler-sprite.svg#tabler-mood-crazy-happy" /></svg>
@@ -145,4 +158,10 @@ function refreshReposView(list, namespaceID, projectID)
     <div class="empty-title">Oh this is *so* new.</div>
     <div class="empty-subtitle text-muted">Time to add your first repository!</div>
 </div>`;
+            return;
+        }
+
+        /* TODO: Render each item.. */
+        list.innerHTML = '';
+    }).catch((error) => console.log(error));
 }
