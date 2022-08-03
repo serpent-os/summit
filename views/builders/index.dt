@@ -28,6 +28,9 @@ block content
                 div.card
                     div.list-group.list-group-flush#buildersList
 
+block dialogs
+
+    include builders/addBuilder
 
 block scripts
 
