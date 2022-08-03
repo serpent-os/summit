@@ -34,7 +34,7 @@ block content
                 div.card
                     div.card-header
                         h3.card-title Repositories
-                    div.list-group.list-group-flush#namespacesList(summit:namespaceList="repos", summit:namespaceName=namespace.slug, summit:projectName=project.name)
+                    div.list-group.list-group-flush#namespacesList(summit:namespaceList="repos", summit:namespaceName=namespace.slug, summit:projectName=project.slug)
 
 block dialogs
 

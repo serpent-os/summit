@@ -5,7 +5,7 @@ div#addRepoDialog.modal.fade.modal-blur.hide(tabindex="-1")
                 h5.modal-title Add a repository
                 button.btn-close(type="button", data-bs-dismiss="modal", aria-label="close")
             div.modal-body
-                form
+                form#addRepoForm
                     div.row
                         div.mb-3
                             label.py-1(for="password") Upstream
@@ -28,5 +28,5 @@ div#addRepoDialog.modal.fade.modal-blur.hide(tabindex="-1")
                                         svg.icon.me-1: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-disc")
                                         | Image (unavailable)
             div.modal-footer
-                a.btn Cancel
-                a.btn.btn-primary.ms-auto Add repository
+                button.btn(data-bs-dismiss="modal") Cancel
+                button#addRepoButton.btn.btn-primary.ms-auto Add repository

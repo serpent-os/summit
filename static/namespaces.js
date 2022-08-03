@@ -30,7 +30,11 @@ window.addEventListener('load', function(ev)
             refreshProjectsView(list, list.getAttribute('summit:namespaceName'));
             break;
         case 'repos':
-            refreshReposView(list, list.getAttribute('summit:namespaceName'), list.getAttribute('summit:projectName'));
+            const namespaceName = list.getAttribute('summit:namespaceName');
+            const projectName = list.getAttribute('summit:projectName');
+            refreshReposView(list, namespaceName, projectName);
+            const button = document.getElementById('addRepoButton');
+            button.addEventListener('click', ev => doAddRepo(ev, namespaceName, projectName));
             break;
         default:
             break;
@@ -163,5 +167,33 @@ function refreshReposView(list, namespaceID, projectID)
 
         /* TODO: Render each item.. */
         list.innerHTML = '';
+    }).catch((error) => console.log(error));
+}
+
+/**
+ * Attempt to add the repository
+ */
+function doAddRepo(ev, namespaceID, projectID)
+{
+    ev.preventDefault();
+
+    const form = document.getElementById('addRepoForm');
+    let fe = new FormData(form);
+    const submisson = JSON.stringify(fe);
+    fetch(`/api/v1/repositories/${namespaceID}/${projectID}/create`,
+        {
+            'credentials': 'include',
+            'method': 'POST',
+            'body': fe,
+            'headers': {
+                'Content-Type': 'application/json'
+            }
+        }
+    ).then((response) => {
+        if (!response.ok)
+        {
+            throw new Error('Failed to create a repo: ' + response.statusText);
+        }
+        console.log(response);
     }).catch((error) => console.log(error));
 }
