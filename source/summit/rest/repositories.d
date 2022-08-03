@@ -20,7 +20,10 @@ import vibe.web.auth;
 
 import moss.db.keyvalue;
 import summit.accounts;
+import summit.models.project;
 import summit.models.repository;
+import std.algorithm : filter, sort;
+import std.array : array;
 
 /**
  * The BuildJobs API
@@ -32,6 +35,9 @@ import summit.models.repository;
      */
     @noAuth @path(":namespace/:project/list") @method(HTTPMethod.GET) Repository[] list(
             string _namespace, string _project) @safe;
+
+    @noAuth @path(":namespace/:project/create") @method(HTTPMethod.POST) void create(
+            string _namespace, string _project, string name, string upstream, string buildType) @safe;
 }
 
 /**
@@ -58,7 +64,46 @@ public final class RepositoryAPI : RepositoryAPIv1
      */
     override Repository[] list(string _namespace, string _project) @safe
     {
-        return null;
+        Repository[] ret;
+        auto e = appDB.view((in tx) @safe {
+            Project p;
+            {
+                auto err = p.load!"slug"(tx, _project);
+                if (!err.isNull)
+                {
+                    return err;
+                }
+            }
+            ret = tx.list!Repository
+                .filter!((r) => r.project == p.id)
+                .array;
+            ret.sort!"a.name < b.name";
+            return NoDatabaseError;
+        });
+        enforceHTTP(e.isNull, HTTPStatus.internalServerError, e.message);
+        return ret;
+    }
+
+    /**
+     * Attempt repo creation
+     */
+    override void create(string _namespace, string _project, string name,
+            string upstream, string buildType) @safe
+    {
+        Repository r = Repository(0, name, name, upstream, VcsType.Git);
+        r.vcsOrigin = upstream;
+        Project p;
+        auto e = appDB.update((scope tx) @safe {
+            auto e = p.load!"slug"(tx, _project);
+            if (!e.isNull)
+            {
+                return e;
+            }
+            r.project = p.id;
+            return r.save(tx);
+        });
+        logInfo("Create %s %s %s", name, upstream, buildType);
+        enforceHTTP(e.isNull, HTTPStatus.notFound, e.message);
     }
 
 private:

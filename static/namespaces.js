@@ -165,9 +165,32 @@ function refreshReposView(list, namespaceID, projectID)
             return;
         }
 
+        let newHTML = '';
+        object.forEach((element) => {
+            console.log(element);
+            newHTML += renderRepo(element);
+        });
+
         /* TODO: Render each item.. */
-        list.innerHTML = '';
+        list.innerHTML = newHTML;
     }).catch((error) => console.log(error));
+}
+
+function renderRepo(element)
+{
+    const col = colors[Math.floor(Math.random() * colors.length)];
+    return `<div class="list-group-item">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <span class="avatar ${col}">${element.name[0]}</span>
+            </div>
+            <div class="col">
+                <a href="#" class="text-reset d-block">${element.name}</a>
+                <div class="d-block text-muted">${element.vcsOrigin}</div>
+            </div>
+        </div>
+</div>
+    `;
 }
 
 /**
@@ -178,14 +201,19 @@ function doAddRepo(ev, namespaceID, projectID)
     ev.preventDefault();
 
     const form = document.getElementById('addRepoForm');
-    let fe = new FormData(form);
-    const submisson = JSON.stringify(fe);
+    const submission = {
+        'upstream': document.querySelector('input[name="upstream"]').value,
+        'name': document.querySelector('input[name="name"]').value,
+        //'buildType': document.querySelector('input[name="buildType"].checked').value
+        'buildType': 'package'
+    }
     fetch(`/api/v1/repositories/${namespaceID}/${projectID}/create`,
         {
             'credentials': 'include',
             'method': 'POST',
-            'body': fe,
+            'body': JSON.stringify(submission),
             'headers': {
+                'Accepts': 'application/json',
                 'Content-Type': 'application/json'
             }
         }
@@ -195,5 +223,11 @@ function doAddRepo(ev, namespaceID, projectID)
             throw new Error('Failed to create a repo: ' + response.statusText);
         }
         console.log(response);
+        /* in theory - got ourselves a new repo. grats. */
+        refreshReposView(document.getElementById('namespacesList'), namespaceID, projectID);
+
+        /* Hide the dialog now. */
+        const md = bootstrap.Modal.getInstance(document.getElementById('addRepoDialog'));
+        md.hide();
     }).catch((error) => console.log(error));
 }

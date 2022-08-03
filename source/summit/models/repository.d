@@ -57,12 +57,12 @@ public @Model struct Repository
     /**
      * Where is this thingy hosted?
      */
-    string vscOrigin;
+    string vcsOrigin;
 
     /**
      * What kind of repo is it
      */
-    VcsType vscType = VcsType.Git;
+    VcsType vcsType = VcsType.Git;
 
     /**
      * A Repository belongs to exactly one project
