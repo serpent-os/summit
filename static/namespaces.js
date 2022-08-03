@@ -52,7 +52,7 @@ const colors = [
 
 function renderProject(element, projectID)
 {
-    const col = colors[Math.floor(Math.random() * colors.length)];
+    const col = colors[element.id % colors.length];
     return `<div class="list-group-item">
         <div class="row align-items-center">
             <div class="col-auto">
@@ -178,7 +178,7 @@ function refreshReposView(list, namespaceID, projectID)
 
 function renderRepo(element)
 {
-    const col = colors[Math.floor(Math.random() * colors.length)];
+    const col = colors[element.id % colors.length];
     return `<div class="list-group-item">
         <div class="row align-items-center">
             <div class="col-auto">
