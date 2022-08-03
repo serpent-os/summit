@@ -62,7 +62,7 @@ public @Model struct Builder
     /**
      * Every builder gets a unique identity
      */
-    @PrimaryKey BuilderIdentity id;
+    @PrimaryKey @AutoIncrement BuilderIdentity id;
 
     /**
      * Full address including port

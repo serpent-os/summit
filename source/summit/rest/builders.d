@@ -35,7 +35,7 @@ import std.array : array;
     /**
      * Add a new builder to the system
      */
-    @path("add") @method(HTTPMethod.GET) void add(string hostname, string nick);
+    @path("add") @method(HTTPMethod.POST) void add(string hostname, string nick);
 }
 
 /**
@@ -75,6 +75,7 @@ public final class BuilderAPI : BuilderAPIv1
     {
         Builder b = Builder(0, hostname, nick, [], BuilderStatus.Unconfigured);
         auto err = appDB.update((scope tx) => b.save(tx));
+        logInfo("Adding builder: %s (%s)", hostname, nick);
         enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
     }
 
