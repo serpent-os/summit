@@ -43,6 +43,8 @@ window.addEventListener('DOMContentLoaded', function(ev)
     jobList.innerHTML = renderPlaceholder();
 });
 
+let timerInterval;
+
 /**
  * Refresh job lists periodically
  */
@@ -50,7 +52,7 @@ window.addEventListener('load', function(ev)
 {
     const jobList = this.document.getElementById('listGroupBuilds');
     const pkgList = this.document.getElementById('listGroupPackages');
-    setInterval(ev => refreshJobs(jobList), 500);
+    timerInterval = setInterval(ev => refreshJobs(jobList), 500);
     refreshJobs(jobList);
     refreshPackages(pkgList);
 });
@@ -129,7 +131,10 @@ function refreshJobs(jobList)
             console.log(job);
         });
         jobList.innerHTML = newHTML;
-    }).catch((error) => console.log(error));
+    }).catch((error) => {
+        console.log(error);
+        clearInterval(timerInterval);
+    });
 }
 
 /**
