@@ -8,10 +8,10 @@ div#addBuilderDialog.modal.fade.modal-blur.hide(tabindex="-1")
                 form#addBuilderForm(method="POST", action="/")
                     div.row
                         div.mb-3
-                            label.py-1(for="name") Nickname
+                            label.py-1(for="name") Alias
                             div.input-icon
                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-writing")
-                                input#name.form-control(name="nick", type="text", placeholder="Nick name", required, minlength="3")
+                                input#name.form-control(name="nick", type="text", placeholder="Public alias for this builder", required, minlength="3")
                     div.row
                         div.mb-3
                             label.py-1(for="upstream") Builder address
