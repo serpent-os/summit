@@ -18,7 +18,7 @@ block content
                             li.breadcrumb-item: a(href="/~") Namespaces
                             li.breadcrumb-item: a(href="/~/#{namespace.slug}") #{namespace.name}
                             li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{namespace.slug}/#{project.slug}") #{project.name}
-                        h2.page-title #{project.name}
+                        h2.page-title #{project.summary}
                     div.col-auto
                         div.btn-list
                             button.btn.d-none.d-md-inline-flex
