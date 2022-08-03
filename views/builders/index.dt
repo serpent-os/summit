@@ -1,8 +1,34 @@
 extends root
 
+
 block title
     title Summit - Builders
 
 block content
     div.container
-        div#buildersList
+
+        div.row
+            div.page-header
+                div.row.align-items-center
+                    div.col
+                        ol.breadcrumb.py-1(aria-label="breadcrumbs")
+                            li.breadcrumb-item: a(href="/") Home
+                            li.breadcrumb-item.active(aria-current="page"): a(href="/~") Builders
+                        h2.page-title Builders
+                    div.col-auto
+                        div.btn-list
+
+                            button.btn-azure.btn.d-none.d-md-inline-flex(data-bs-toggle="modal", data-bs-target="#addBuilderDialog")
+                                svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-plus")
+                                | Add a builder
+
+        div.row.py-3
+            div.py-1
+
+                div.card
+                    div.list-group.list-group-flush#buildersList
+
+
+block scripts
+
+    script(src="/static/builders.js", defer, async, module="true")

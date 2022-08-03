@@ -65,14 +65,9 @@ public @Model struct Builder
     @PrimaryKey BuilderIdentity id;
 
     /**
-     * Full address minus port
+     * Full address including port
      */
     @Indexed string uri;
-
-    /**
-     * Port number
-     */
-    uint16_t port;
 
     /**
      * The visible display name

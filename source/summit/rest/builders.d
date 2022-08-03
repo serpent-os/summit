@@ -31,6 +31,11 @@ import std.array : array;
      * List all builders
      */
     @path("list") @method(HTTPMethod.GET) Builder[] list() @safe;
+
+    /**
+     * Add a new builder to the system
+     */
+    @path("add") @method(HTTPMethod.GET) void add(string hostname, string nick);
 }
 
 /**
@@ -61,6 +66,16 @@ public final class BuilderAPI : BuilderAPIv1
             return NoDatabaseError;
         });
         return jobs;
+    }
+
+    /**
+     * Add a new builder
+     */
+    override void add(string hostname, string nick) @safe
+    {
+        Builder b = Builder(0, hostname, nick, [], BuilderStatus.Unconfigured);
+        auto err = appDB.update((scope tx) => b.save(tx));
+        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
     }
 
 private:
