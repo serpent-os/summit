@@ -10,6 +10,7 @@ public import vibe.core.channel : Channel;
 public import std.stdint : uint8_t, uint64_t;
 
 import moss.db.keyvalue.orm;
+import std.datetime.systime;
 
 /**
  * summit.workers.job
@@ -65,4 +66,29 @@ public struct WorkerTask
      * Status for this task
      */
     TaskStatus status;
+
+    /**
+     * When was the task created?
+     */
+    SysTime tsCreated;
+
+    /**
+     * When did execution start?
+     */
+    SysTime tsStarted;
+
+    /**
+     * When did it finish?
+     */
+    SysTime tsFinished;
+
+    /**
+     * Is this actually done yet?
+     *
+     * Returns: true if the task finished (or failed.)
+     */
+    pragma(inline, true) pure @property bool finished() @safe @nogc nothrow
+    {
+        return (status == TaskStatus.Failed) || (status == TaskStatus.Succeeded);
+    }
 }
