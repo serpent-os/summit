@@ -8,7 +8,7 @@ block banner
         div.container-xl.py-4
             div.row.d-flex
                 div.col-auto
-                    img(src="/static/white_notext_4x.png", width="141.60px", height="125.40px")
+                    img(src="/static/white_notext_4x.png", width="141px", height="125px")
                 div.col.px-5.mx-5
                     h1 Awww yeah, we did it.
                     p.text-lead Serpent OS has been in development for the past #[i two years].#[br ]
