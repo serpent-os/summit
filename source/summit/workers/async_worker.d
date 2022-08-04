@@ -21,6 +21,9 @@ import vibe.core.core : yield;
 
 public import summit.workers.job;
 
+public static enum taskBacklog = 100;
+public alias WorkerChannel = Channel!(WorkerTask, taskBacklog);
+
 /**
  * Our threaded helper
  *
