@@ -28,7 +28,6 @@ import summit.accounts;
 import summit.models;
 import summit.web;
 import summit.rest;
-import summit.workers;
 
 /**
  * Main entry point from the server side, storing our
@@ -57,8 +56,6 @@ public final class SummitApp
         settings.sessionOptions = SessionOption.httpOnly | SessionOption.secure;
         settings.sessionStore = new DBSessionStore("lmdb://database/session");
         settings.serverString = "summit/0.0.1";
-
-        workerSystem = new WorkerSystem();
 
         /* Open the accounts DB */
         accountManager = new AccountManager("lmdb://database/accounts");
@@ -90,13 +87,7 @@ public final class SummitApp
         fileSettings = new HTTPFileServerSettings();
         fileSettings.serverPathPrefix = "/static";
         router.get("/static/*", serveStaticFiles("static", fileSettings));
-
         router.rebuild();
-
-        debug
-        {
-            import std.stdio : writeln;
-        }
     }
 
     /**
@@ -104,7 +95,6 @@ public final class SummitApp
      */
     void start() @safe
     {
-        workerSystem.start();
         listener = listenHTTP(settings, router);
     }
 
@@ -114,7 +104,6 @@ public final class SummitApp
     void stop() @safe
     {
         listener.stopListening();
-        workerSystem.stop();
     }
 
 private:
@@ -168,5 +157,4 @@ private:
     HTTPFileServerSettings fileSettings;
     Database appDB;
     AccountManager accountManager;
-    WorkerSystem workerSystem;
 }
