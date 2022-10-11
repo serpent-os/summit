@@ -19,7 +19,7 @@ html
         - {
             link(rel="icon", type="image/png", sizes="#{size}x#{size}", href="/static/img/favicon-#{size}x#{size}.png")   
         - }
-    body.d-flex.flex-column.min-vh-100.theme-dark-auto
+    body.d-flex.flex-column.min-vh-100
         include primary_navigation
         block banner
         main
@@ -35,6 +35,7 @@ html
 
     // TODO: Use a site prefix
     script(src="/static/tabler/js/tabler.min.js", defer, async)
+    script(src="/static/global.js")
 
     block scripts
         // add scripts here
