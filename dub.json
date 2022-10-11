@@ -9,9 +9,8 @@
 		"openssl": "~>3.1",
 		"moss-core": ">=0.0.1",
 		"moss-db": ">=0.0.4",
-		"libsodiumd": {
-			"repository": "git+https://github.com/Geod24/libsodiumd.git",
-			"version": "8bc62db965ce3da0fb5652b024f66bfacd9b8cb6"
+		"moss-service": {
+			"path": "../moss-service"
 		}
 	},
 	"versions": [
