@@ -1,3 +1,21 @@
+/*
+ * SPDX-FileCopyrightText: Copyright © 2020-2022 Serpent OS Developers
+ *
+ * SPDX-License-Identifier: Zlib
+ */
+
+/**
+ * global.js
+ *
+ * Global JS support for Summit
+ *
+ * Authors: Copyright © 2020-2022 Serpent OS Developers
+ * License: Zlib
+ */
+
+/**
+ * Returns the current theme preference
+ */
 function currentThemePref()
 {
     let prefs = window.sessionStorage.getItem('theme-pref');
@@ -8,6 +26,12 @@ function currentThemePref()
     return prefs;
 }
 
+/**
+ * Compute the next theme preference in the cycle
+ *
+ * @param {string} currentThemePref Current theme preference
+ * @returns The next theme preference
+ */
 function nextThemePref(currentThemePref)
 {
     switch (currentThemePref)
@@ -22,6 +46,11 @@ function nextThemePref(currentThemePref)
     }
 }
 
+/**
+ * Activate the theme preference
+ * 
+ * @param {string} themePref New theme preference
+ */
 function activateTheme(themePref)
 {
     const svg = document.getElementById('themeSwitcherIcon');
