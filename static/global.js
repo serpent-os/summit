@@ -14,6 +14,15 @@
  */
 
 /**
+ * Enum for our theme variants
+ */
+const ThemeVariant = Object.freeze({
+    System: 'system',
+    Dark: 'dark',
+    Light: 'light',
+});
+
+/**
  * Returns the current theme preference
  */
 function currentThemePref()
@@ -21,7 +30,7 @@ function currentThemePref()
     let prefs = window.sessionStorage.getItem('theme-pref');
     if (prefs === null)
     {
-        return "system";
+        return ThemeVariant.System;
     }
     return prefs;
 }
@@ -36,13 +45,13 @@ function nextThemePref(currentThemePref)
 {
     switch (currentThemePref)
     {
-        case 'system':
-            return 'dark';
-        case 'dark':
-            return 'light';
-        case 'light':
+        case ThemeVariant.System:
+            return ThemeVariant.Dark;
+        case ThemeVariant.Dark:
+            return ThemeVariant.Light;
+        case ThemeVariant.Light:
         default:
-            return 'dark';
+            return ThemeVariant.Dark;
     }
 }
 
