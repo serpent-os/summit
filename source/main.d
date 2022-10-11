@@ -17,7 +17,7 @@ module main;
 
 import vibe.d;
 import summit;
-import std.path : absolutePath, asNormalizedPath;
+import std.path : buildPath, absolutePath, asNormalizedPath;
 import std.conv : to;
 
 /**
@@ -29,7 +29,7 @@ import std.conv : to;
  */
 int main(string[] args) @safe
 {
-    immutable rootDir = ".".absolutePath.asNormalizedPath.to!string;
+    immutable rootDir = ".".buildPath("smt").absolutePath.asNormalizedPath.to!string;
 
     auto app = new SummitApplication(rootDir);
     scope (exit)
