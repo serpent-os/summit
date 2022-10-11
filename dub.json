@@ -2,6 +2,9 @@
 	"authors": [
 		"Serpent OS Developers"
 	],
+	"stringImportPaths": [
+		"views"
+	],
 	"copyright": "Copyright © 2022, Serpent OS Developers",
 	"dependencies": {
 		"vibe-d": ">=0.9.5",

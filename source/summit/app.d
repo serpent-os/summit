@@ -19,6 +19,7 @@ import vibe.d;
 import moss.service.sessionstore;
 import std.file : mkdirRecurse;
 import std.path : buildPath;
+import summit.web;
 
 /**
  * SummitApplication maintains the core lifecycle of Summit
@@ -64,6 +65,9 @@ public final class SummitApplication
         fileSettings.options = HTTPFileServerOption.failIfNotFound;
         router.get("/static/*", serveStaticFiles(rootDir.buildPath("static/"), fileSettings));
 
+        web = new SummitWeb();
+        web.configure(router);
+
         /* Lets go listen */
         listener = listenHTTP(serverSettings, router);
     }
@@ -83,4 +87,5 @@ private:
     HTTPFileServerSettings fileSettings;
     URLRouter router;
     DBSessionStore sessionStore;
+    SummitWeb web;
 }

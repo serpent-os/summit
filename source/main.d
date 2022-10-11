@@ -30,6 +30,7 @@ import std.conv : to;
 int main(string[] args) @safe
 {
     immutable rootDir = ".".absolutePath.asNormalizedPath.to!string;
+    setLogLevel(LogLevel.trace);
 
     auto app = new SummitApplication(rootDir);
     scope (exit)
