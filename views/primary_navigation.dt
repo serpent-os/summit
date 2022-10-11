@@ -3,6 +3,7 @@
 - alias NavigationItem = Tuple!(string, "path", string, "name");
 - static NavigationItem[] navItems = [
 -   NavigationItem("/", "Home"),
+-   NavigationItem("/collections", "Collections"),
 - ];
 
 nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm

@@ -5,3 +5,4 @@ block title
         
 block content
     div.container
+        h1 TODO: Add activity lists etc.
