@@ -39,7 +39,8 @@ public final class SummitApplication
     {
         logInfo(format!"SummitApplication running from %s"(rootDir));
 
-        immutable dbPath = rootDir.buildPath("smt", "db");
+        immutable statePath = rootDir.buildPath("state");
+        immutable dbPath = statePath.buildPath("db");
         dbPath.mkdirRecurse();
 
         router = new URLRouter();
