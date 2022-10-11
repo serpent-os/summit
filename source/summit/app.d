@@ -38,7 +38,7 @@ public final class SummitApplication
     {
         logInfo(format!"SummitApplication running from %s"(rootDir));
 
-        immutable dbPath = rootDir.buildPath("db");
+        immutable dbPath = rootDir.buildPath("smt", "db");
         dbPath.mkdirRecurse();
 
         router = new URLRouter();
@@ -57,6 +57,13 @@ public final class SummitApplication
         sessionStore = new DBSessionStore(dbPath.buildPath("session"));
         serverSettings.sessionStore = sessionStore;
 
+        /* File settings for /static/ serving */
+        fileSettings = new HTTPFileServerSettings();
+        fileSettings.serverPathPrefix = "/static";
+        //fileSettings.maxAge = 30.days;
+        fileSettings.options = HTTPFileServerOption.failIfNotFound;
+        router.get("/static/*", serveStaticFiles(rootDir.buildPath("static/"), fileSettings));
+
         /* Lets go listen */
         listener = listenHTTP(serverSettings, router);
     }
@@ -73,6 +80,7 @@ private:
 
     HTTPListener listener;
     HTTPServerSettings serverSettings;
+    HTTPFileServerSettings fileSettings;
     URLRouter router;
     DBSessionStore sessionStore;
 }
