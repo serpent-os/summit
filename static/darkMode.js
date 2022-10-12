@@ -5,9 +5,9 @@
  */
 
 /**
- * global.js
+ * darkMode.js
  *
- * Global JS support for Summit
+ * Enable dark mode in Serpent OS websites
  *
  * Authors: Copyright © 2020-2022 Serpent OS Developers
  * License: Zlib
@@ -89,6 +89,9 @@ function activateTheme(themePref)
     }
 }
 
+/**
+ * On load we'll hook up the #themeSwitcher button for swaps
+ */
 window.addEventListener('DOMContentLoaded', function(ev) {
     const switcher = document.getElementById('themeSwitcher');
     switcher.addEventListener('click', function(ev) {
@@ -99,5 +102,8 @@ window.addEventListener('DOMContentLoaded', function(ev) {
     })
 });
 
+/**
+ * Forcibly apply the theme in non-async fashion
+ */
 const themePref = currentThemePref();
 activateTheme(themePref);
