@@ -54,6 +54,7 @@ public final class SummitApplication
 
         immutable dbErr = appDB.update((scope tx) => tx.createModel!(PackageCollection,
                 Repository));
+        enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
 
         router = new URLRouter();
 
