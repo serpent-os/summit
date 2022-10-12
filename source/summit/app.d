@@ -20,6 +20,9 @@ import moss.service.sessionstore;
 import std.file : mkdirRecurse;
 import std.path : buildPath;
 import summit.web;
+import moss.db.keyvalue;
+import moss.db.keyvalue.orm;
+import summit.models;
 
 /**
  * SummitApplication maintains the core lifecycle of Summit
@@ -42,6 +45,15 @@ public final class SummitApplication
         immutable statePath = rootDir.buildPath("state");
         immutable dbPath = statePath.buildPath("db");
         dbPath.mkdirRecurse();
+
+        /* *has* to work */
+        Database.open(format!"lmdb://%s"(dbPath.buildPath("app")),
+                DatabaseFlags.CreateIfNotExists).tryMatch!((Database db) {
+            appDB = db;
+        });
+
+        immutable dbErr = appDB.update((scope tx) => tx.createModel!(PackageCollection,
+                Repository));
 
         router = new URLRouter();
 
@@ -79,6 +91,7 @@ public final class SummitApplication
     void close() @safe
     {
         listener.stopListening();
+        appDB.close();
     }
 
 private:
@@ -89,4 +102,5 @@ private:
     URLRouter router;
     DBSessionStore sessionStore;
     SummitWeb web;
+    Database appDB;
 }

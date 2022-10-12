@@ -17,7 +17,7 @@ module summit.models.repository;
 
 import moss.db.keyvalue.orm;
 
-public import summit.models.collection : CollectionID;
+public import summit.models.collection : PackageCollectionID;
 
 /**
  * Collection is our encapsulation unit for a repository
@@ -52,5 +52,5 @@ public @Model struct Repository
     /**
      * Which collection do we belong to?
      */
-    CollectionID collection;
+    PackageCollectionID collection;
 }

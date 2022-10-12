@@ -21,17 +21,17 @@ public import std.stdint : uint64_t;
 /**
  * Unique assignment to survive renames, etc.
  */
-public alias CollectionID = uint64_t;
+public alias PackageCollectionID = uint64_t;
 
 /**
  * Collection is our encapsulation unit for a repository
  */
-public @Model struct Collection
+public @Model struct PackageCollection
 {
     /**
      * Unique id for the collection
      */
-    CollectionID id;
+    @PrimaryKey PackageCollectionID id;
 
     /**
      * Unique name for the collection
