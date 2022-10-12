@@ -25,3 +25,7 @@ block content
 
                 div.card
                     div.list-group.list-group-flush#collectionsList
+
+block dialogs
+
+    include collections/add_collection
