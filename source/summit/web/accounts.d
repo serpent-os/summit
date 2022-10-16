@@ -62,6 +62,15 @@ public struct WebSession
     }
 
     /**
+     * Log the session out
+     */
+    @method(HTTPMethod.GET) @path("logout") void logout() @safe
+    {
+        endSession();
+        redirect("/");
+    }
+
+    /**
      * Render the login form
      */
     @method(HTTPMethod.GET) @path("login") void renderLogin() @safe
