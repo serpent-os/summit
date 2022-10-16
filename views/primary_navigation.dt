@@ -28,4 +28,4 @@ nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
             a.btn.btn-ghost-info.btn-icon#themeSwitcher
                 svg#themeSwitcherIcon(width="16px", height="16px")
                     use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-moon")
-            a.btn.btn-ghost-info.btn-icon#accountButton Log in
+            a.btn.btn-ghost-info.btn-icon#accountButton(href="/accounts/login") Log in

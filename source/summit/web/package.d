@@ -16,6 +16,7 @@
 module summit.web;
 
 import vibe.d;
+import summit.web.accounts;
 import summit.web.collections;
 
 /**
@@ -33,6 +34,8 @@ public final class SummitWeb
     @noRoute void configure(URLRouter router) @safe
     {
         auto root = registerWebInterface(router, this);
+        auto act = new AccountsWeb();
+        act.configure(root);
         auto col = new CollectionsWeb();
         col.configure(root);
     }
