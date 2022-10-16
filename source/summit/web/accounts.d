@@ -130,7 +130,7 @@ public struct WebSession
             endSession();
         }
         enforceHTTP(policy, HTTPStatus.forbidden, "Policy must be accepted");
-        immutable err = accountManager.registerUser(username, password);
+        immutable err = accountManager.registerUser(username, password, emailAddress);
         enforceHTTP(err.isNull, HTTPStatus.forbidden, err.message);
         startSession();
     }
