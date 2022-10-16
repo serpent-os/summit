@@ -16,6 +16,8 @@
 module summit.web.accounts;
 
 import vibe.d;
+import vibe.web.validation;
+
 import moss.service.accounts;
 
 /**
@@ -68,6 +70,26 @@ public struct WebSession
     }
 
     /**
+     * Perform the login
+     *
+     * Params:
+     *      username = Valid username
+     *      password = Valid password
+     */
+    @method(HTTPMethod.POST) @path("login") void handleLogin(ValidUsername username,
+            ValidPassword password) @safe
+    {
+        accountManager.authenticateUser(username, password).match!((User user) {
+            logInfo(format!"User successfully logged in: %s [%s]"(user.username, user.id));
+            startSession();
+        }, (DatabaseError e) {
+            logError(format!"Failed login for user '%s': %s"(username, e));
+            endSession();
+            throw new HTTPStatusException(HTTPStatus.forbidden, e.message);
+        });
+    }
+
+    /**
      * Render the registration form
      */
     @method(HTTPMethod.GET) @path("register") void renderRegistration() @safe
@@ -76,5 +98,25 @@ public struct WebSession
     }
 
 private:
+
+    /**
+     * Start a login session
+     */
+    void startSession() @safe
+    {
+        auto session = WebSession();
+        session.loggedIn = true;
+    }
+
+    /**
+     * End the session
+     */
+    void endSession() @safe
+    {
+        auto session = WebSession();
+        session.loggedIn = false;
+        terminateSession();
+    }
+
     AccountManager accountManager;
 }
