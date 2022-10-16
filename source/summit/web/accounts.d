@@ -87,6 +87,7 @@ public struct WebSession
             endSession();
             throw new HTTPStatusException(HTTPStatus.forbidden, e.message);
         });
+        redirect("/");
     }
 
     /**
@@ -95,6 +96,34 @@ public struct WebSession
     @method(HTTPMethod.GET) @path("register") void renderRegistration() @safe
     {
         render!"accounts/register.dt";
+    }
+
+    /**
+     * Register a new user
+     *
+     * Params:
+     *      username = New username
+     *      emailAddress = Valid email address
+     *      password = New password
+     *      confirmPassword = Validate password
+     *      policy = Ensure policy is accepted
+     */
+    @method(HTTPMethod.POST) @path("register") void handleRegistration(ValidUsername username,
+            ValidEmail emailAddress, ValidPassword password,
+            Confirm!"password" confirmPassword, bool policy) @safe
+    {
+        scope (exit)
+        {
+            redirect("/");
+        }
+        scope (failure)
+        {
+            endSession();
+        }
+        enforceHTTP(policy, HTTPStatus.forbidden, "Policy must be accepted");
+        immutable err = accountManager.registerUser(username, password);
+        enforceHTTP(err.isNull, HTTPStatus.forbidden, err.message);
+        startSession();
     }
 
 private:
