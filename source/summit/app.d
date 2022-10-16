@@ -96,6 +96,7 @@ public final class SummitApplication
     {
         listener.stopListening();
         appDB.close();
+        accountManager.close();
     }
 
 private:

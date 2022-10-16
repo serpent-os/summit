@@ -30,6 +30,7 @@ public final class SummitWeb
      * Join SummitWeb into the router
      *
      * Params:
+     *      accountManager = Account management interface
      *      router = Base root for the application
      */
     @noRoute void configure(AccountManager accountManager, URLRouter router) @safe
