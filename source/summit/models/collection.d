@@ -37,4 +37,9 @@ public @Model struct PackageCollection
      * Unique name for the collection
      */
     @Indexed string name;
+
+    /** 
+     * Release tracking
+     */
+    string vscURI;
 }
