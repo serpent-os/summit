@@ -18,6 +18,18 @@ module summit.web.accounts;
 import vibe.d;
 
 /**
+ * Allow views to access session information
+ * DO NOT use outside of WebInterface APIs
+ */
+public struct WebSession
+{
+    /**
+     * Set true if we're logged in
+     */
+    SessionVar!(bool, "activeSession") loggedIn;
+}
+
+/**
  * Root entry into our web service
  */
 @path("/accounts") public final class AccountsWeb

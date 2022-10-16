@@ -5,6 +5,7 @@
 -   NavigationItem("/", "Home"),
 -   NavigationItem("/collections", "Collections"),
 - ];
+- import summit.web.accounts : WebSession;
 
 nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
     div.container
@@ -28,4 +29,9 @@ nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
             a.btn.btn-ghost-info.btn-icon#themeSwitcher
                 svg#themeSwitcherIcon(width="16px", height="16px")
                     use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-moon")
-            a.btn.btn-ghost-info.btn-icon#accountButton(href="/accounts/login") Log in
+            - auto session = WebSession();
+            - if (session.loggedIn) {
+                a.btn.btn-ghost-info.btn-icon#accountButton(href="/accounts/logout") Log out
+            - } else {
+                a.btn.btn-ghost-info.btn-icon#accountButton(href="/accounts/login") Log in
+            - }
