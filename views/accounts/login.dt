@@ -1,0 +1,33 @@
+extends root
+
+block title
+    title Summit - Login
+
+block content
+    div.main-view.justify-content-center
+        div.container
+            div.row.d-flex.align-self-center.justify-content-center
+                div.col-10.col-md-5
+                    div.card.shadow-sm
+                        div.card-status.bg-azure.card-status-top
+                        div.card-body.mb-2
+                            h3.card-title.justify-content-center.align-self-center
+                                div.d-flex
+                                    svg.icon.align-self-center: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-login")
+                                    div &nbsp; Login to Summit
+                            p.text-muted.text-wrap.py-3 Gain access to the Serpent OS build infrastructure. 
+                                | If you don't have an account yet, you can #[a(href="/accounts/register") register one] now.
+                            form(method="post", action="/accounts/login")
+                                div.row.mb-2
+                                    div
+                                        div.input-icon
+                                            span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-user")
+                                            input#username.form-control(name="username", placeholder="The username you signed up with", type="text", required, minlength="4")
+                                div.row.mb-2
+                                    div
+                                        div.input-icon
+                                            span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-lock")
+                                            input#password.form-control(name="password", type="password", placeholder="Enter your password", required, minlength="6")
+                                div.row.mb-2
+                                    div.py-3
+                                        button.form-control.btn.btn-primary(type="submit") Login
