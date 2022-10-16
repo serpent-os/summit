@@ -16,6 +16,7 @@
 module summit.web.accounts;
 
 import vibe.d;
+import moss.service.accounts;
 
 /**
  * Allow views to access session information
@@ -34,6 +35,19 @@ public struct WebSession
  */
 @path("/accounts") public final class AccountsWeb
 {
+    @disable this();
+
+    /**
+     * Construct new AccountsWeb
+     *
+     * Params:
+     *      accountManager = Account management
+     */
+    this(AccountManager accountManager) @safe
+    {
+        this.accountManager = accountManager;
+    }
+
     /**
      * Install account management into web app
      *
@@ -60,4 +74,7 @@ public struct WebSession
     {
         render!"accounts/register.dt";
     }
+
+private:
+    AccountManager accountManager;
 }

@@ -16,6 +16,7 @@
 module summit.app;
 
 import vibe.d;
+import moss.service.accounts;
 import moss.service.sessionstore;
 import std.file : mkdirRecurse;
 import std.path : buildPath;
@@ -56,6 +57,8 @@ public final class SummitApplication
                 Repository));
         enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
 
+        accountManager = new AccountManager(dbPath.buildPath("accounts"));
+
         router = new URLRouter();
 
         /* Set up the server */
@@ -80,7 +83,7 @@ public final class SummitApplication
         router.get("/static/*", serveStaticFiles(rootDir.buildPath("static/"), fileSettings));
 
         web = new SummitWeb();
-        web.configure(router);
+        web.configure(accountManager, router);
 
         /* Lets go listen */
         listener = listenHTTP(serverSettings, router);
@@ -97,6 +100,7 @@ public final class SummitApplication
 
 private:
 
+    AccountManager accountManager;
     HTTPListener listener;
     HTTPServerSettings serverSettings;
     HTTPFileServerSettings fileSettings;

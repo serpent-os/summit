@@ -18,6 +18,7 @@ module summit.web;
 import vibe.d;
 import summit.web.accounts;
 import summit.web.collections;
+import moss.service.accounts;
 
 /**
  * Root entry into our web service
@@ -31,10 +32,10 @@ public final class SummitWeb
      * Params:
      *      router = Base root for the application
      */
-    @noRoute void configure(URLRouter router) @safe
+    @noRoute void configure(AccountManager accountManager, URLRouter router) @safe
     {
         auto root = registerWebInterface(router, this);
-        auto act = new AccountsWeb();
+        auto act = new AccountsWeb(accountManager);
         act.configure(root);
         auto col = new CollectionsWeb();
         col.configure(root);
