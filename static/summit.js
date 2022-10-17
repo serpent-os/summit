@@ -59,8 +59,32 @@ function integrateList()
     refreshList(summitContext, summitMode);
 }
 
+/**
+ * Render the default placeholder
+ */
+function renderPlaceholder()
+{
+    const html = `
+<div class="empty">
+    <div class="empty-icon">
+        <svg class="logo text-muted">
+            <use xlink:href="/static/tabler/tabler-sprite.svg#tabler-mood-suprised" />
+        </svg>
+    </div>
+    <p class="empty-title">This page has intentionally been left blank</p>
+    <p class="empty-subtitle text-muted">
+        How does that work, though? Like, clearly it isn't blank.
+    </p>
+</div>`;
+    document.getElementById('summitList').innerHTML = html;
+}
+
+/**
+ * Lets get the list updated
+ */
 function refreshList(context, mode)
 {
     console.log(`Not yet implemented: '${mode}' of '${context}'`)
-    console.log(`Endpoint: ${Endpoint[context]}`)
+    console.log(`Endpoint: ${Endpoint[context]}`);
+    renderPlaceholder();
 }
