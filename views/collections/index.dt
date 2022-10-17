@@ -24,8 +24,12 @@ block content
             div.py-1
 
                 div.card
-                    div.list-group.list-group-flush#collectionsList
+                    div.list-group.list-group-flush#summitList(summit:context="collections", summit:mode="enumerate")
 
 block dialogs
 
     include collections/add_collection
+
+block scripts
+
+    script(src="/static/summit.js", defer, async)
