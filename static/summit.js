@@ -243,7 +243,7 @@ function renderElement(context, element)
 <div class="mb-3 col-6 col-md-6 col-lg-6">
     <div class="card">
         <div class="card-header">
-            <h5 class="card-title">${element.title}</h5>
+            <h5 class="card-title"><a href="${element.slug}" class="text-reset">${element.title}</a></h5>
         </div>
         <div class="card-body">
             <p>${element.subtitle}</p>
