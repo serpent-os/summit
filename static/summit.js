@@ -84,7 +84,37 @@ function renderPlaceholder()
  */
 function refreshList(context, mode)
 {
-    console.log(`Not yet implemented: '${mode}' of '${context}'`)
-    console.log(`Endpoint: ${Endpoint[context]}`);
-    renderPlaceholder();
+    const uri = `${Endpoint[context]}/${mode}`;
+    fetch(uri, {
+        credentials: 'include',
+        method: 'GET',
+        headers: {
+            Accept: 'application/json'
+        }
+    }).then((response) => {
+        if (!response.ok)
+        {
+            throw new Error("refreshList failed: " + response.statusText);
+        }
+        return response.json();
+    }).then((obj) => {
+        renderList(context, mode, obj);
+    }).catch((error) => console.log(error));
+}
+
+/**
+ * Render the list when successful
+ * @param {string} context Summit Context (i.e. collections)
+ * @param {string} mode Summit mode (i.e. enumerate)
+ * @param {JSON} obj Summit object response (ListItem)
+ */
+function renderList(context, mode, obj)
+{
+    // No items, set up the placeholder
+    if (obj.length == 0)
+    {
+        renderPlaceholder();
+        return;
+    }
+    console.log(`${context} : ${obj}`)
 }
