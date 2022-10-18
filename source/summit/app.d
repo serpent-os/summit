@@ -21,6 +21,7 @@ import moss.service.sessionstore;
 import std.file : mkdirRecurse;
 import std.path : buildPath;
 import summit.web;
+import summit.api;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import summit.models;
@@ -85,6 +86,9 @@ public final class SummitApplication
         web = new SummitWeb();
         web.configure(accountManager, router);
 
+        service = new RESTService(rootDir);
+        service.configure(router);
+
         /* Lets go listen */
         listener = listenHTTP(serverSettings, router);
     }
@@ -101,6 +105,7 @@ public final class SummitApplication
 
 private:
 
+    RESTService service;
     AccountManager accountManager;
     HTTPListener listener;
     HTTPServerSettings serverSettings;
