@@ -75,3 +75,15 @@ public interface SummitAPIv1
      */
     @path("version") @method(HTTPMethod.GET) pure string versionID() @safe @nogc nothrow const;
 }
+
+/**
+ * Base API for the Collections
+ */
+@path("/api/v1/collections")
+public interface CollectionsAPIv1
+{
+    /**
+     * Enumerate all items within the collection API
+     */
+    @path("enumerate") @method(HTTPMethod.GET) ListItem[] enumerate() @safe;
+}

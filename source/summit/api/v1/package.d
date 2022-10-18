@@ -18,6 +18,8 @@ module summit.api.v1;
 public import vibe.d;
 public import summit.api.v1.interfaces;
 
+import summit.api.v1.collections;
+
 /**
  * Root implementation to configure all supported interfaces
  */
@@ -42,6 +44,7 @@ public final class RESTService : SummitAPIv1
     @noRoute void configure(URLRouter router) @safe
     {
         router.registerRestInterface(this);
+        router.registerRestInterface(new CollectionsService());
     }
 
     /**
