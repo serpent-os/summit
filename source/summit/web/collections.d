@@ -41,4 +41,16 @@ public final class CollectionsWeb
     {
         render!"collections/index.dt";
     }
+
+    /**
+     * View an individual collection
+     *
+     * Params:
+     *      _slug = Specific slug ID (i.e. collection short name)
+     */
+    @path("/:slug") @method(HTTPMethod.GET)
+    void view(string _slug)
+    {
+        render!"collections/view.dt";
+    }
 }
