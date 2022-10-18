@@ -16,6 +16,7 @@
  window.addEventListener('load', function(ev)
  {
      integrateList();
+     integrateDialog();
      ev.preventDefault();
  });
 
@@ -41,16 +42,6 @@ const SummitWidgets = Object.freeze(
          * Creation form dialog
          */
         CreationDialog: 'creationDialog',
-
-        /**
-         * Submit button on the dialog
-         */
-        CreationDialogSubmit: 'creationButton',
-
-        /**
-         * Form for creation events
-         */
-        CreationDialogForm: 'creationForm',
 
         /**
          * Renderable items
@@ -85,6 +76,28 @@ function integrateList()
     const summitMode = list.getAttribute('summit:mode');
 
     refreshList(summitContext, summitMode);
+}
+
+/**
+ * Integration the manipulation dialog
+ */
+function integrateDialog()
+{
+    let dialog = document.getElementById(SummitWidgets.CreationDialog);
+    if (dialog === null)
+    {
+        return;
+    }
+
+    let form = dialog.getElementsByClassName('summit-form')[0];
+    let submission = dialog.getElementsByClassName('summit-submit')[0];
+    submission.addEventListener('click', function(ev)
+    {
+        ev.preventDefault();
+        var fe = new FormData(form);
+        const body = JSON.stringify(Object.fromEntries(fe));
+        console.log(`To submit: ${body}`);
+    });
 }
 
 /**

@@ -16,7 +16,7 @@ block content
                         h2.page-title Collections
                     div.col-auto
                         div.btn-list
-                            button.btn-azure.btn.d-none.d-md-inline-flex(data-bs-toggle="modal", data-bs-target="#addCollectionDialog")
+                            button.btn-azure.btn.d-none.d-md-inline-flex(data-bs-toggle="modal", data-bs-target="#creationDialog")
                                 svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-plus")
                                 | Add a collection
 
