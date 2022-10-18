@@ -152,7 +152,9 @@ function submitDialog(context, dialog)
     let form = dialog.getElementsByClassName('summit-form')[0];
 
     const fe = new FormData(form);
-    const submissionBody = JSON.stringify(Object.fromEntries(fe));
+    const submissionBody = JSON.stringify({
+        'request': Object.fromEntries(fe)
+    });
     const uri = `${Endpoint[context]}/create`;
     console.log(uri);
 
@@ -164,7 +166,8 @@ function submitDialog(context, dialog)
         body: submissionBody,
         method: 'POST',
         headers: {
-            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
         }
     }).then((response) => {
         if (!response.ok)
