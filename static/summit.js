@@ -175,9 +175,12 @@ function submitDialog(context, dialog)
             throw new Error("submitDialog: " + response.statusText);
         }
         console.log("Success");
+        refreshList(context, 'enumerate');
     }).catch((error) => console.log(error))
     .finally(() => {
         formSubmitting = false;
+        var modal = bootstrap.Modal.getInstance(dialog);
+        modal.hide();
     });
 }
 
@@ -225,6 +228,29 @@ function refreshList(context, mode)
 }
 
 /**
+ * Render an individual element
+ * @param {String} context Rendering context (Collections, etc.)
+ * @param {String} element The element to render
+ * @returns new innerHTML for the summit list
+ */
+function renderElement(context, element)
+{
+    return `
+<div class="list-group-item list-group-hoverable">
+    <div class="row align-items-center">
+        <div class="col-auto">
+            <span class="avatar">${element.id}</span>
+        </div>
+        <div class="col text-truncate">
+            <a href="${element.slug}" class="text-reset d-block">${element.title}</a>
+            <div class="d-block text-muted">${element.subtitle}</div>
+        </div>
+    </div>
+</div>
+`;
+}
+
+/**
  * Render the list when successful
  * @param {string} context Summit Context (i.e. collections)
  * @param {string} mode Summit mode (i.e. enumerate)
@@ -238,5 +264,10 @@ function renderList(context, mode, obj)
         renderPlaceholder();
         return;
     }
-    console.log(`${context} : ${obj}`)
+    let completeHTML = '';
+    obj.forEach(element => {
+        completeHTML += renderElement(context, element);
+    });
+    // Update the DOM
+    document.getElementById(SummitWidgets.ItemList).innerHTML = completeHTML;
 }
