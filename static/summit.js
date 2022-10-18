@@ -13,6 +13,13 @@
  * License: Zlib
  */
 
+ window.addEventListener('load', function(ev)
+ {
+     integrateList();
+     ev.preventDefault();
+ });
+
+ 
 /**
  * Current context
  */
@@ -22,6 +29,33 @@
         Repositories: 'repositories',
         Groups: 'groups',
         Users: 'users',
+    }
+);
+
+/**
+ * Enum of our widgets
+ */
+const SummitWidgets = Object.freeze(
+    {
+        /**
+         * Creation form dialog
+         */
+        CreationDialog: 'creationDialog',
+
+        /**
+         * Submit button on the dialog
+         */
+        CreationDialogSubmit: 'creationButton',
+
+        /**
+         * Form for creation events
+         */
+        CreationDialogForm: 'creationForm',
+
+        /**
+         * Renderable items
+         */
+        ItemList: 'summitList',
     }
 );
 
@@ -37,18 +71,12 @@ const Endpoint = Object.freeze(
     }
 );
 
-window.addEventListener('load', function(ev)
-{
-    integrateList();
-    ev.preventDefault();
-});
-
 /**
  * Integrate the context list
  */
 function integrateList()
 {
-    let list = document.getElementById('summitList')
+    let list = document.getElementById(SummitWidgets.ItemList)
     if (list === null)
     {
         return;
@@ -76,7 +104,7 @@ function renderPlaceholder()
         How does that work, though? Like, clearly it isn't blank.
     </p>
 </div>`;
-    document.getElementById('summitList').innerHTML = html;
+    document.getElementById(SummitWidgets.ItemList).innerHTML = html;
 }
 
 /**

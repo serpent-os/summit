@@ -5,7 +5,7 @@ div#addCollectionDialog.modal.fade.modal-blur.hide(tabindex="-1")
                 h5.modal-title Add a collection
                 button.btn-close(type="button", data-bs-dismiss="modal", aria-label="close")
             div.modal-body
-                form#addCollectionForm(method="POST", action="/")
+                form#creationForm(method="POST", action="/")
                     div.row
                         div.mb-3
                             label.py-1(for="name") Name
@@ -26,4 +26,4 @@ div#addCollectionDialog.modal.fade.modal-blur.hide(tabindex="-1")
                                 input#upstream.form-control(name="upstream", type="text", placeholder="https://github.com/myorg/myrepo.git", required, minlength="6")
             div.modal-footer
                 button.btn(data-bs-dismiss="modal") Cancel
-                button#addCollectionButton.btn.btn-primary.ms-auto Add collection
+                button#creationButton.btn.btn-primary.ms-auto Add collection
