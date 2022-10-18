@@ -20,7 +20,7 @@ import vibe.d;
 /**
  * Root entry into our web service
  */
-@path("/collections")
+@path("/~")
 public final class CollectionsWeb
 {
     /**

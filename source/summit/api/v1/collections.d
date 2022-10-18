@@ -53,7 +53,7 @@ public final class CollectionsService : CollectionsAPIv1
                     ret.id = to!string(c.id);
                     ret.title = c.name;
                     ret.subtitle = c.summary;
-                    ret.slug = format!"/collections/%s"(c.slug);
+                    ret.slug = format!"/~/%s"(c.slug);
                     return ret;
                 });
             renderable = () @trusted { return items.array; }();
