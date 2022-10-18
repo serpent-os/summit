@@ -13,10 +13,11 @@
  * License: Zlib
  */
 
+let formSubmitting = false;
+
  window.addEventListener('load', function(ev)
  {
      integrateList();
-     integrateDialog();
      ev.preventDefault();
  });
 
@@ -75,28 +76,105 @@ function integrateList()
     const summitContext = list.getAttribute('summit:context');
     const summitMode = list.getAttribute('summit:mode');
 
+    integrateDialog(summitContext);
+
     refreshList(summitContext, summitMode);
 }
 
 /**
  * Integration the manipulation dialog
  */
-function integrateDialog()
+function integrateDialog(context)
 {
     let dialog = document.getElementById(SummitWidgets.CreationDialog);
     if (dialog === null)
     {
         return;
     }
+    // When showing modal - reset it first
+    dialog.addEventListener('show.bs.modal', function(ev)
+    {
+        resetDialog();
+    });
 
-    let form = dialog.getElementsByClassName('summit-form')[0];
+    /* Prevent hide if busy. */
+    dialog.addEventListener('hide.bs.modal', function(ev)
+    {
+        if (formSubmitting)
+        {
+            ev.preventDefault();
+        }
+    })
+
+    // Hook up submission
     let submission = dialog.getElementsByClassName('summit-submit')[0];
     submission.addEventListener('click', function(ev)
     {
         ev.preventDefault();
-        var fe = new FormData(form);
-        const body = JSON.stringify(Object.fromEntries(fe));
-        console.log(`To submit: ${body}`);
+        submitDialog(context, dialog);
+    });
+}
+
+/**
+ * Reset an async dialog
+ */
+function resetDialog()
+{
+    let dialog = document.getElementById(SummitWidgets.CreationDialog);
+    if (dialog === null)
+    {
+        return;
+    }
+    let spinner = dialog.getElementsByClassName('summit-spinner')[0];
+    let submission = dialog.getElementsByClassName('summit-submit')[0];
+    let form = dialog.getElementsByClassName('summit-form')[0];
+    form.reset();
+
+    // Ensure spinner is invisible
+    spinner.classList.add('d-none');
+
+    // Fix sensitivity
+    submission.disabled = false;
+}
+
+/**
+ * Submit a dialog
+ * 
+ * @param {String} context Context used for submission
+ * @param {Element} dialog The visible dialog element
+ */
+function submitDialog(context, dialog)
+{
+    formSubmitting = true;
+
+    let spinner = dialog.getElementsByClassName('summit-spinner')[0];
+    let submission = dialog.getElementsByClassName('summit-submit')[0];
+    let form = dialog.getElementsByClassName('summit-form')[0];
+
+    const fe = new FormData(form);
+    const submissionBody = JSON.stringify(Object.fromEntries(fe));
+    const uri = `${Endpoint[context]}/create`;
+    console.log(uri);
+
+    // Show spinner
+    spinner.classList.remove('d-none');
+    submission.disabled = true;
+
+    fetch(uri, {
+        body: submissionBody,
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+        }
+    }).then((response) => {
+        if (!response.ok)
+        {
+            throw new Error("submitDialog: " + response.statusText);
+        }
+        console.log("Success");
+    }).catch((error) => console.log(error))
+    .finally(() => {
+        formSubmitting = false;
     });
 }
 
