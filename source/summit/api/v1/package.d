@@ -17,6 +17,7 @@ module summit.api.v1;
 
 public import vibe.d;
 public import summit.api.v1.interfaces;
+import moss.db.keyvalue;
 
 import summit.api.v1.collections;
 
@@ -39,12 +40,13 @@ public final class RESTService : SummitAPIv1
      * Integrate the RESTService into the web application
      *
      * Params:
+     *      appDB = Application database
      *      router = Root level router
      */
-    @noRoute void configure(URLRouter router) @safe
+    @noRoute void configure(Database appDB, URLRouter router) @safe
     {
         router.registerRestInterface(this);
-        router.registerRestInterface(new CollectionsService());
+        router.registerRestInterface(new CollectionsService(appDB));
     }
 
     /**

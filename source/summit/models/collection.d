@@ -31,7 +31,7 @@ public @Model struct PackageCollection
     /**
      * Unique id for the collection
      */
-    @PrimaryKey PackageCollectionID id;
+    @PrimaryKey @AutoIncrement PackageCollectionID id;
 
     /**
      * Unique name for the collection

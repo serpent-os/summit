@@ -87,7 +87,7 @@ public final class SummitApplication
         web.configure(accountManager, router);
 
         service = new RESTService(rootDir);
-        service.configure(router);
+        service.configure(appDB, router);
 
         /* Lets go listen */
         listener = listenHTTP(serverSettings, router);
