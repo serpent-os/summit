@@ -52,7 +52,7 @@ public final class CollectionsService : CollectionsAPIv1
                     ret.context = ListContext.Collections;
                     ret.id = to!string(c.id);
                     ret.title = c.name;
-                    ret.subtitle = "undescribed";
+                    ret.subtitle = c.summary;
                     return ret;
                 });
             renderable = () @trusted { return items.array; }();
@@ -73,6 +73,7 @@ public final class CollectionsService : CollectionsAPIv1
         auto c = PackageCollection();
         c.name = request.name;
         c.vscURI = request.releaseURI;
+        c.summary = request.summary;
         immutable err = appDB.update((scope tx) => c.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.badRequest, err.message);
     }

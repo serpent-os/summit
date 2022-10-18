@@ -38,6 +38,11 @@ public @Model struct PackageCollection
      */
     @Indexed string name;
 
+    /**
+     * Brief description of the collection
+     */
+    string summary;
+
     /** 
      * Release tracking
      */
