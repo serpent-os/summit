@@ -12,7 +12,7 @@ block content
                     div.col
                         ol.breadcrumb.py-1(aria-label="breadcrumbs")
                             li.breadcrumb-item: a(href="/") Home
-                            li.breadcrumb-item.active(aria-current="page"): a(href="/collections") Collections
+                            li.breadcrumb-item.active(aria-current="page"): a(href="/~") Collections
                         h2.page-title Collections
                     div.col-auto
                         div.btn-list
