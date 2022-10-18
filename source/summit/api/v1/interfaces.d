@@ -26,5 +26,5 @@ public interface SummitAPIv1
     /**
      * Return the actual version identifier
      */
-    @path("version") pure string versionID() @safe @nogc nothrow const;
+    @path("version") @method(HTTPMethod.GET) pure string versionID() @safe @nogc nothrow const;
 }
