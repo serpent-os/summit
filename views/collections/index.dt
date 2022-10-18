@@ -23,8 +23,7 @@ block content
         div.row.py-3
             div.py-1
 
-                div.card
-                    div.list-group.list-group-flush#summitList(summit:context="collections", summit:mode="enumerate")
+                div#summitList.row(summit:context="collections", summit:mode="enumerate")
 
 block dialogs
 

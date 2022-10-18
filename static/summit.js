@@ -235,7 +235,25 @@ function refreshList(context, mode)
  */
 function renderElement(context, element)
 {
-    return `
+    switch (context)
+    {
+        // Specialist Collection rendering
+        case SummitContext.Collections:
+            return `
+<div class="mb-3 col-6 col-md-6 col-lg-6">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">${element.title}</h5>
+        </div>
+        <div class="card-body">
+            <p>${element.subtitle}</p>
+        </div>
+    </div>
+</div>`;
+
+        // Default rendering
+        default:
+            return `
 <div class="list-group-item list-group-hoverable">
     <div class="row align-items-center">
         <div class="col-auto">
@@ -246,8 +264,8 @@ function renderElement(context, element)
             <div class="d-block text-muted">${element.subtitle}</div>
         </div>
     </div>
-</div>
-`;
+</div>`;
+    }
 }
 
 /**
