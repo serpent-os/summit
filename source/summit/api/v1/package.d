@@ -35,6 +35,9 @@ public final class RESTService : SummitAPIv1
 
     /**
      * Integrate the RESTService into the web application
+     *
+     * Params:
+     *      router = Root level router
      */
     @noRoute void configure(URLRouter router) @safe
     {
@@ -42,8 +45,6 @@ public final class RESTService : SummitAPIv1
     }
 
     /**
-     * Return the version identifier
-     *
      * Returns: Version identifier
      */
     override string versionID() @safe @nogc nothrow const
