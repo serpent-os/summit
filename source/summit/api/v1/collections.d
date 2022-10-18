@@ -31,4 +31,18 @@ public final class CollectionsService : CollectionsAPIv1
     {
         return null;
     }
+
+    /**
+     * Create a new collection
+     *
+     * Params:
+     *      name = Unique name for the collection
+     *      summary = Brief description for the collection
+     *      releaseURI = Upstream tracking URI
+     */
+    override void create(CreateCollection request) @safe
+    {
+        logInfo(format!"Constructing new collection: %s"(request));
+    }
+
 }

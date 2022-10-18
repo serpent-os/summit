@@ -64,6 +64,13 @@ public struct ListItem
     ListItem[] children;
 }
 
+public struct CreateCollection
+{
+    string name;
+    string summary;
+    string releaseURI;
+}
+
 /**
  * Root API node
  */
@@ -86,4 +93,9 @@ public interface CollectionsAPIv1
      * Enumerate all items within the collection API
      */
     @path("enumerate") @method(HTTPMethod.GET) ListItem[] enumerate() @safe;
+
+    /**
+     * Create a new collection with the given release URI
+     */
+    @path("create") @method(HTTPMethod.POST) void create(CreateCollection request) @safe;
 }
