@@ -53,6 +53,7 @@ public final class CollectionsService : CollectionsAPIv1
                     ret.id = to!string(c.id);
                     ret.title = c.name;
                     ret.subtitle = c.summary;
+                    ret.slug = format!"/collections/%s"(c.slug);
                     return ret;
                 });
             renderable = () @trusted { return items.array; }();
@@ -72,6 +73,7 @@ public final class CollectionsService : CollectionsAPIv1
         logInfo(format!"Constructing new collection: %s"(request));
         auto c = PackageCollection();
         c.name = request.name;
+        c.slug = request.slug;
         c.vscURI = request.releaseURI;
         c.summary = request.summary;
         immutable err = appDB.update((scope tx) => c.save(tx));

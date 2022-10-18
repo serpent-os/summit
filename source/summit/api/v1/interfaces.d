@@ -66,6 +66,7 @@ public struct ListItem
 
 public struct CreateCollection
 {
+    string slug;
     string name;
     string summary;
     string releaseURI;

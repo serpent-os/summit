@@ -39,6 +39,11 @@ public @Model struct PackageCollection
     @Indexed string name;
 
     /**
+     * Unique slug ID (i.e. serpent-os)
+     */
+    string slug;
+
+    /**
      * Brief description of the collection
      */
     string summary;
