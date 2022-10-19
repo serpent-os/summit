@@ -34,14 +34,14 @@ public @Model struct PackageCollection
     @PrimaryKey @AutoIncrement PackageCollectionID id;
 
     /**
-     * Unique name for the collection
+     * Display name for the collection
      */
-    @Indexed string name;
+    string name;
 
     /**
      * Unique slug ID (i.e. serpent-os)
      */
-    string slug;
+    @Indexed string slug;
 
     /**
      * Brief description of the collection

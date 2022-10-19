@@ -16,6 +16,9 @@
 module summit.web.collections;
 
 import vibe.d;
+import moss.db.keyvalue;
+import moss.db.keyvalue.orm;
+import summit.models.collection;
 
 /**
  * Root entry into our web service
@@ -27,10 +30,12 @@ public final class CollectionsWeb
      * Join CollectionsWeb into the router
      *
      * Params:
+     *      appDB = Application database
      *      router = Web root for the application
      */
-    @noRoute void configure(URLRouter router) @safe
+    @noRoute void configure(Database appDB, URLRouter router) @safe
     {
+        this.appDB = appDB;
         registerWebInterface(router, this);
     }
 
@@ -51,6 +56,13 @@ public final class CollectionsWeb
     @path("/:slug") @method(HTTPMethod.GET)
     void view(string _slug)
     {
-        render!"collections/view.dt";
+        PackageCollection collection;
+        immutable err = appDB.view((in tx) => collection.load!"slug"(tx, _slug));
+        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
+        render!("collections/view.dt", collection);
     }
+
+private:
+
+    Database appDB;
 }

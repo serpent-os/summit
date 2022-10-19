@@ -1,7 +1,7 @@
 extends root
 
 block title
-    title Collection
+    title Summit - #{collection.name}
 
 block content
     div.container
@@ -13,9 +13,9 @@ block content
                         ol.breadcrumb.py-1(aria-label="breadcrumbs")
                             li.breadcrumb-item: a(href="/") Home
                             li.breadcrumb-item: a(href="/~") Collections
-                            li.breadcrumb-item.active(aria-current="page"): a(href="/~/thingy") This Collection
+                            li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{collection.slug}") #{collection.name}
 
-                        h2.page-title This Collection
+                        h2.page-title #{collection.name}
                     div.col-auto
                         div.btn-list
                             button.btn-azure.btn.d-none.d-md-inline-flex(data-bs-toggle="modal", data-bs-target="#creationDialog")
@@ -23,6 +23,13 @@ block content
                                 | Add a repository
 
         div.row.py-3
-            div.py-1
 
-                div#summitList.row(summit:context="repositories", summit:mode="enumerate")
+            div.py-1
+                div.card
+                    p.p-2=collection.summary
+
+                    div.list-group.list-group-flush#summitList.row(summit:context="repositories", summit:mode="add", summit:parent=collection.slug)
+                        div.list-group-header Repositories
+
+block scripts
+    script(src="/static/summit.js", defer, async)

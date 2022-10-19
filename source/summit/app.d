@@ -84,7 +84,7 @@ public final class SummitApplication
         router.get("/static/*", serveStaticFiles(rootDir.buildPath("static/"), fileSettings));
 
         web = new SummitWeb();
-        web.configure(accountManager, router);
+        web.configure(appDB, accountManager, router);
 
         service = new RESTService(rootDir);
         service.configure(appDB, router);
