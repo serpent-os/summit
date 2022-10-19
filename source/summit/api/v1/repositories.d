@@ -49,6 +49,18 @@ public final class RepositoriesService : RepositoriesAPIv1
         return null;
     }
 
+    /**
+     * Create new repo within collection
+     *
+     * Params:
+     *      _collection: Collection slug
+     *      request: JSON Request
+     */
+    override void create(string _collection, CreateRepository request) @safe
+    {
+        logInfo(format!"Create at %s: %s"(_collection, request));
+    }
+
 private:
     Database appDB;
 }

@@ -72,6 +72,13 @@ public struct CreateCollection
     string releaseURI;
 }
 
+public struct CreateRepository
+{
+    string id;
+    string summary;
+    string originURI;
+}
+
 /**
  * Root API node
  */
@@ -108,4 +115,10 @@ public interface RepositoriesAPIv1
      * Enumerate all items within the given collection
      */
     @path("enumerate/:collection") @method(HTTPMethod.GET) ListItem[] enumerate(string _collection) @safe;
+
+    /**
+     * Create new repo within the given collection
+     */
+    @path("create/:collection") @method(HTTPMethod.POST) void create(string _collection,
+            CreateRepository request) @safe;
 }
