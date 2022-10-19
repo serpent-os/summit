@@ -63,6 +63,18 @@ const Endpoint = Object.freeze(
     }
 );
 
+function constructURI(mode)
+{
+    let list = document.getElementById(SummitWidgets.ItemList);
+    let summitContext = list.getAttribute('summit:context');
+    let summitParent = list.getAttribute('summit:parent');
+    if (summitParent === null)
+    {
+        return `${Endpoint[summitContext]}/${mode}`;
+    }
+    return `${Endpoint[summitContext]}/${mode}/${summitParent}`;
+}
+
 /**
  * Integrate the context list
  */
@@ -155,7 +167,7 @@ function submitDialog(context, dialog)
     const submissionBody = JSON.stringify({
         'request': Object.fromEntries(fe)
     });
-    const uri = `${Endpoint[context]}/create`;
+    const uri = constructURI('create');
     console.log(uri);
 
     // Show spinner
@@ -209,7 +221,7 @@ function renderPlaceholder()
  */
 function refreshList(context, mode)
 {
-    const uri = `${Endpoint[context]}/${mode}`;
+    const uri = constructURI('enumerate');
     fetch(uri, {
         credentials: 'include',
         method: 'GET',
