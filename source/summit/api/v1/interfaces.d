@@ -100,3 +100,12 @@ public interface CollectionsAPIv1
      */
     @path("create") @method(HTTPMethod.POST) void create(CreateCollection request) @safe;
 }
+
+@path("/api/v1/repos")
+public interface RepositoriesAPIv1
+{
+    /**
+     * Enumerate all items within the given collection
+     */
+    @path("enumerate/:collection") @method(HTTPMethod.GET) ListItem[] enumerate(string _collection) @safe;
+}

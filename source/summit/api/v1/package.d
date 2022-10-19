@@ -20,6 +20,7 @@ public import summit.api.v1.interfaces;
 import moss.db.keyvalue;
 
 import summit.api.v1.collections;
+import summit.api.v1.repositories;
 
 /**
  * Root implementation to configure all supported interfaces
@@ -47,6 +48,7 @@ public final class RESTService : SummitAPIv1
     {
         router.registerRestInterface(this);
         router.registerRestInterface(new CollectionsService(appDB));
+        router.registerRestInterface(new RepositoriesService(appDB));
     }
 
     /**
