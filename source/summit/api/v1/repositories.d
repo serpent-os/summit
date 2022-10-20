@@ -53,6 +53,7 @@ public final class RepositoriesService : RepositoriesAPIv1
             auto items = tx.list!Repository
                 .map!((i) {
                     ListItem item;
+                    item.id = to!string(i.id);
                     item.title = i.name;
                     item.slug = format!"/~/%s/%s"(_collection, i.name);
                     item.subtitle = i.summary;

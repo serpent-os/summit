@@ -15,6 +15,15 @@
 
 let formSubmitting = false;
 
+const colors = [
+    "bg-azure-lt",
+    "bg-purple-lt",
+    "bg-red-lt",
+    "bg-teal-lt",
+    "bg-pink-lt",
+    "bg-lime-lt",
+];
+
  window.addEventListener('load', function(ev)
  {
      integrateList();
@@ -265,11 +274,12 @@ function renderElement(context, element)
 
         // Default rendering
         default:
+            const color = colors[parseInt(element.id) % colors.length]
             return `
 <div class="list-group-item list-group-hoverable">
     <div class="row align-items-center">
         <div class="col-auto">
-            <span class="avatar">${element.id}</span>
+            <span class="avatar ${color}">${element.title[0]}</span>
         </div>
         <div class="col text-truncate">
             <a href="${element.slug}" class="text-reset d-block">${element.title}</a>
