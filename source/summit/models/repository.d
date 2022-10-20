@@ -18,6 +18,9 @@ module summit.models.repository;
 import moss.db.keyvalue.orm;
 
 public import summit.models.collection : PackageCollectionID;
+public import std.stdint : uint64_t;
+
+public alias RepositoryID = uint64_t;
 
 /**
  * Collection is our encapsulation unit for a repository
@@ -25,9 +28,14 @@ public import summit.models.collection : PackageCollectionID;
 public @Model struct Repository
 {
     /**
-     * Unique id for the collection
+     * Unique identifier for the repository
      */
-    @PrimaryKey string id;
+    @AutoIncrement @PrimaryKey RepositoryID id;
+
+    /**
+     * Name for this repository
+     */
+    @Indexed string name;
 
     /**
      * Summary for the primary repository purpose
