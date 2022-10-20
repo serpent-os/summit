@@ -35,10 +35,20 @@ public struct ScanRepositoriesEvent
  */
 public union ControlEventSet
 {
+    /**
+     * A scan of repositories has been requested
+     */
     ScanRepositoriesEvent scanRepositories;
 }
 
+/**
+ * ControlEvents are nicely tagged algebraic events.
+ */
 public alias ControlEvent = TaggedAlgebraic!ControlEventSet;
+
+/**
+ * Backlog of 1k events.
+ */
 public static immutable auto numEvents = 1_000;
 
 /**
