@@ -17,6 +17,8 @@ module summit.workers;
 
 import vibe.d;
 import summit.workers.messaging;
+import moss.db.keyvalue;
+import moss.db.keyvalue.orm;
 
 /**
  * The WorkerSystem is responsible for managing dispatch and
@@ -29,9 +31,10 @@ public final class WorkerSystem
     /**
      * The WorkerSystem is created with a root directory
      */
-    this(string rootDir) @safe
+    this(string rootDir, Database appDB) @safe
     {
         this.rootDir = rootDir;
+        this.appDB = appDB;
         controlQueue = createChannel!(ControlEvent, numEvents)();
     }
 
@@ -48,4 +51,5 @@ private:
 
     string rootDir;
     ControlQueue controlQueue;
+    Database appDB;
 }

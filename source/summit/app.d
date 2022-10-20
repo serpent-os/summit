@@ -91,7 +91,7 @@ public final class SummitApplication
         service.configure(appDB, router);
 
         /* Get worker system up and running */
-        worker = new WorkerSystem(rootDir);
+        worker = new WorkerSystem(rootDir, appDB);
 
         /* Lets go listen */
         listener = listenHTTP(serverSettings, router);
