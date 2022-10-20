@@ -16,6 +16,7 @@
 module summit.workers;
 
 import vibe.d;
+import summit.workers.messaging;
 
 /**
  * The WorkerSystem is responsible for managing dispatch and
@@ -31,6 +32,7 @@ public final class WorkerSystem
     this(string rootDir) @safe
     {
         this.rootDir = rootDir;
+        controlQueue = createChannel!(ControlEvent, numEvents)();
     }
 
     /**
@@ -39,9 +41,11 @@ public final class WorkerSystem
     void close() @safe
     {
         logInfo("WorkerSystem shutting down");
+        controlQueue.close();
     }
 
 private:
 
     string rootDir;
+    ControlQueue controlQueue;
 }
