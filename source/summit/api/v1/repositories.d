@@ -20,7 +20,7 @@ import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import summit.models.collection;
 import summit.models.repository;
-import std.algorithm : map;
+import std.algorithm : filter, map;
 import std.array : array;
 
 /**
@@ -49,8 +49,13 @@ public final class RepositoriesService : RepositoriesAPIv1
     override ListItem[] enumerate(string _collection) @safe
     {
         ListItem[] ret;
+        PackageCollection collection;
+        immutable err = appDB.view((in tx) => collection.load!"slug"(tx, _collection));
+        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
+
         appDB.view((in tx) @safe {
             auto items = tx.list!Repository
+                .filter!((r) => r.collection == collection.id)
                 .map!((i) {
                     ListItem item;
                     item.id = to!string(i.id);
