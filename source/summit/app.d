@@ -25,6 +25,7 @@ import summit.api;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import summit.models;
+import summit.workers;
 
 /**
  * SummitApplication maintains the core lifecycle of Summit
@@ -89,6 +90,9 @@ public final class SummitApplication
         service = new RESTService(rootDir);
         service.configure(appDB, router);
 
+        /* Get worker system up and running */
+        worker = new WorkerSystem(rootDir);
+
         /* Lets go listen */
         listener = listenHTTP(serverSettings, router);
     }
@@ -101,6 +105,7 @@ public final class SummitApplication
         listener.stopListening();
         appDB.close();
         accountManager.close();
+        worker.close();
     }
 
 private:
@@ -114,4 +119,5 @@ private:
     DBSessionStore sessionStore;
     SummitWeb web;
     Database appDB;
+    WorkerSystem worker;
 }
