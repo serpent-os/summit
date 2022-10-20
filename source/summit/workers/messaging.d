@@ -17,17 +17,28 @@ module summit.workers.messaging;
 
 public import vibe.core.channel;
 public import taggedalgebraic;
-public import summit.models.collection : PackageCollectionID;
+public import summit.models.repository : Repository;
 
 /**
- * We need to rescan all repositories
+ * Refresh the given repository
  */
-public struct ScanRepositoriesEvent
+public struct RefreshRepositoryEvent
 {
     /**
-     * Which collection we need to scan from
+     * Repo to refresh
      */
-    PackageCollectionID collectionID;
+    Repository repo;
+}
+
+/**
+ * We need to rescan all manifests in the given repository
+ */
+public struct ScanManifestsEvent
+{
+    /**
+     * Which repo we need to scan from
+     */
+    Repository repo;
 }
 
 /**
@@ -36,9 +47,14 @@ public struct ScanRepositoriesEvent
 public union ControlEventSet
 {
     /**
-     * A scan of repositories has been requested
+     * We must refresh the given repo (interval based)
      */
-    ScanRepositoriesEvent scanRepositories;
+    RefreshRepositoryEvent refreshRepo;
+
+    /**
+     * Refresh the manifests
+     */
+    ScanManifestsEvent scanManifests;
 }
 
 /**
