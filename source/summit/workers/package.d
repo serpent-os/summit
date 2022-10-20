@@ -39,6 +39,21 @@ public final class WorkerSystem
     }
 
     /**
+     * Process the queue in parallel green thread
+     */
+    void start() @safe
+    {
+        logInfo("WorkerSystem started");
+        runTask({
+            ControlEvent event;
+            while (controlQueue.tryConsumeOne(event))
+            {
+                logDiagnostic(format!"Worker system: Event [%s]"(event.kind));
+            }
+        });
+    }
+
+    /**
      * Shutdown the worker system
      */
     void close() @safe
