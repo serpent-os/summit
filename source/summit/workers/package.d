@@ -61,6 +61,7 @@ public final class WorkerSystem
             }
         });
         runTask(&processGreenQueue);
+        runWorkerTaskDist(&processDistributedQueue, distributedQueue);
     }
 
     /**
@@ -94,6 +95,17 @@ private:
         {
             logInfo(format!"greenQueue: Event [%s]"(event.kind));
         }
+        logInfo("greenQueue: Finished");
+    }
+
+    static void processDistributedQueue(ControlQueue queue) @safe
+    {
+        ControlEvent event;
+        while (queue.tryConsumeOne(event))
+        {
+            logInfo(format!"distributedQueue: Event [%s]"(event.kind));
+        }
+        logInfo("distributedQueue: Finished");
     }
 
     string rootDir;
