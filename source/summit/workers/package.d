@@ -53,8 +53,13 @@ public final class WorkerSystem
                 logDiagnostic(format!"Worker system: Event [%s]"(event.kind));
                 switch (event.kind)
                 {
-                    /* Put to the green queue */
+
+                case ControlEvent.Kind.scanManifests:
+                    /* Expensive mmap bulk scanning */
+                    distributedQueue.put(event);
+                    break;
                 default:
+                    /* Put to the green queue (vibe I/O) */
                     greenQueue.put(event);
                     break;
                 }
