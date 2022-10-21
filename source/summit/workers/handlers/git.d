@@ -5,15 +5,15 @@
  */
 
 /**
- * summit.workers.handler
+ * summit.workers.handlers.git
  *
- * Handler vtable
+ * Git support
  *
  * Authors: Copyright © 2020-2022 Serpent OS Developers
  * License: Zlib
  */
 
-module summit.workers.git_handler;
+module summit.workers.handlers.git;
 
 public import summit.workers.messaging;
 import vibe.d;

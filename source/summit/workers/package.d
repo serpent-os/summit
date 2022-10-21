@@ -15,11 +15,11 @@
 
 module summit.workers;
 
-import vibe.d;
 public import summit.workers.messaging;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
-import summit.workers.handler;
+import summit.workers.handlers;
+import vibe.d;
 
 /**
  * The WorkerSystem is responsible for managing dispatch and

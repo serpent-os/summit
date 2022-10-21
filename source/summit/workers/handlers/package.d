@@ -5,7 +5,7 @@
  */
 
 /**
- * summit.workers.handler
+ * summit.workers.handlers
  *
  * Handler vtable
  *
@@ -13,7 +13,7 @@
  * License: Zlib
  */
 
-module summit.workers.handler;
+module summit.workers.handlers;
 
 public import summit.workers.messaging;
 import std.exception : assumeUnique;
@@ -21,7 +21,7 @@ import vibe.d;
 import std.string : format;
 
 /* Handlers */
-import summit.workers.git_handler : handleImportRepository;
+import summit.workers.handlers.git : handleImportRepository;
 
 /**
  * Handler function
