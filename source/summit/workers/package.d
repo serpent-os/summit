@@ -19,6 +19,7 @@ import vibe.d;
 public import summit.workers.messaging;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
+import summit.workers.handler;
 
 /**
  * The WorkerSystem is responsible for managing dispatch and
@@ -99,6 +100,7 @@ private:
         while (greenQueue.tryConsumeOne(event))
         {
             logInfo(format!"greenQueue: Event [%s]"(event.kind));
+            processEvent(event);
         }
         logInfo("greenQueue: Finished");
     }
@@ -109,6 +111,7 @@ private:
         while (queue.tryConsumeOne(event))
         {
             logInfo(format!"distributedQueue: Event [%s]"(event.kind));
+            processEvent(event);
         }
         logInfo("distributedQueue: Finished");
     }
