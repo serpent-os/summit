@@ -96,7 +96,7 @@ public final class RepositoriesService : RepositoriesAPIv1
         logInfo(format!"Create at %s: %s"(_collection, request));
 
         /* Get this repo imported */
-        controlQueue.put(ControlEvent(RefreshRepositoryEvent(repo)));
+        controlQueue.put(ControlEvent(ImportRepositoryEvent(repo)));
     }
 
 private:

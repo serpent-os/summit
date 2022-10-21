@@ -20,6 +20,17 @@ public import taggedalgebraic;
 public import summit.models.repository : Repository;
 
 /**
+ * Import the given repository
+ */
+public struct ImportRepositoryEvent
+{
+    /**
+     * Repo to import
+     */
+    Repository repo;
+}
+
+/**
  * Refresh the given repository
  */
 public struct RefreshRepositoryEvent
@@ -46,6 +57,11 @@ public struct ScanManifestsEvent
  */
 public union ControlEventSet
 {
+    /**
+     * We must import the given repo
+     */
+    ImportRepositoryEvent importRepo;
+
     /**
      * We must refresh the given repo (interval based)
      */
