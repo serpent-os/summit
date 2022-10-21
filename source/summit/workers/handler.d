@@ -20,6 +20,9 @@ import std.exception : assumeUnique;
 import vibe.d;
 import std.string : format;
 
+/* Handlers */
+import summit.workers.git_handler : handleImportRepository;
+
 /**
  * Handler function
  */
@@ -35,7 +38,9 @@ public static immutable(HandlerFT[ControlEvent.Kind]) handlerVtable;
  */
 shared static this()
 {
-    HandlerFT[ControlEvent.Kind] workerTable;
+    HandlerFT[ControlEvent.Kind] workerTable = [
+        ControlEvent.Kind.importRepo: &handleImportRepository
+    ];
     handlerVtable = assumeUnique(workerTable);
 }
 
