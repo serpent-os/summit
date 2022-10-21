@@ -23,6 +23,7 @@ import vibe.core.process;
 import std.path : buildPath;
 import std.file : mkdirRecurse;
 import std.conv : to;
+import std.string : strip;
 
 /**
  * Handle a request for a repository import
@@ -58,5 +59,13 @@ public void handleImportRepository(scope HandlerContext context, scope const ref
 
     enforceHTTP(statusCode == 0, HTTPStatus.internalServerError,
             format!"Cloning %s resulted in non-zero exit code"(repoEvent.repo));
+
+    /* Find the commitref */
+    cmd = ["git", "rev-parse", "HEAD"];
+    auto gitRev = execute(cmd, env, Config.none, ulong.max, NativePath(cacheDir));
+    enforceHTTP(gitRev.status == 0, HTTPStatus.internalServerError,
+            format!"Checking git revision for %s resulted in non-zero exit code"(repoEvent.repo));
+    auto gitRevID = gitRev.output.strip();
+    logDiagnostic(format!"Repo '%s' HEAD is '%s'"(repoEvent.repo.originURI, gitRevID));
 
 }
