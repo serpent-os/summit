@@ -42,6 +42,19 @@ public struct RefreshRepositoryEvent
 }
 
 /**
+ * Update the given repository
+ *
+ * This happens only on the green queue
+ */
+public struct UpdateRepositoryEvent
+{
+    /**
+     * Repository metadata to update
+     */
+    Repository repo;
+}
+
+/**
  * We need to rescan all manifests in the given repository
  */
 public struct ScanManifestsEvent
@@ -66,6 +79,11 @@ public union ControlEventSet
      * We must refresh the given repo (interval based)
      */
     RefreshRepositoryEvent refreshRepo;
+
+    /**
+     * Metadata updated
+     */
+    UpdateRepositoryEvent updateRepo;
 
     /**
      * Refresh the manifests

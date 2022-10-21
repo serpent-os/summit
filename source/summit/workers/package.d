@@ -54,7 +54,6 @@ public final class WorkerSystem
                 logDiagnostic(format!"Worker system: Event [%s]"(event.kind));
                 switch (event.kind)
                 {
-
                 case ControlEvent.Kind.scanManifests:
                     /* Expensive mmap bulk scanning */
                     distributedQueue.put(event);
@@ -97,6 +96,19 @@ public final class WorkerSystem
 
 private:
 
+    /** 
+     * Update repository metadata (thread-safe)
+     *
+     * Params:
+     *      event = Repository that needs updating
+     */
+    void updateRepo(UpdateRepositoryEvent event) @safe
+    {
+        immutable err = appDB.update((scope tx) => event.repo.save(tx));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+        logDiagnostic(format!"Updated repo data: %s"(event.repo));
+    }
+
     /**
      * Process the green queue (multiplexed fibers)
      */
@@ -106,7 +118,16 @@ private:
         while (greenQueue.tryConsumeOne(event))
         {
             logInfo(format!"greenQueue: Event [%s]"(event.kind));
-            processEvent(context, event);
+
+            switch (event.kind)
+            {
+            case ControlEvent.Kind.updateRepo:
+                updateRepo(cast(UpdateRepositoryEvent) event);
+                break;
+            default:
+                processEvent(context, event);
+                break;
+            }
         }
         logInfo("greenQueue: Finished");
     }

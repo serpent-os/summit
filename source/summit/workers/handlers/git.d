@@ -65,7 +65,9 @@ public void handleImportRepository(scope HandlerContext context, scope const ref
     auto gitRev = execute(cmd, env, Config.none, ulong.max, NativePath(cacheDir));
     enforceHTTP(gitRev.status == 0, HTTPStatus.internalServerError,
             format!"Checking git revision for %s resulted in non-zero exit code"(repoEvent.repo));
-    auto gitRevID = gitRev.output.strip();
-    logDiagnostic(format!"Repo '%s' HEAD is '%s'"(repoEvent.repo.originURI, gitRevID));
+
+    /* Push the metadata change back */
+    repoEvent.repo.commitRef = gitRev.output.strip;
+    context.serialQueue.put(ControlEvent(UpdateRepositoryEvent(repoEvent.repo)));
 
 }
