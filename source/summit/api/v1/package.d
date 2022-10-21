@@ -17,6 +17,7 @@ module summit.api.v1;
 
 public import vibe.d;
 public import summit.api.v1.interfaces;
+import summit.workers;
 import moss.db.keyvalue;
 
 import summit.api.v1.collections;
@@ -44,11 +45,11 @@ public final class RESTService : SummitAPIv1
      *      appDB = Application database
      *      router = Root level router
      */
-    @noRoute void configure(Database appDB, URLRouter router) @safe
+    @noRoute void configure(scope WorkerSystem worker, Database appDB, URLRouter router) @safe
     {
         router.registerRestInterface(this);
         router.registerRestInterface(new CollectionsService(appDB));
-        router.registerRestInterface(new RepositoriesService(appDB));
+        router.registerRestInterface(new RepositoriesService(worker, appDB));
     }
 
     /**

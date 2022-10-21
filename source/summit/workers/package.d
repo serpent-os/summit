@@ -16,7 +16,7 @@
 module summit.workers;
 
 import vibe.d;
-import summit.workers.messaging;
+public import summit.workers.messaging;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 
@@ -35,7 +35,7 @@ public final class WorkerSystem
     {
         this.rootDir = rootDir;
         this.appDB = appDB;
-        controlQueue = createChannel!(ControlEvent, numEvents)();
+        _controlQueue = createChannel!(ControlEvent, numEvents)();
     }
 
     /**
@@ -59,12 +59,20 @@ public final class WorkerSystem
     void close() @safe
     {
         logInfo("WorkerSystem shutting down");
-        controlQueue.close();
+        _controlQueue.close();
+    }
+
+    /**
+     * Returns: The controlQueue
+     */
+    pure @property auto controlQueue() @safe @nogc nothrow
+    {
+        return _controlQueue;
     }
 
 private:
 
     string rootDir;
-    ControlQueue controlQueue;
+    ControlQueue _controlQueue;
     Database appDB;
 }

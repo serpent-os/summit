@@ -87,12 +87,12 @@ public final class SummitApplication
         web = new SummitWeb();
         web.configure(appDB, accountManager, router);
 
-        service = new RESTService(rootDir);
-        service.configure(appDB, router);
-
         /* Get worker system up and running */
         worker = new WorkerSystem(rootDir, appDB);
         worker.start();
+
+        service = new RESTService(rootDir);
+        service.configure(worker, appDB, router);
 
         /* Lets go listen */
         listener = listenHTTP(serverSettings, router);
