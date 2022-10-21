@@ -36,6 +36,8 @@ public final class WorkerSystem
         this.rootDir = rootDir;
         this.appDB = appDB;
         _controlQueue = createChannel!(ControlEvent, numEvents)();
+        greenQueue = createChannel!(ControlEvent, numEvents)();
+        distributedQueue = createChannel!(ControlEvent, numEvents)();
     }
 
     /**
@@ -49,8 +51,16 @@ public final class WorkerSystem
             while (controlQueue.tryConsumeOne(event))
             {
                 logDiagnostic(format!"Worker system: Event [%s]"(event.kind));
+                switch (event.kind)
+                {
+                    /* Put to the green queue */
+                default:
+                    greenQueue.put(event);
+                    break;
+                }
             }
         });
+        runTask(&processGreenQueue);
     }
 
     /**
@@ -60,6 +70,8 @@ public final class WorkerSystem
     {
         logInfo("WorkerSystem shutting down");
         _controlQueue.close();
+        greenQueue.close();
+        distributedQueue.close();
     }
 
     /**
@@ -72,7 +84,26 @@ public final class WorkerSystem
 
 private:
 
+    /**
+     * Process the green queue (multiplexed fibers)
+     */
+    void processGreenQueue() @safe
+    {
+        ControlEvent event;
+        while (greenQueue.tryConsumeOne(event))
+        {
+            logInfo(format!"greenQueue: Event [%s]"(event.kind));
+        }
+    }
+
     string rootDir;
     ControlQueue _controlQueue;
+
+    /* Multiple threads read from distributed queue */
+    ControlQueue distributedQueue;
+
+    /* main thread pulling from a serial queue */
+    ControlQueue greenQueue;
+
     Database appDB;
 }
