@@ -28,6 +28,7 @@ import std.conv : to;
  * Handle a request for a repository import
  *
  * Params:
+ *      context = Handling context
  *      event = the ImportRepositoryEvent
  */
 public void handleImportRepository(scope HandlerContext context, scope const ref ControlEvent event) @safe
