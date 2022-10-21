@@ -50,7 +50,7 @@ public void handleImportRepository(scope HandlerContext context, scope const ref
         "git", "clone", "--mirror", "--", repoEvent.repo.originURI, cacheDir,
     ];
 
-    logDiagnostic(format!"Importing repository: %s"(cmd));
+    logDiagnostic(format!"Importing repository: %s"(repoEvent.repo.originURI));
     string[string] env;
     string workDir = context.rootDirectory.buildPath("state").to!string;
     auto ret = spawnProcess(cmd, env, Config.none, NativePath(workDir));
