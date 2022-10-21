@@ -26,7 +26,7 @@ import summit.workers.handlers.git : handleImportRepository;
 /**
  * Handler function
  */
-public alias HandlerFT = void function(ControlEvent event) @safe;
+public alias HandlerFT = void function(scope HandlerContext context, scope const ref ControlEvent event) @safe;
 
 /**
  * Shared jump table for handlers
@@ -44,11 +44,35 @@ shared static this()
     handlerVtable = assumeUnique(workerTable);
 }
 
-void processEvent(scope ref ControlEvent event) @safe
+/**
+ * A HandlerContext is a safe context containing queue access
+ * and system state
+ */
+public struct HandlerContext
+{
+    /**
+     * The Serial Ops queue
+     */
+    ControlQueue serialQueue;
+
+    /**
+     * Root directory for all ops
+     */
+    string rootDirectory;
+}
+
+/**
+ * Process event via the jump table
+ *
+ * Params:
+ *      context = Handler context
+ *      event = The event to process
+ */
+void processEvent(scope HandlerContext context, scope const ref ControlEvent event) @safe
 {
     auto handler = event.kind in handlerVtable;
     enforceHTTP(handler !is null, HTTPStatus.internalServerError,
             format!"No handler assigned for %s"(event.kind));
     auto rHandler = () @trusted { return *handler; }();
-    rHandler(event);
+    rHandler(context, event);
 }

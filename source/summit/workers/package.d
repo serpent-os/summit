@@ -66,8 +66,14 @@ public final class WorkerSystem
                 }
             }
         });
-        runTask(&processGreenQueue);
-        runWorkerTaskDist(&processDistributedQueue, distributedQueue);
+
+        /* Set up the context */
+        HandlerContext ct;
+        ct.serialQueue = greenQueue;
+        ct.rootDirectory = rootDir;
+
+        runTask(&processGreenQueue, ct);
+        runWorkerTaskDist(&processDistributedQueue, ct, distributedQueue);
     }
 
     /**
@@ -94,24 +100,24 @@ private:
     /**
      * Process the green queue (multiplexed fibers)
      */
-    void processGreenQueue() @safe
+    void processGreenQueue(HandlerContext context) @safe
     {
         ControlEvent event;
         while (greenQueue.tryConsumeOne(event))
         {
             logInfo(format!"greenQueue: Event [%s]"(event.kind));
-            processEvent(event);
+            processEvent(context, event);
         }
         logInfo("greenQueue: Finished");
     }
 
-    static void processDistributedQueue(ControlQueue queue) @safe
+    static void processDistributedQueue(HandlerContext context, ControlQueue queue) @safe
     {
         ControlEvent event;
         while (queue.tryConsumeOne(event))
         {
             logInfo(format!"distributedQueue: Event [%s]"(event.kind));
-            processEvent(event);
+            processEvent(context, event);
         }
         logInfo("distributedQueue: Finished");
     }
