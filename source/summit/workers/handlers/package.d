@@ -22,6 +22,7 @@ import std.string : format;
 
 /* Handlers */
 import summit.workers.handlers.git : handleImportRepository;
+import summit.workers.handlers.scanner : handleScanManifests;
 
 /**
  * Handler function
@@ -39,7 +40,8 @@ public static immutable(HandlerFT[ControlEvent.Kind]) handlerVtable;
 shared static this()
 {
     HandlerFT[ControlEvent.Kind] workerTable = [
-        ControlEvent.Kind.importRepo: &handleImportRepository
+        ControlEvent.Kind.importRepo: &handleImportRepository,
+        ControlEvent.Kind.scanManifests: &handleScanManifests,
     ];
     handlerVtable = assumeUnique(workerTable);
 }
