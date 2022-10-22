@@ -104,9 +104,17 @@ private:
      */
     void updateRepo(UpdateRepositoryEvent event) @safe
     {
+        Repository oldData;
+        immutable lookupErr = appDB.view((in tx) => oldData.load(tx, event.repo.id));
         immutable err = appDB.update((scope tx) => event.repo.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
         logDiagnostic(format!"Updated repo data: %s"(event.repo));
+
+        if (lookupErr.isNull && oldData.commitRef != event.repo.commitRef)
+        {
+            logDiagnostic(format!"Scheduling scan for %s"(event.repo));
+            _controlQueue.put(ControlEvent(ScanManifestsEvent(event.repo)));
+        }
     }
 
     /**
