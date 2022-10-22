@@ -19,6 +19,7 @@ import vibe.d;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import summit.models.collection;
+import summit.models.repository;
 
 /**
  * Root entry into our web service
@@ -60,6 +61,32 @@ public final class CollectionsWeb
         immutable err = appDB.view((in tx) => collection.load!"slug"(tx, _slug));
         enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
         render!("collections/view.dt", collection);
+    }
+
+    /**
+     * View a repo within a collection
+     *
+     * Params:
+     *      _slug = Collection ID
+     *      _repo = Repo ID
+     */
+    @path("/:slug/:repo") @method(HTTPMethod.GET)
+    void viewRepo(string _slug, string _repo)
+    {
+        PackageCollection collection;
+        Repository repo;
+        /* TODO: Exist outside global constraints */
+        immutable err = appDB.view((in tx) @safe {
+            auto eCol = collection.load!"slug"(tx, _slug);
+            if (!eCol.isNull)
+            {
+                return eCol;
+            }
+
+            return repo.load!"name"(tx, _repo);
+        });
+        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
+        render!("collections/repo.dt", collection, repo);
     }
 
 private:
