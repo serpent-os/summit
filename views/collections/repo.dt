@@ -17,10 +17,28 @@ block content
                             li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{collection.slug}/#{repo.name}") #{repo.name}
 
                         h2.page-title #{repo.name}
+                    div.col-auto
+                        svg.mx-2.primaryLogo.logo.text-muted(width="16px", height="16px")
+                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-git-merge")
+                        span.text-muted #{repo.commitRef}
         div.row.py-3
 
             div
                 div.card
-                    - import vibe.textfilter.markdown : filterMarkdown;
-                    div.px-4
-                        p.markdown!=filterMarkdown(repo.description)
+                    div.card-header
+                        svg.mx-2.primaryLogo.logo.text-muted(width="16px", height="16px")
+                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-book")
+                        h5.card-title README.md
+                    div.card-body
+                        - import vibe.textfilter.markdown : filterMarkdown;
+                        div.px-4
+                            div.markdown!=filterMarkdown(repo.description)
+
+        div.row.py-3
+            div
+                div.card
+                    div.card-header
+                        svg.mx-2.primaryLogo.logo.text-muted(width="16px", height="16px")
+                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-package")
+                        h5.card-title Package recipes
+                    div.card-body
