@@ -12,6 +12,9 @@
 		"openssl": "~>3.1",
 		"moss-core": ">=0.0.1",
 		"moss-db": ">=0.0.4",
+		"moss-deps": {
+			"path": "../moss-deps"
+		},
 		"moss-service": {
 			"path": "../moss-service"
 		},
