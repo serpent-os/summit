@@ -96,6 +96,17 @@ public final class WorkerSystem
 
 private:
 
+    /**
+     * Import a specific manifest
+     *
+     * Params:
+     *      event = Import event
+     */
+    void importManifest(ImportManifestEvent event) @safe
+    {
+        logDiagnostic(format!"Importing manifest %s into %s"(event.manifestPath, event.repo.name));
+    }
+
     /** 
      * Update repository metadata (thread-safe)
      *
@@ -132,6 +143,9 @@ private:
             case ControlEvent.Kind.updateRepo:
                 updateRepo(cast(UpdateRepositoryEvent) event);
                 break;
+            case ControlEvent.Kind.importManifest:
+                importManifest(cast(ImportManifestEvent) event);
+                break;
             default:
                 processEvent(context, event);
                 break;
@@ -140,6 +154,13 @@ private:
         logInfo("greenQueue: Finished");
     }
 
+    /**
+     * Handler for the distributed queue
+     *
+     * Params:
+     *      context = Handling context
+     *      queue = Dispatch queue
+     */
     static void processDistributedQueue(HandlerContext context, ControlQueue queue) @safe
     {
         ControlEvent event;

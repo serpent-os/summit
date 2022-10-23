@@ -18,11 +18,12 @@ module summit.workers.handlers.scanner;
 public import summit.workers.messaging;
 public import summit.workers.handlers : HandlerContext;
 
+import std.algorithm : each, map;
+import std.file : dirEntries, exists, mkdirRecurse, rmdirRecurse, SpanMode;
+import std.path : buildPath, dirName;
+import std.string : format;
 import vibe.core.process;
 import vibe.d;
-import std.string : format;
-import std.path : buildPath, dirName;
-import std.file : exists, rmdirRecurse, mkdirRecurse;
 
 /**
  * Handle scanning for manifest.bin files
@@ -80,4 +81,10 @@ public void handleScanManifests(scope HandlerContext context, scope const ref Co
         logInfo(scanEvent.repo.description);
     }
 
+    /* Find all manifest files */
+    () @trusted {
+        workDir.dirEntries("manifest.*.bin", SpanMode.depth, false).map!((m) => m.name)
+            .each!((m) => context.serialQueue.put(ControlEvent(ImportManifestEvent(scanEvent.repo,
+                    m))));
+    }();
 }

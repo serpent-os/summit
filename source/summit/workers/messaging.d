@@ -66,6 +66,22 @@ public struct ScanManifestsEvent
 }
 
 /**
+ * Requesting import of a manifest file
+ */
+public struct ImportManifestEvent
+{
+    /**
+     * What repo are we importing into
+     */
+    Repository repo;
+
+    /**
+     * Full path for the manifest
+     */
+    string manifestPath;
+}
+
+/**
  * A set of known events
  */
 public union ControlEventSet
@@ -89,6 +105,11 @@ public union ControlEventSet
      * Refresh the manifests
      */
     ScanManifestsEvent scanManifests;
+
+    /**
+     * Import a single manifest path
+     */
+    ImportManifestEvent importManifest;
 }
 
 /**
