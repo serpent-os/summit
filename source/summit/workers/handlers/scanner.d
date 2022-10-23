@@ -55,7 +55,7 @@ public void handleScanManifests(scope HandlerContext context, scope const ref Co
     /* Prepare to build it again */
     workDir.dirName.mkdirRecurse();
 
-    auto cmd = ["git", "clone", originDir, workDir];
+    auto cmd = ["git", "clone", "--depth=1", originDir, workDir];
     string[string] env;
 
     /* Clone into new tree */
