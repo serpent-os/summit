@@ -16,6 +16,8 @@
 module summit.workers;
 
 public import summit.workers.messaging;
+import moss.client.metadb;
+import moss.core.errors;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import summit.workers.handlers;
@@ -32,10 +34,11 @@ public final class WorkerSystem
     /**
      * The WorkerSystem is created with a root directory
      */
-    this(string rootDir, Database appDB) @safe
+    this(string rootDir, Database appDB, MetaDB metaDB) @safe
     {
         this.rootDir = rootDir;
         this.appDB = appDB;
+        this.metaDB = metaDB;
         _controlQueue = createChannel!(ControlEvent, numEvents)();
         greenQueue = createChannel!(ControlEvent, numEvents)();
         distributedQueue = createChannel!(ControlEvent, numEvents)();
@@ -182,4 +185,5 @@ private:
     ControlQueue greenQueue;
 
     Database appDB;
+    MetaDB metaDB;
 }

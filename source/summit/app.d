@@ -16,6 +16,8 @@
 module summit.app;
 
 import vibe.d;
+import moss.client.metadb;
+import moss.core.errors;
 import moss.service.accounts;
 import moss.service.sessionstore;
 import std.file : mkdirRecurse;
@@ -55,6 +57,9 @@ public final class SummitApplication
             appDB = db;
         });
 
+        metaDB = new MetaDB(dbPath.buildPath("metaDB"), true);
+        metaDB.connect.tryMatch!((Success _) {});
+
         immutable dbErr = appDB.update((scope tx) => tx.createModel!(PackageCollection,
                 Repository));
         enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
@@ -88,7 +93,7 @@ public final class SummitApplication
         web.configure(appDB, accountManager, router);
 
         /* Get worker system up and running */
-        worker = new WorkerSystem(rootDir, appDB);
+        worker = new WorkerSystem(rootDir, appDB, metaDB);
         worker.start();
 
         service = new RESTService(rootDir);
@@ -107,6 +112,7 @@ public final class SummitApplication
         appDB.close();
         accountManager.close();
         worker.close();
+        metaDB.close();
     }
 
 private:
@@ -120,5 +126,6 @@ private:
     DBSessionStore sessionStore;
     SummitWeb web;
     Database appDB;
+    MetaDB metaDB;
     WorkerSystem worker;
 }
