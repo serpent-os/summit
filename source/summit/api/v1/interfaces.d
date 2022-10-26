@@ -122,3 +122,13 @@ public interface RepositoriesAPIv1
     @path("create/:collection") @method(HTTPMethod.POST) void create(string _collection,
             CreateRepository request) @safe;
 }
+
+@path("/api/v1/recipes")
+public interface RecipesAPIv1
+{
+    /**
+     * Enumerate all items within the given repository
+     */
+    @path("enumerate/:collection/:repo") @method(HTTPMethod.GET) ListItem[] enumerate(
+            string _collection, string _repo) @safe;
+}

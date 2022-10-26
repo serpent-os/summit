@@ -40,6 +40,7 @@ const colors = [
         Repositories: 'repositories',
         Groups: 'groups',
         Users: 'users',
+        Recipes: 'recipes',
     }
 );
 
@@ -69,6 +70,7 @@ const Endpoint = Object.freeze(
         'repositories': '/api/v1/repos',
         'groups': '/api/v1/groups',
         'users': '/api/v1/users',
+        'recipes': '/api/v1/recipes',
     }
 );
 

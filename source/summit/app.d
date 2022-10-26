@@ -103,7 +103,7 @@ public final class SummitApplication
         worker.start();
 
         service = new RESTService(rootDir);
-        service.configure(worker, appDB, router);
+        service.configure(worker, metaDB, appDB, router);
 
         /* Lets go listen */
         listener = listenHTTP(serverSettings, router);

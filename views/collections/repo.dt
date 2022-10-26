@@ -42,3 +42,6 @@ block content
                             use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-package")
                         h5.card-title Package recipes
                     div.card-body
+                        div#summitList.row(summit:context="recipes", summit:mode="enumerate", summit:parent="#{collection.slug}/#{repo.name}")
+block scripts
+    script(src="/static/summit.js", defer, async)

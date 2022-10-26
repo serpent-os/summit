@@ -19,9 +19,11 @@ public import vibe.d;
 public import summit.api.v1.interfaces;
 import summit.workers;
 import moss.db.keyvalue;
+import moss.client.metadb;
 
 import summit.api.v1.collections;
 import summit.api.v1.repositories;
+import summit.api.v1.recipes;
 
 /**
  * Root implementation to configure all supported interfaces
@@ -45,11 +47,13 @@ public final class RESTService : SummitAPIv1
      *      appDB = Application database
      *      router = Root level router
      */
-    @noRoute void configure(scope WorkerSystem worker, Database appDB, URLRouter router) @safe
+    @noRoute void configure(scope WorkerSystem worker, MetaDB metaDB,
+            Database appDB, URLRouter router) @safe
     {
         router.registerRestInterface(this);
         router.registerRestInterface(new CollectionsService(appDB));
         router.registerRestInterface(new RepositoriesService(worker, appDB));
+        router.registerRestInterface(new RecipesService(metaDB, appDB));
     }
 
     /**
