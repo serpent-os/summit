@@ -20,6 +20,7 @@ import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import summit.models.collection;
 import summit.models.repository;
+import moss.client.metadb;
 
 /**
  * Root entry into our web service
@@ -34,9 +35,10 @@ public final class CollectionsWeb
      *      appDB = Application database
      *      router = Web root for the application
      */
-    @noRoute void configure(Database appDB, URLRouter router) @safe
+    @noRoute void configure(Database appDB, MetaDB metaDB, URLRouter router) @safe
     {
         this.appDB = appDB;
+        this.metaDB = metaDB;
         registerWebInterface(router, this);
     }
 
@@ -89,7 +91,29 @@ public final class CollectionsWeb
         render!("collections/repo.dt", collection, repo);
     }
 
+    @path("/:slug/:repo/:recipeID") @method(HTTPMethod.GET)
+    void viewRecipe(string _slug, string _repo, string _recipeID) @safe
+    {
+        PackageCollection collection;
+        Repository repo;
+        /* TODO: Exist outside global constraints */
+        immutable err = appDB.view((in tx) @safe {
+            auto eCol = collection.load!"slug"(tx, _slug);
+            if (!eCol.isNull)
+            {
+                return eCol;
+            }
+
+            return repo.load!"name"(tx, _repo);
+        });
+        auto id = metaDB.byProvider(ProviderType.PackageName, _recipeID);
+        enforceHTTP(id.length > 0, HTTPStatus.notFound);
+        auto recipe = metaDB.byID(id[0]);
+        render!("collections/recipe.dt", collection, repo, recipe);
+    }
+
 private:
 
     Database appDB;
+    MetaDB metaDB;
 }

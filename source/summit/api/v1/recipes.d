@@ -55,6 +55,7 @@ public final class RecipesService : RecipesAPIv1
             i.id = m.pkgID;
             i.context = ListContext.Recipes;
             i.title = format!"%s - %s-%s"(m.sourceID, m.versionIdentifier, m.sourceRelease);
+            i.slug = format!"/~/%s/%s/%s"(_collection, _repo, m.sourceID);
             i.subtitle = m.summary;
             return i;
         });
