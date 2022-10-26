@@ -85,6 +85,6 @@ public void handleScanManifests(scope HandlerContext context, scope const ref Co
     () @trusted {
         workDir.dirEntries("manifest.*.bin", SpanMode.depth, false).map!((m) => m.name)
             .each!((m) => context.serialQueue.put(ControlEvent(ImportManifestEvent(scanEvent.repo,
-                    m))));
+                    m, workDir))));
     }();
 }

@@ -79,6 +79,11 @@ public struct ImportManifestEvent
      * Full path for the manifest
      */
     string manifestPath;
+
+    /**
+     * Base directory for the repository
+     */
+    string basePath;
 }
 
 /**
