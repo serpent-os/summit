@@ -22,6 +22,11 @@ import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import summit.workers.handlers;
 import vibe.d;
+import moss.format.binary.reader;
+import moss.format.binary.payload.meta;
+import moss.core.util : computeSHA256;
+import std.path : buildPath, dirName, relativePath;
+import std.algorithm : uniq, sort;
 
 /**
  * The WorkerSystem is responsible for managing dispatch and
@@ -105,9 +110,114 @@ private:
      * Params:
      *      event = Import event
      */
-    void importManifest(ImportManifestEvent event) @safe
+    void importManifest(ImportManifestEvent event) @trusted
     {
+        scope rdr = new Reader(File(event.manifestPath, "rb"));
+        auto payloads = rdr.payloads!MetaPayload;
+        if (payloads.empty)
+        {
+            logWarn(format!"Missing payloads in manifest %s"(event.manifestPath));
+            return;
+        }
+
         logDiagnostic(format!"Importing manifest %s into %s"(event.manifestPath, event.repo.name));
+        MetaPayload mp = new MetaPayload();
+        mp.addRecord(RecordType.String, RecordTag.SourceRef, event.repo.commitRef);
+        mp.addRecord(RecordType.String, RecordTag.SourceURI, event.repo.originURI);
+        immutable ymlPath = event.manifestPath.dirName.buildPath("stone.yml");
+        immutable checksum = computeSHA256(event.manifestPath, true);
+        mp.addRecord(RecordType.String, RecordTag.PackageHash, checksum);
+        mp.addRecord(RecordType.String, RecordTag.SourcePath,
+                ymlPath.relativePath(event.basePath));
+        logDiagnostic(format!"YAML %s : %s"(ymlPath.relativePath(event.basePath), checksum));
+
+        string sourceID;
+        string architecture;
+        string[] licenses;
+        Provider[] providers;
+        Dependency[] dependencies;
+        Dependency[] buildDependencies;
+        uint64_t relno = 0;
+        string versionID;
+
+        foreach (payload; payloads)
+        {
+            auto meta = cast(MetaPayload) payload;
+            foreach (record; meta)
+            {
+                switch (record.tag)
+                {
+                case RecordTag.License:
+                    licenses ~= record.get!string;
+                    break;
+                case RecordTag.Depends:
+                    dependencies ~= record.get!Dependency;
+                    break;
+                case RecordTag.Provides:
+                    providers ~= record.get!Provider;
+                    break;
+                case RecordTag.Name:
+                    providers ~= Provider(record.get!string,
+                            ProviderType.PackageName);
+                    break;
+                case RecordTag.Release:
+                    relno = record.get!uint64_t;
+                    break;
+                case RecordTag.Version:
+                    versionID = record.get!string;
+                    break;
+                case RecordTag.SourceID:
+                    sourceID = record.get!string;
+                    break;
+                case RecordTag.BuildDepends:
+                    buildDependencies ~= record.get!Dependency;
+                    break;
+                case RecordTag.Architecture:
+                    architecture = record.get!string;
+                    break;
+                default:
+                    /* Ignore */
+                    break;
+                }
+            }
+        }
+
+        mp.addRecord(RecordType.String, RecordTag.SourceID, sourceID);
+        mp.addRecord(RecordType.String, RecordTag.Architecture, architecture);
+
+        /* Licenses */
+        licenses.sort();
+        foreach (l; licenses.uniq)
+        {
+            mp.addRecord(RecordType.String, RecordTag.License, l);
+        }
+
+        /* Build deps */
+        buildDependencies.sort();
+        foreach (b; buildDependencies.uniq)
+        {
+            mp.addRecord(RecordType.Dependency, RecordTag.BuildDepends, b);
+        }
+
+        /* Run deps */
+        dependencies.sort();
+        foreach (d; dependencies.uniq)
+        {
+            mp.addRecord(RecordType.Dependency, RecordTag.Depends, d);
+        }
+
+        /* Providers */
+        providers.sort();
+        foreach (p; providers.uniq)
+        {
+            mp.addRecord(RecordType.Provider, RecordTag.Provides, p);
+        }
+
+        /* Relno/version */
+        mp.addRecord(RecordType.String, RecordTag.Version, versionID);
+        mp.addRecord(RecordType.Uint64, RecordTag.Release, relno);
+
+        metaDB.install(mp);
     }
 
     /** 

@@ -105,6 +105,8 @@ import moss.format.binary.payload.meta : MetaPayload, RecordTag, RecordType;
      */
     string[] licenses;
 
+    Dependency[] buildDependencies;
+
     /**
      * All dependencies
      */
@@ -129,6 +131,10 @@ import moss.format.binary.payload.meta : MetaPayload, RecordTag, RecordType;
      * How big is this package in the repo..?
      */
     uint64_t downloadSize;
+
+    string sourcePath;
+    string sourceURI;
+    string sourceRef;
 }
 
 /**
@@ -406,14 +412,17 @@ private:
             case RecordTag.Version:
                 entry.versionIdentifier = pair.get!string;
                 break;
-                /* Currently we do not store source information */
             case RecordTag.BuildDepends:
+                entry.buildDependencies ~= pair.get!Dependency;
                 break;
             case RecordTag.SourceURI:
+                entry.sourceURI = pair.get!string;
                 break;
             case RecordTag.SourcePath:
+                entry.sourcePath = pair.get!string;
                 break;
             case RecordTag.SourceRef:
+                entry.sourceRef = pair.get!string;
                 break;
             }
         }
