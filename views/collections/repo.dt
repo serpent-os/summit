@@ -21,9 +21,17 @@ block content
                         svg.mx-2.primaryLogo.logo.text-muted(width="16px", height="16px")
                             use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-git-merge")
                         span.text-muted #{repo.commitRef}
-        div.row.py-3
+        div.row.d-flex.pt-2
+            div.col-lg-6.col-6.col-sm-3
+                div.card
+                    div.card-header
+                        svg.mx-2.primaryLogo.logo.text-muted(width="16px", height="16px")
+                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-package")
+                        h5.card-title Package recipes
+                    div.card-body.p-0
+                        div#summitList.list-group-row.list-group-flush(summit:context="recipes", summit:mode="enumerate", summit:parent="#{collection.slug}/#{repo.name}")
 
-            div
+            div.col-lg-6.col-6.col-sm-3
                 div.card
                     div.card-header
                         svg.mx-2.primaryLogo.logo.text-muted(width="16px", height="16px")
@@ -33,15 +41,5 @@ block content
                         - import vibe.textfilter.markdown : filterMarkdown;
                         div.px-4
                             div.markdown!=filterMarkdown(repo.description)
-
-        div.row.py-3
-            div
-                div.card
-                    div.card-header
-                        svg.mx-2.primaryLogo.logo.text-muted(width="16px", height="16px")
-                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-package")
-                        h5.card-title Package recipes
-                    div.card-body
-                        div#summitList.row(summit:context="recipes", summit:mode="enumerate", summit:parent="#{collection.slug}/#{repo.name}")
 block scripts
     script(src="/static/summit.js", defer, async)

@@ -60,12 +60,6 @@ public final class SummitApplication
         metaDB = new MetaDB(dbPath.buildPath("metaDB"), true);
         metaDB.connect.tryMatch!((Success _) {});
 
-        auto things = metaDB.list();
-        foreach (t; things)
-        {
-            logInfo("%s", t);
-        }
-
         immutable dbErr = appDB.update((scope tx) => tx.createModel!(PackageCollection,
                 Repository));
         enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);

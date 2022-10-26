@@ -134,6 +134,7 @@ private:
         string sourceID;
         string architecture;
         string[] licenses;
+        string summary;
         Provider[] providers;
         Dependency[] dependencies;
         Dependency[] buildDependencies;
@@ -175,6 +176,12 @@ private:
                 case RecordTag.Architecture:
                     architecture = record.get!string;
                     break;
+                case RecordTag.Summary:
+                    if (summary is null)
+                    {
+                        summary = record.get!string;
+                    }
+                    break;
                 default:
                     /* Ignore */
                     break;
@@ -184,6 +191,8 @@ private:
 
         mp.addRecord(RecordType.String, RecordTag.SourceID, sourceID);
         mp.addRecord(RecordType.String, RecordTag.Architecture, architecture);
+        mp.addRecord(RecordType.String, RecordTag.Name, sourceID);
+        mp.addRecord(RecordType.String, RecordTag.Summary, summary);
 
         /* Licenses */
         licenses.sort();

@@ -19,6 +19,8 @@ import vibe.d;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import moss.client.metadb;
+import std.array : array;
+import std.algorithm : map, sort;
 
 /**
  * Implements the RecipesAPIv1
@@ -48,6 +50,16 @@ public final class RecipesService : RecipesAPIv1
     override ListItem[] enumerate(string _collection, string _repo) @safe
     {
         ListItem[] ret;
+        auto items = metaDB.list.map!((m) {
+            ListItem i;
+            i.id = m.pkgID;
+            i.context = ListContext.Recipes;
+            i.title = format!"%s - %s-%s"(m.sourceID, m.versionIdentifier, m.sourceRelease);
+            i.subtitle = m.summary;
+            return i;
+        });
+        ret = () @trusted { return items.array; }();
+        ret.sort!((a, b) => a.title < b.title);
         return ret;
     }
 
