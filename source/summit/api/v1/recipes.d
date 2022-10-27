@@ -47,7 +47,7 @@ public final class RecipesService : RecipesAPIv1
      *
      * Returns: ListItem[] of known repos
      */
-    override ListItem[] enumerate(string _collection, string _repo) @safe
+    override Paginator!ListItem enumerate(string _collection, string _repo, ulong pageNumber = 0) @safe
     {
         ListItem[] ret;
         auto items = metaDB.list.map!((m) {
@@ -61,7 +61,7 @@ public final class RecipesService : RecipesAPIv1
         });
         ret = () @trusted { return items.array; }();
         ret.sort!((a, b) => a.title < b.title);
-        return ret;
+        return Paginator!ListItem(ret, pageNumber);
     }
 
 private:

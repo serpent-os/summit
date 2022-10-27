@@ -187,6 +187,6 @@ public interface RecipesAPIv1
     /**
      * Enumerate all items within the given repository
      */
-    @path("enumerate/:collection/:repo") @method(HTTPMethod.GET) ListItem[] enumerate(
-            string _collection, string _repo) @safe;
+    @path("enumerate/:collection/:repo") @method(HTTPMethod.GET) Paginator!ListItem enumerate(
+            string _collection, string _repo, ulong pageNumber = 0) @safe;
 }

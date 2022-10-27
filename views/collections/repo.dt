@@ -30,7 +30,7 @@ block content
                         h5.card-title Package recipes
                     div.card-body.p-0
                         div#summitList.list-group-row.list-group-flush(summit:context="recipes", summit:mode="enumerate", summit:parent="#{collection.slug}/#{repo.name}")
-
+                        div#summitPaginator
             div.col-lg-6.col-6.col-sm-3
                 div.card
                     div.card-header

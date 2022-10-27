@@ -58,6 +58,11 @@ const SummitWidgets = Object.freeze(
          * Renderable items
          */
         ItemList: 'summitList',
+
+        /**
+         * List paginator
+         */
+        Paginator: 'summitPaginator',
     }
 );
 
@@ -101,7 +106,7 @@ function integrateList()
 
     integrateDialog(summitContext);
 
-    refreshList(summitContext, summitMode);
+    refreshList(summitContext, summitMode, 0);
 }
 
 /**
@@ -230,9 +235,14 @@ function renderPlaceholder()
 /**
  * Lets get the list updated
  */
-function refreshList(context, mode)
+function refreshList(context, mode, pageNumber=0)
 {
-    const uri = constructURI('enumerate');
+    console.log(context, mode, pageNumber);
+    let uri = constructURI('enumerate');
+    if (pageNumber != 0)
+    {
+        uri += `?pageNumber=${pageNumber}`;
+    }
     fetch(uri, {
         credentials: 'include',
         method: 'GET',
@@ -307,9 +317,67 @@ function renderList(context, mode, obj)
         return;
     }
     let completeHTML = '';
-    obj.forEach(element => {
-        completeHTML += renderElement(context, element);
-    });
+    if (obj['items'] !== undefined)
+    {
+        /* Paginated */
+        obj.items.forEach(element => {
+            completeHTML += renderElement(context, element);
+        });
+        document.getElementById(SummitWidgets.Paginator).innerHTML = renderPaginator(context, obj);
+    } else {
+        /* Non paginated */
+        obj.forEach(element => {
+            completeHTML += renderElement(context, element);
+        })
+    }
+
     // Update the DOM
     document.getElementById(SummitWidgets.ItemList).innerHTML = completeHTML;
+}
+
+/**
+ * Render the paginator object
+ * 
+ * @param {String} context Current rendering context
+ * @param {JSON} obj The returned JSON object, must be Paginator!ListItem
+ */
+function renderPaginator(context, obj)
+{
+    console.log(obj);
+    var pageHTML = Array(obj.numPages).fill(0).map(
+        (_, i) => {
+            let pageClass = "page-item";
+            let aria = '';
+            if (i == obj.page)
+            {
+                pageClass += " active";
+            }
+            return `<li class="${pageClass}">
+                <a class="page-link" ${aria} href="#${SummitWidgets.Paginator}" onclick="javascript:refreshList('${context}', 'enumerate', ${i});">${i+1}</a>
+            </li>`;
+        });
+    const nextClass = obj.hasNext ? "" : "disabled";
+    const nextAria = obj.hasNext ? "" : "aria-disabled='true'";
+    const prevClass = obj.hasPrevious ? "" : "disabled";
+    const prevAria = obj.hasPrevious ? "" : "aria-disabled='true'";
+    return `
+<ul class="pagination justify-content-center">
+    <li class="page-item ${prevClass}">
+        <a class="page-link" ${prevAria} href="#${SummitWidgets.Paginator}" onclick="javascript:refreshList('${context}', 'enumerate', ${obj.page-1});">
+            <svg class="icon">
+                <use xlink:href="/static/tabler/tabler-sprite.svg#tabler-chevron-left" />
+            </svg>
+        prev
+        </a>
+    </li>
+    ${pageHTML.join("")}
+    <li class="page-item ${nextClass}">
+        <a class="page-link" ${nextAria} href="#${SummitWidgets.Paginator}" onclick="javascript:refreshList('${context}', 'enumerate', ${obj.page+1});">
+            <svg class="icon">
+                <use xlink:href="/static/tabler/tabler-sprite.svg#tabler-chevron-right" />
+            </svg>
+        next
+        </a>
+    </li>
+</ul>`;
 }
