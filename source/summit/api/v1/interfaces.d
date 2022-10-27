@@ -17,6 +17,8 @@ module summit.api.v1.interfaces;
 
 public import vibe.d;
 
+import std.range : take, drop;
+
 /**
  * A ListItem can be represented using a specific ListContext
  */
@@ -27,6 +29,61 @@ public enum ListContext : string
     Groups = "groups",
     Repositories = "repositories",
     Recipes = "recipes",
+}
+
+/**
+ * We use a Paginator to serve paginated queries over the API
+ *
+ * Params:
+ *      T = Type to paginate
+ */
+public struct Paginator(T)
+{
+    /**
+     * Each page is locked to 15 display items
+     */
+    static immutable ulong pageSize = 15;
+
+    /**
+     * The subset of items to render
+     */
+    T[] items;
+
+    /**
+     * How many displayable pages?
+     */
+    ulong numPages;
+
+    /**
+     * What page are we on now?
+     */
+    ulong page;
+
+    /**
+     * Should the prev control be rendered?
+     */
+    bool hasPrevious;
+
+    /**
+     * Should the next control be rendered?
+     */
+    bool hasNext;
+
+    /**
+     * Construct a new Paginator
+     * pageNumber is indexed from *1*
+     */
+    this(T[] input, ulong pageNumber) @safe
+    {
+        this.page = pageNumber;
+
+        /* Minimum 1 page */
+        numPages = (input.length / pageSize) + 1;
+        page = pageNumber >= numPages ? numPages : pageNumber;
+        hasPrevious = page > 0;
+        hasNext = page < (numPages - 1);
+        items = input.drop(pageNumber * pageSize).take(pageSize);
+    }
 }
 
 /**
