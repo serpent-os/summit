@@ -291,7 +291,7 @@ function renderElement(context, element, idx)
 
         // Default rendering
         default:
-            const color = colors[idx % colors.length]
+            const color = isNaN(element.id) ?  colors[idx % colors.length] : colors[parseInt(element.id) % colors.length];
             return `
 <div class="list-group-item list-group-hoverable">
     <div class="row align-items-center">
