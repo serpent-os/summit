@@ -4,6 +4,7 @@
 - static NavigationItem[] navItems = [
 -   NavigationItem("/", "Home"),
 -   NavigationItem("/~", "Collections"),
+-   NavigationItem("/builders", "Builders"),
 - ];
 - import summit.web.accounts : WebSession;
 
