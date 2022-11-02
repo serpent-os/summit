@@ -361,13 +361,13 @@ function renderPaginator(context, obj)
     const prevClass = obj.hasPrevious ? "" : "disabled";
     const prevAria = obj.hasPrevious ? "" : "aria-disabled='true'";
     return `
-<ul class="pagination justify-content-center">
+<ul class="pagination justify-content-center border-top pt-3">
     <li class="page-item ${prevClass}">
         <a class="page-link" ${prevAria} href="#${SummitWidgets.Paginator}" onclick="javascript:refreshList('${context}', 'enumerate', ${obj.page-1});">
             <svg class="icon">
                 <use xlink:href="/static/tabler/tabler-sprite.svg#tabler-chevron-left" />
             </svg>
-        prev
+        Previous
         </a>
     </li>
     ${pageHTML.join("")}
@@ -376,7 +376,7 @@ function renderPaginator(context, obj)
             <svg class="icon">
                 <use xlink:href="/static/tabler/tabler-sprite.svg#tabler-chevron-right" />
             </svg>
-        next
+        Next
         </a>
     </li>
 </ul>`;
