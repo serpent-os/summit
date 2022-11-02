@@ -22,6 +22,7 @@ import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import summit.workers.handlers;
 import vibe.d;
+import moss.format.source.spec;
 import moss.format.binary.reader;
 import moss.format.binary.payload.meta;
 import moss.core.util : computeSHA256;
@@ -131,6 +132,9 @@ private:
                 ymlPath.relativePath(event.basePath));
         logDiagnostic(format!"YAML %s : %s"(ymlPath.relativePath(event.basePath), checksum));
 
+        auto spec = new Spec(File(ymlPath, "r"));
+        spec.parse();
+
         string sourceID;
         string architecture;
         string[] licenses;
@@ -176,12 +180,6 @@ private:
                 case RecordTag.Architecture:
                     architecture = record.get!string;
                     break;
-                case RecordTag.Summary:
-                    if (summary is null)
-                    {
-                        summary = record.get!string;
-                    }
-                    break;
                 default:
                     /* Ignore */
                     break;
@@ -192,7 +190,8 @@ private:
         mp.addRecord(RecordType.String, RecordTag.SourceID, sourceID);
         mp.addRecord(RecordType.String, RecordTag.Architecture, architecture);
         mp.addRecord(RecordType.String, RecordTag.Name, sourceID);
-        mp.addRecord(RecordType.String, RecordTag.Summary, summary);
+        mp.addRecord(RecordType.String, RecordTag.Summary, spec.rootPackage.summary);
+        mp.addRecord(RecordType.String, RecordTag.Description, spec.rootPackage.description);
 
         /* Licenses */
         licenses.sort();
