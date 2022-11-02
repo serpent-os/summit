@@ -16,12 +16,17 @@
 let formSubmitting = false;
 
 const colors = [
+    "bg-blue-lt",
     "bg-azure-lt",
+    "bg-indigo-lt",
     "bg-purple-lt",
     "bg-red-lt",
-    "bg-teal-lt",
-    "bg-pink-lt",
+    "bg-orange-lt",
+    "bg-yellow-lt",
     "bg-lime-lt",
+    "bg-green-lt",
+    "bg-teal-lt",
+    "bg-cyan-lt"
 ];
 
  window.addEventListener('load', function(ev)
@@ -266,7 +271,7 @@ function refreshList(context, mode, pageNumber=0)
  * @param {String} element The element to render
  * @returns new innerHTML for the summit list
  */
-function renderElement(context, element)
+function renderElement(context, element, idx)
 {
     switch (context)
     {
@@ -286,7 +291,7 @@ function renderElement(context, element)
 
         // Default rendering
         default:
-            const color = colors[parseInt(element.id) % colors.length]
+            const color = colors[idx % colors.length]
             return `
 <div class="list-group-item list-group-hoverable">
     <div class="row align-items-center">
@@ -317,17 +322,20 @@ function renderList(context, mode, obj)
         return;
     }
     let completeHTML = '';
+    let idx = 0;
     if (obj['items'] !== undefined)
     {
         /* Paginated */
         obj.items.forEach(element => {
-            completeHTML += renderElement(context, element);
+            completeHTML += renderElement(context, element, idx);
+            idx+=1;
         });
         document.getElementById(SummitWidgets.Paginator).innerHTML = renderPaginator(context, obj);
     } else {
         /* Non paginated */
         obj.forEach(element => {
-            completeHTML += renderElement(context, element);
+            completeHTML += renderElement(context, element, idx);
+            idx+=1;
         })
     }
 
