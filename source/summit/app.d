@@ -21,7 +21,7 @@ import moss.core.errors;
 import moss.service.accounts;
 import moss.service.sessionstore;
 import moss.service.models;
-import std.file : mkdirRecurse;
+import std.file : mkdirRecurse, exists;
 import std.path : buildPath;
 import summit.web;
 import summit.api;
@@ -29,6 +29,15 @@ import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import summit.models;
 import summit.workers;
+import moss.service.tokens;
+import std.base64 : Base64URLNoPadding;
+
+private enum TokenPaths : string
+{
+    Seed = ".seed",
+    PublicKey = ".pubkey",
+    PrivateKey = ".privkey",
+};
 
 /**
  * SummitApplication maintains the core lifecycle of Summit
@@ -51,6 +60,8 @@ public final class SummitApplication
         immutable statePath = rootDir.buildPath("state");
         immutable dbPath = statePath.buildPath("db");
         dbPath.mkdirRecurse();
+
+        initTokens(statePath);
 
         /* *has* to work */
         Database.open(format!"lmdb://%s"(dbPath.buildPath("app")),
@@ -118,6 +129,61 @@ public final class SummitApplication
 
 private:
 
+    /**
+     * Initialise token management
+     *
+     * Params:
+     *      statePath = State storage path
+     */
+    void initTokens(string statePath) @safe
+    {
+        immutable seedPath = statePath.buildPath(TokenPaths.Seed);
+        immutable privatePath = statePath.buildPath(TokenPaths.PrivateKey);
+        immutable publicPath = statePath.buildPath(TokenPaths.PublicKey);
+
+        if (!seedPath.exists)
+        {
+            seed = createSeed();
+            logWarn(format!"Writing new seed to %s"(seedPath));
+            writeFile(NativePath(seedPath), seed);
+        }
+        else
+        {
+            auto tempSeed = readFile(seedPath);
+            enforce(tempSeed.length == seed.length, "Invalid TokenSeed!");
+            seed = tempSeed[0 .. tempSeed.length];
+            logInfo("Loaded instance seed");
+        }
+
+        /* Regen required? */
+        if (!privatePath.exists || !publicPath.exists)
+        {
+            logWarn("Generating new signing pair");
+            pair = TokenSigningPair.create(seed);
+            logDiagnostic(format!"Writing pubkey to %s"(publicPath));
+            writeFile(NativePath(privatePath), pair.secretKey);
+            logDiagnostic(format!"Writing privkey to %s"(privatePath));
+            writeFile(NativePath(publicPath), pair.publicKey);
+        }
+        else
+        {
+            logInfo("Loading signing pair from disk");
+
+            /* Load disk pair */
+            auto tempPublic = readFile(publicPath);
+            auto tempPrivate = readFile(privatePath);
+
+            enforce(tempPublic.length == pair.publicKey.length, "Invalid public key");
+            enforce(tempPrivate.length == pair.secretKey.length, "Invalid private key");
+
+            pair.publicKey = tempPublic[0 .. pair.publicKey.length];
+            pair.secretKey = tempPrivate[0 .. pair.secretKey.length];
+        }
+
+        pubkeyRepresentation = Base64URLNoPadding.encode(pair.publicKey);
+        logInfo(format!"Utilising public key '%s'"(pubkeyRepresentation));
+    }
+
     RESTService service;
     AccountManager accountManager;
     HTTPListener listener;
@@ -129,4 +195,7 @@ private:
     Database appDB;
     MetaDB metaDB;
     WorkerSystem worker;
+    TokenSeed seed;
+    TokenSigningPair pair;
+    string pubkeyRepresentation;
 }
