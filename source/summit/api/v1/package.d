@@ -21,6 +21,7 @@ import summit.workers;
 import moss.db.keyvalue;
 import moss.client.metadb;
 
+import summit.api.v1.builders;
 import summit.api.v1.collections;
 import summit.api.v1.repositories;
 import summit.api.v1.recipes;
@@ -51,6 +52,7 @@ public final class RESTService : SummitAPIv1
             Database appDB, URLRouter router) @safe
     {
         router.registerRestInterface(this);
+        router.registerRestInterface(new BuildersService(appDB));
         router.registerRestInterface(new CollectionsService(appDB));
         router.registerRestInterface(new RepositoriesService(worker, appDB));
         router.registerRestInterface(new RecipesService(metaDB, appDB));
