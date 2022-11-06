@@ -151,6 +151,18 @@ public interface SummitAPIv1
 }
 
 /**
+ * Base API for the Builders
+ */
+@path("/api/v1/builders")
+public interface BuildersAPIv1
+{
+    /**
+     * Enumerate all items within the builders API
+     */
+    @path("enumerate") @method(HTTPMethod.GET) ListItem[] enumerate() @safe;
+}
+
+/**
  * Base API for the Collections
  */
 @path("/api/v1/collections")
