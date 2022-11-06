@@ -1,0 +1,52 @@
+div#creationDialog.modal.fade.modal-blur.hide(tabindex="-1")
+    div.modal-dialog.modal-lg.modal-dialog-centered(role="document")
+        div.modal-content.shadow
+            div.modal-header
+                h5.modal-title Add a builder
+                button.btn-close(type="button", data-bs-dismiss="modal", aria-label="close")
+            div.modal-body
+                form#creationForm.form.summit-form(method="POST", action="/")
+                    div.row
+                        div.col-auto
+                            div.row
+                                div.mb-3
+                                    label.py-1(for="id") Name
+                                    div.input-icon
+                                        span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-writing")
+                                        input#name.form-control(name="id", type="text", placeholder="Short name", required, minlength="3")
+                            div.row
+                                div.mb-3
+                                    label.py-1(for="summary") Summary
+                                    div.input-icon
+                                        span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-page-break")
+                                        input#summary.form-control(name="summary", type="text", placeholder="Short description", required, minlength="10")
+                            div.row
+                                div.mb-3
+                                    label.py-1(for="originURI") Instance URI
+                                    div.input-icon
+                                        span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-server")
+                                        input#upstream.form-control(name="instanceURI", type="text", placeholder="https://localhost:port", required, minlength="20")
+                            div.row
+                                div.mb-3
+                                    label.py-1(for="pubkey") Public key
+                                    div.input-icon
+                                        span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-key")
+                                        input#upstream.form-control(name="pubkey", type="text", placeholder="Secure key", required, minlength="15")
+                        div.col-auto
+                            fieldset.form-fieldset
+                                legend.text-muted Administrator
+                                div.row
+                                    div.mb-3
+                                        label.py-1(for="adminNamel") Name
+                                        div.input-icon
+                                            span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-user")
+                                            input#upstream.form-control(name="adminName", type="text", placeholder="Keeper Of The Builds", required, minlength="15")
+                                div.row
+                                    div.mb-3
+                                        label.py-1(for="adminEmail") Email
+                                        div.input-icon
+                                            span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-mail")
+                                            input#upstream.form-control(name="adminEmail", type="text", placeholder="Thine Email ", required, minlength="15")
+            div.modal-footer
+                button.summit-cancel.btn(data-bs-dismiss="modal") Cancel
+                button.summit-submit.btn.btn-primary.ms-auto Add builder #[span.summit-spinner.animated-dots.d-none]
