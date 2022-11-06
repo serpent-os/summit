@@ -41,6 +41,7 @@ const colors = [
  */
  const SummitContext = Object.freeze(
     {
+        Builders: 'builders',
         Collections: 'collections',
         Repositories: 'repositories',
         Groups: 'groups',
@@ -76,6 +77,7 @@ const SummitWidgets = Object.freeze(
  */
 const Endpoint = Object.freeze(
     {
+        'builders': '/api/v1/builders',
         'collections': '/api/v1/collections',
         'repositories': '/api/v1/repos',
         'groups': '/api/v1/groups',

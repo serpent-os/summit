@@ -24,6 +24,7 @@ import std.range : take, drop;
  */
 public enum ListContext : string
 {
+    Builders = "builders",
     Collections = "collections",
     Users = "users",
     Groups = "groups",
