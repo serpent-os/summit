@@ -22,7 +22,7 @@ div#creationDialog.modal.fade.modal-blur.hide(tabindex="-1")
                                         input#summary.form-control(name="summary", type="text", placeholder="Short description", required, minlength="10")
                             div.row
                                 div.mb-3
-                                    label.py-1(for="originURI") Instance URI
+                                    label.py-1(for="instanceURI") Instance URI
                                     div.input-icon
                                         span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-server")
                                         input#upstream.form-control(name="instanceURI", type="text", placeholder="https://localhost:port", required, minlength="20")

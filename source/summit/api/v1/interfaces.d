@@ -188,7 +188,7 @@ public struct AttachAvalanche
     /**
      * Attachment URI
      */
-    string originURI;
+    string instanceURI;
 
     /**
      * Public key
@@ -232,7 +232,7 @@ public interface BuildersAPIv1
     /**
      * Create a new builder attachment
      */
-    @path("create") @method(HTTPMethod.GET) void create(AttachAvalanche request) @safe;
+    @path("create") @method(HTTPMethod.POST) void create(AttachAvalanche request) @safe;
 }
 
 /**

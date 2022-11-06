@@ -46,6 +46,17 @@ public final class BuildersService : BuildersAPIv1
         return ret;
     }
 
+    /**
+     * Create a new avalanche attachment
+     *
+     * Params:
+     *      request = Incoming request
+     */
+    override void create(AttachAvalanche request) @safe
+    {
+        logDiagnostic(format!"Incoming attachment: %s"(request));
+    }
+
 private:
     Database appDB;
 }
