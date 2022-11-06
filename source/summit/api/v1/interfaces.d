@@ -123,19 +123,87 @@ public struct ListItem
     ListItem[] children;
 }
 
+/**
+ * Request used to create a new collection
+ */
 public struct CreateCollection
 {
+    /**
+     * Identity slug
+     */
     string slug;
+
+    /**
+     * Display name
+     */
     string name;
+
+    /**
+     * Short one liner description
+     */
     string summary;
+
+    /**
+     * Release management URI
+     */
     string releaseURI;
 }
 
+/**
+ * Request used to create a new repository
+ */
 public struct CreateRepository
 {
+    /**
+     * Identity slug
+     */
     string id;
+
+    /**
+     * One line description
+     */
     string summary;
+
+    /**
+     * Upstream origin (.git)
+     */
     string originURI;
+}
+
+/**
+ * Request used to attach an Avalanche instance
+ */
+public struct AttachAvalanche
+{
+    /**
+     * Unique identifier within Summit
+     */
+    string id;
+
+    /**
+     * Short description of the purpose/use
+     */
+    string summary;
+
+    /**
+     * Attachment URI
+     */
+    string originURI;
+
+    /**
+     * Public key
+     */
+    string pubkey;
+
+    /**
+     * Contact point: Admin name
+     */
+    string adminName;
+
+    /**
+     * Contact point: Admin email
+     */
+    string adminEmail;
 }
 
 /**
@@ -160,6 +228,11 @@ public interface BuildersAPIv1
      * Enumerate all items within the builders API
      */
     @path("enumerate") @method(HTTPMethod.GET) ListItem[] enumerate() @safe;
+
+    /**
+     * Create a new builder attachment
+     */
+    @path("create") @method(HTTPMethod.GET) void create(AttachAvalanche request) @safe;
 }
 
 /**
@@ -179,6 +252,9 @@ public interface CollectionsAPIv1
     @path("create") @method(HTTPMethod.POST) void create(CreateCollection request) @safe;
 }
 
+/**
+ * Base API for the Repositories
+ */
 @path("/api/v1/repos")
 public interface RepositoriesAPIv1
 {
@@ -194,6 +270,9 @@ public interface RepositoriesAPIv1
             CreateRepository request) @safe;
 }
 
+/**
+ * Base API for the Recipes
+ */
 @path("/api/v1/recipes")
 public interface RecipesAPIv1
 {
