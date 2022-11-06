@@ -19,6 +19,7 @@ import vibe.d;
 import summit;
 import std.path : absolutePath, asNormalizedPath;
 import std.conv : to;
+import libsodium : sodium_init;
 
 /**
  * Main entry for summit
@@ -29,6 +30,10 @@ import std.conv : to;
  */
 int main(string[] args) @safe
 {
+    logInfo("Initialising libsodium");
+    immutable sret = () @trusted { return sodium_init(); }();
+    enforce(sret == 0, "Failed to initialise libsodium");
+
     immutable rootDir = ".".absolutePath.asNormalizedPath.to!string;
     setLogLevel(LogLevel.trace);
 
