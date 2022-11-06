@@ -20,6 +20,7 @@ import moss.client.metadb;
 import moss.core.errors;
 import moss.service.accounts;
 import moss.service.sessionstore;
+import moss.service.models;
 import std.file : mkdirRecurse;
 import std.path : buildPath;
 import summit.web;
@@ -61,7 +62,7 @@ public final class SummitApplication
         metaDB.connect.tryMatch!((Success _) {});
 
         immutable dbErr = appDB.update((scope tx) => tx.createModel!(PackageCollection,
-                Repository));
+                Repository, AvalancheEndpoint));
         enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
 
         accountManager = new AccountManager(dbPath.buildPath("accounts"));

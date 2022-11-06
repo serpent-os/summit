@@ -17,6 +17,7 @@ module summit.web;
 
 import vibe.d;
 import summit.web.accounts;
+import summit.web.builders;
 import summit.web.collections;
 import moss.service.accounts;
 import moss.db.keyvalue;
@@ -44,6 +45,8 @@ public final class SummitWeb
         act.configure(root);
         auto col = new CollectionsWeb();
         col.configure(appDB, metaDB, root);
+        auto build = new BuildersWeb();
+        build.configure(appDB, root);
     }
 
     /**
