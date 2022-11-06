@@ -37,7 +37,7 @@ div#creationDialog.modal.fade.modal-blur.hide(tabindex="-1")
                                 legend.text-muted Administrator
                                 div.row
                                     div.mb-3
-                                        label.py-1(for="adminNamel") Name
+                                        label.py-1(for="adminName") Name
                                         div.input-icon
                                             span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-user")
                                             input#upstream.form-control(name="adminName", type="text", placeholder="Keeper Of The Builds", required, minlength="15")
