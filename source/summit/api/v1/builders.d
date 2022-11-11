@@ -19,6 +19,9 @@ import vibe.d;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import moss.service.models.endpoints;
+import moss.service.interfaces;
+import std.algorithm : map;
+import std.array : array;
 
 /**
  * Implements the BuildersService
@@ -43,6 +46,19 @@ public final class BuildersService : BuildersAPIv1
     override ListItem[] enumerate() @safe
     {
         ListItem[] ret;
+        appDB.view((in tx) @safe {
+            auto items = tx.list!AvalancheEndpoint
+                .map!((i) {
+                    ListItem v;
+                    v.context = ListContext.Builders;
+                    v.id = i.id;
+                    v.title = i.id;
+                    v.subtitle = i.description;
+                    return v;
+                });
+            ret = () @trusted { return items.array; }();
+            return NoDatabaseError;
+        });
         return ret;
     }
 
@@ -55,6 +71,18 @@ public final class BuildersService : BuildersAPIv1
     override void create(AttachAvalanche request) @safe
     {
         logDiagnostic(format!"Incoming attachment: %s"(request));
+
+        /* TODO: Mark as unused */
+        AvalancheEndpoint endpoint;
+        endpoint.adminEmail = request.adminEmail;
+        endpoint.adminName = request.adminName;
+        endpoint.hostAddress = request.instanceURI;
+        endpoint.publicKey = request.pubkey;
+        endpoint.description = request.summary;
+        endpoint.id = request.id;
+
+        immutable err = appDB.update((scope tx) => endpoint.save(tx));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
     }
 
 private:
