@@ -22,6 +22,7 @@ import moss.service.models.endpoints;
 import moss.service.interfaces;
 import std.algorithm : map;
 import std.array : array;
+import summit.workers;
 
 /**
  * Implements the BuildersService
@@ -33,9 +34,10 @@ public final class BuildersService : BuildersAPIv1
     /**
      * Construct new BuildersService
      */
-    this(Database appDB) @safe
+    this(scope WorkerSystem workerSystem, Database appDB) @safe
     {
         this.appDB = appDB;
+        queue = workerSystem.controlQueue;
     }
 
     /**
@@ -87,4 +89,5 @@ public final class BuildersService : BuildersAPIv1
 
 private:
     Database appDB;
+    ControlQueue queue;
 }

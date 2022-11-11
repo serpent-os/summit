@@ -52,7 +52,7 @@ public final class RESTService : SummitAPIv1
             Database appDB, URLRouter router) @safe
     {
         router.registerRestInterface(this);
-        router.registerRestInterface(new BuildersService(appDB));
+        router.registerRestInterface(new BuildersService(worker, appDB));
         router.registerRestInterface(new CollectionsService(appDB));
         router.registerRestInterface(new RepositoriesService(worker, appDB));
         router.registerRestInterface(new RecipesService(metaDB, appDB));
