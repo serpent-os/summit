@@ -18,6 +18,7 @@ module summit.workers.messaging;
 public import vibe.core.channel;
 public import taggedalgebraic;
 public import summit.models.repository : Repository;
+public import moss.service.models.endpoints;
 
 /**
  * Import the given repository
@@ -87,6 +88,18 @@ public struct ImportManifestEvent
 }
 
 /**
+ * We've got a new endpoint added but it needs enroling into
+ * our system.
+ */
+public struct EnrolAvalancheEvent
+{
+    /**
+     * The target endpoint. We'll form our own enrolment request
+     */
+    AvalancheEndpoint endpoint;
+}
+
+/**
  * A set of known events
  */
 public union ControlEventSet
@@ -115,6 +128,11 @@ public union ControlEventSet
      * Import a single manifest path
      */
     ImportManifestEvent importManifest;
+
+    /**
+     * Enrol a builder
+     */
+    EnrolAvalancheEvent enrolBuilder;
 }
 
 /**

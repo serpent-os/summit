@@ -85,6 +85,10 @@ public final class BuildersService : BuildersAPIv1
 
         immutable err = appDB.update((scope tx) => endpoint.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+
+        /* Dispatch event */
+        EnrolAvalancheEvent event = EnrolAvalancheEvent(endpoint);
+        queue.put(ControlEvent(event));
     }
 
 private:
