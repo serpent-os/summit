@@ -24,7 +24,7 @@ block content
             div.py-1
 
                 div.card
-                    div.card-body
+                    div.card-body.p-0
                         div#summitList.list-group-row.list-group-flush(summit:context="builders", summit:mode="enumerate")
 
 block dialogs
