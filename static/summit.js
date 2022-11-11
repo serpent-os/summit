@@ -275,6 +275,8 @@ function refreshList(context, mode, pageNumber=0)
  */
 function renderElement(context, element, idx)
 {
+    const color = isNaN(element.id) ?  colors[idx % colors.length] : colors[parseInt(element.id) % colors.length];
+
     switch (context)
     {
         // Specialist Collection rendering
@@ -290,10 +292,25 @@ function renderElement(context, element, idx)
         </div>
     </div>
 </div>`;
-
+        case SummitContext.Builders:
+                return `
+                <div class="list-group-item list-group-hoverable">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span class="status-dot status-dot-animated status-red"></span>
+                    </div>
+                    <div class="col-auto">
+                        <span class="avatar ${color}">${element.title[0]}</span>
+                    </div>
+                    <div class="col text-truncate">
+                        <a href="${element.slug}" class="text-reset d-block">${element.title}</a>
+                        <div class="d-block text-muted">${element.subtitle}</div>
+                    </div>
+                </div>
+            </div>
+`;
         // Default rendering
         default:
-            const color = isNaN(element.id) ?  colors[idx % colors.length] : colors[parseInt(element.id) % colors.length];
             return `
 <div class="list-group-item list-group-hoverable">
     <div class="row align-items-center">
