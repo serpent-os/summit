@@ -23,6 +23,7 @@ import moss.service.interfaces;
 import std.algorithm : map;
 import std.array : array;
 import summit.workers;
+import moss.service.tokens;
 import moss.service.tokens.manager;
 
 /**
@@ -88,8 +89,18 @@ public final class BuildersService : BuildersAPIv1
         immutable err = appDB.update((scope tx) => endpoint.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
-        /* Dispatch event */
+        /* Get token allocated */
         EnrolAvalancheEvent event = EnrolAvalancheEvent(endpoint);
+        TokenPayload payload;
+        payload.iss = "summit";
+        payload.sub = endpoint.id;
+        Token bearer = tokenManager.createBearerToken(payload);
+        tokenManager.signToken(bearer).match!((TokenError err) {
+            throw new HTTPStatusException(HTTPStatus.internalServerError, err.message);
+        }, (string s) { event.issueToken = s; });
+        event.instancePublicKey = tokenManager.publicKey;
+
+        /* Dispatch the event */
         queue.put(ControlEvent(event));
     }
 
