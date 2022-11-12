@@ -36,6 +36,8 @@ public void handleEnrolBuilder(scope HandlerContext context, scope const ref Con
     /* TODO: Make this more complete. */
     ServiceEnrolmentRequest req;
     req.role = EnrolmentRole.Builder;
+    req.issueToken = enrol.issueToken;
+    req.issuer.publicKey = enrol.instancePublicKey;
     req.issuer.role = EnrolmentRole.Hub;
 
     /* Enrol with the remote system */

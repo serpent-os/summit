@@ -23,6 +23,7 @@ import moss.service.interfaces;
 import std.algorithm : map;
 import std.array : array;
 import summit.workers;
+import moss.service.tokens.manager;
 
 /**
  * Implements the BuildersService
@@ -34,9 +35,10 @@ public final class BuildersService : BuildersAPIv1
     /**
      * Construct new BuildersService
      */
-    this(scope WorkerSystem workerSystem, Database appDB) @safe
+    this(scope WorkerSystem workerSystem, TokenManager tokenManager, Database appDB) @safe
     {
         this.appDB = appDB;
+        this.tokenManager = tokenManager;
         queue = workerSystem.controlQueue;
     }
 
@@ -94,4 +96,5 @@ public final class BuildersService : BuildersAPIv1
 private:
     Database appDB;
     ControlQueue queue;
+    TokenManager tokenManager;
 }

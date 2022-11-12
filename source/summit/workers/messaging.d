@@ -97,6 +97,16 @@ public struct EnrolAvalancheEvent
      * The target endpoint. We'll form our own enrolment request
      */
     AvalancheEndpoint endpoint;
+
+    /**
+     * Our own public key
+     */
+    string instancePublicKey;
+
+    /** 
+     * The initial issue token we'll give them. Nice of us.
+     */
+    string issueToken;
 }
 
 /**
