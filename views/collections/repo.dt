@@ -10,36 +10,36 @@ block content
             div.page-header
                 div.row.align-items-center
                     div.col
-                        ol.breadcrumb.py-1(aria-label="breadcrumbs")
+                        ol.breadcrumb.breadcrumb-arrows.py-1(aria-label="breadcrumbs")
                             li.breadcrumb-item: a(href="/") Home
                             li.breadcrumb-item: a(href="/~") Collections
                             li.breadcrumb-item(aria-current="page"): a(href="/~/#{collection.slug}") #{collection.name}
                             li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{collection.slug}/#{repo.name}") #{repo.name}
 
-                        h2.page-title #{repo.name}
+                        h2.page-title #{repo.summary}
                     div.col-auto
                         svg.mx-2.primaryLogo.logo.text-muted(width="16px", height="16px")
                             use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-git-merge")
                         span.text-muted #{repo.commitRef}
-        div.row.d-flex.pt-2
+        div.row.d-flex.pt-4
             div.col-lg-6.col-6.col-sm-3
                 div.card
                     div.card-header
-                        svg.mx-2.primaryLogo.logo.text-muted(width="16px", height="16px")
+                        svg.primaryLogo.logo.text-muted(width="16px", height="16px")
                             use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-package")
-                        h5.card-title Package recipes
+                        h5.mx-2.card-title Package recipes
                     div.card-body.p-0
-                        div#summitList.list-group-row.list-group-flush(summit:context="recipes", summit:mode="enumerate", summit:parent="#{collection.slug}/#{repo.name}")
+                        div#summitList.list-group.list-group-flush(summit:context="recipes", summit:mode="enumerate", summit:parent="#{collection.slug}/#{repo.name}")
                         div#summitPaginator
             div.col-lg-6.col-6.col-sm-3
                 div.card
                     div.card-header
-                        svg.mx-2.primaryLogo.logo.text-muted(width="16px", height="16px")
+                        svg.primaryLogo.logo.text-muted(width="16px", height="16px")
                             use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-book")
-                        h5.card-title README.md
+                        h5.mx-2.card-title README.md
                     div.card-body
                         - import vibe.textfilter.markdown : filterMarkdown;
-                        div.px-4
+                        div
                             div.markdown!=filterMarkdown(repo.description)
 block scripts
     script(src="/static/summit.js", defer, async)

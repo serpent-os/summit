@@ -8,13 +8,13 @@
 - ];
 - import summit.web.accounts : WebSession;
 
-nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
+nav.navbar.navbar-expand-lg.navbar-light
     div.container
         // Logo
         a.navbar-brand.logo(href="/")
             svg.primaryLogo.logo.text-azure(width="32px", height="32px")
                 use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-dashboard")
-            span.logo.px-2 #[span.subtitle.text-muted Summit] Dashboard
+            span.logo.px-2 #[span.subtitle.opacity-75 Summit] Dashboard
         button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#primaryNavigation", aria-controls="primaryNavigation", aria-expanded="false")
             span.navbar-toggler-icon.text-white
         div.collapse.navbar-collapse(id="primaryNavigation")
@@ -27,12 +27,12 @@ nav.navbar.navbar-expand-lg.navbar-light.border-bottom.shadow-sm
                 - }
 
         div.d-flex
-            a.btn.btn-ghost-info.btn-icon#themeSwitcher
+            a.px-2.nav-link#themeSwitcher(href="#")
                 svg#themeSwitcherIcon(width="16px", height="16px")
                     use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-moon")
             - auto session = WebSession();
             - if (session.loggedIn) {
-                a.btn.btn-ghost-info.btn-icon#accountButton(href="/accounts/logout") Log out
+                a.nav-link#accountButton(href="/accounts/logout") Log out
             - } else {
-                a.btn.btn-ghost-info.btn-icon#accountButton(href="/accounts/login") Log in
+                a.nav-link#accountButton(href="/accounts/login") Log in
             - }
