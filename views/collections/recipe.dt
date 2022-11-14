@@ -18,45 +18,73 @@ block content
                             li.breadcrumb-item.active: a(href="/~/#{collection.slug}/#{repo.name}/#{recipe.name}") #{recipe.name}
 
 
-                        h2.page-title #{recipe.name}
-                    div.col-auto
-                        span #[code #{recipe.sourcePath}] - #{recipe.versionIdentifier}-#{recipe.sourceRelease}
+                        h2.page-title #{recipe.summary}
 
         div.row.py-3
 
-            div.py-1
-                div.card
-                    div.card-body
-                        div.row.m-1
-                            blockquote=recipe.summary
-
+            div.card.col.mx-1
+                div.card-body
+                    div.row.pt-2.pb-4
                         div.datagrid
-                            div.row
-                                div.col
-                                    div.datagrid-item
-                                        div.datagrid-title Build dependencies
-                                        div.datagrid-content.m-1
-                                            - foreach (b; recipe.buildDependencies) {
-                                                li #{b}
-                                            - }
-                                div.col
-                                    div.datagrid-item
-                                        div.datagrid-title Provides
-                                        div.datagrid-content.m-1
-                                            - foreach (b; recipe.providers) {
-                                                li #{b}
-                                            - }
-                                div.col
-                                    div.datagrid-item
-                                        div.datagrid-title Runtime dependencies
-                                        div.datagrid-content.m-1
-                                            - foreach (b; recipe.dependencies) {
-                                                li #{b}
-                                            - }
-                                div.col
-                                    div.datagrid-item
-                                        div.datagrid-title Licensing
-                                        div.datagrid-content.m-1
-                                            - foreach (b; recipe.licenses) {
-                                                li #{b}
-                                            - }
+                            // Description 
+                            div.datagrid-item
+                                div.datagrid-title Description
+                                div.datagrid-content=recipe.description
+                            // Recipe
+                            div.datagrid-item
+                                div.datagrid-title Recipe
+                                div.datagrid-content: code=recipe.sourcePath
+                    div.row
+                        div.datagrid
+                            // Version
+                            div.datagrid-item
+                                div.datagrid-title Version
+                                div.datagrid-content=recipe.versionIdentifier
+                            div.datagrid-item
+                                div.datagrid-title Release
+                                div.datagrid-content=recipe.sourceRelease
+
+                            // Homepage
+                            div.datagrid-item
+                                div.datagrid-title Homepage
+                                div.datagrid-content: a(href=recipe.homepage)=recipe.homepage
+
+                            // Licensing
+                            div.datagrid-item
+                                div.datagrid-title Licensing
+                                div.datagrid-content
+                                    ul
+                                        - foreach (l; recipe.licenses)
+                                        - {
+                                            li: a(href="https://spdx.org/licenses/#{l}.html")=l
+                                        - }
+
+        div.row.py-3
+
+            div.card.col.mx-1
+                div.card-body
+                    h5.card-title.opacity-75 Build dependencies
+                    div.row.g-3
+                        - foreach (b; recipe.buildDependencies) {
+                            div.col-6.g-3
+                                code=b
+                        - }
+
+            div.card.col.mx-1
+                div.card-body
+                    h5.card-title.opacity-75 Runtime dependencies
+                    div.row.g-3
+                        - foreach (b; recipe.dependencies) {
+                            div.col-6.g-3
+                                code=b
+                        - }
+        div.row.py-3
+
+            div.card.col.mx-1
+                div.card-body
+                    h5.card-title.opacity-75 Provides
+                    div.row.g-3
+                        - foreach (b; recipe.providers) {
+                            div.col-3.g-3
+                                code=b
+                        - }
