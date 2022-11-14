@@ -84,7 +84,6 @@ public final class SummitApplication
 
         /* Set up the server */
         serverSettings = new HTTPServerSettings();
-        serverSettings.bindAddresses = ["localhost",];
         serverSettings.disableDistHost = true;
         serverSettings.useCompressionIfPossible = true;
         serverSettings.port = 8081;
