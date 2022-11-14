@@ -15,7 +15,7 @@ block content
                             li.breadcrumb-item: a(href="/~") Collections
                             li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{collection.slug}") #{collection.name}
 
-                        h2.page-title #{collection.name}
+                        h2.page-title #{collection.summary}
                     div.col-auto
                         div.btn-list
                             button.btn-azure.btn.d-none.d-md-inline-flex(data-bs-toggle="modal", data-bs-target="#creationDialog")
@@ -26,10 +26,7 @@ block content
 
             div.py-1
                 div.card
-                    p.p-2=collection.summary
-
                     div.list-group.list-group-flush#summitList.row(summit:context="repositories", summit:mode="add", summit:parent=collection.slug)
-                        div.list-group-header Repositories
 
 block dialogs
     include collections/add_repo
