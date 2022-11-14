@@ -29,7 +29,8 @@ block content
                             // Description 
                             div.datagrid-item
                                 div.datagrid-title Description
-                                div.datagrid-content=recipe.description
+                                div.datagrid-content
+                                    p.markdown=recipe.description
                             // Recipe
                             div.datagrid-item
                                 div.datagrid-title Recipe
