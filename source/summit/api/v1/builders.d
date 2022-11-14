@@ -80,8 +80,20 @@ public final class BuildersService : BuildersAPIv1
     {
         logDiagnostic(format!"Incoming attachment: %s"(request));
 
-        /* TODO: Mark as unused */
+        /* OK - first up we need a service account */
+        immutable serviceUser = format!"%s%s"(serviceAccountPrefix, request.id);
+        User serviceAccount;
+        accountManager.registerService(serviceUser, request.adminEmail).match!((User u) {
+            serviceAccount = u;
+        }, (DatabaseError e) {
+            throw new HTTPStatusException(HTTPStatus.forbidden, e.message);
+        });
+
+        logInfo(format!"Constructed new service account '%s': %s"(serviceAccount.id, serviceUser));
+
+        /* Create the endpoint model */
         AvalancheEndpoint endpoint;
+        endpoint.serviceAccount = serviceAccount.id;
         endpoint.status = EndpointStatus.AwaitingEnrolment;
         endpoint.adminEmail = request.adminEmail;
         endpoint.adminName = request.adminName;
@@ -97,7 +109,7 @@ public final class BuildersService : BuildersAPIv1
         EnrolAvalancheEvent event = EnrolAvalancheEvent(endpoint);
         TokenPayload payload;
         payload.iss = "summit";
-        payload.sub = endpoint.id;
+        payload.sub = to!string(serviceAccount.id);
         Token bearer = tokenManager.createBearerToken(payload);
         tokenManager.signToken(bearer).match!((TokenError err) {
             throw new HTTPStatusException(HTTPStatus.internalServerError, err.message);
