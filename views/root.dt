@@ -20,13 +20,16 @@ html
             link(rel="icon", type="image/png", sizes="#{size}x#{size}", href="/static/img/favicon-#{size}x#{size}.png")   
         - }
     body.d-flex.flex-column.min-vh-100
-        include primary_navigation
         block banner
         main
             div.container-fluid.py-0.px-0.my-0.mx-0
-                div.container-fluid.py-5
-                    block content
-                        h1 undefined content
+                include sidebar_navigation
+                div.container-fluid.py-0.px-0.mx-0.my-0
+                    include header_navigation
+                    div.container.py-4
+                        block content
+                            div.container
+                                h1 undefined content
         include footer
 
         block dialogs
