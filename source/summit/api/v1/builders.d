@@ -79,6 +79,7 @@ public final class BuildersService : BuildersAPIv1
 
         /* TODO: Mark as unused */
         AvalancheEndpoint endpoint;
+        endpoint.status = EndpointStatus.AwaitingEnrolment;
         endpoint.adminEmail = request.adminEmail;
         endpoint.adminName = request.adminName;
         endpoint.hostAddress = request.instanceURI;
