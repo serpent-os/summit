@@ -192,6 +192,7 @@ private:
         mp.addRecord(RecordType.String, RecordTag.Name, sourceID);
         mp.addRecord(RecordType.String, RecordTag.Summary, spec.rootPackage.summary);
         mp.addRecord(RecordType.String, RecordTag.Description, spec.rootPackage.description);
+        mp.addRecord(RecordType.String, RecordTag.Homepage, spec.source.homepage);
 
         /* Licenses */
         licenses.sort();
