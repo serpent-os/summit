@@ -1,11 +1,10 @@
-### summit
+# summit
 
 Web dashboard for Serpent OS
 
-**Focus**:
+## Focus:
 
-We're not currently building a fully fledged dashboard, instead focusing
-on a set of validation features to permit basic bootstrap escape.
+We're not currently building a fully fledged dashboard, but instead focusing on a set of validation features to permit basic bootstrap escape.
 
 ## How to build
 
