@@ -18,6 +18,7 @@ public import summit.api.v1.interfaces;
 import vibe.d;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
+import moss.service.models.bearertoken;
 import moss.service.models.endpoints;
 import moss.service.interfaces;
 import std.algorithm : map;
@@ -91,6 +92,25 @@ public final class BuildersService : BuildersAPIv1
 
         logInfo(format!"Constructed new service account '%s': %s"(serviceAccount.id, serviceUser));
 
+        /* Construct the bearer token */
+        string encodedToken;
+        TokenPayload payload;
+        payload.iss = "summit";
+        payload.sub = serviceAccount.username;
+        payload.uid = serviceAccount.id;
+        payload.act = serviceAccount.type;
+        Token bearer = tokenManager.createBearerToken(payload);
+        tokenManager.signToken(bearer).match!((TokenError err) {
+            throw new HTTPStatusException(HTTPStatus.internalServerError, err.message);
+        }, (string s) { encodedToken = s; });
+
+        /* Set the token in the DB now */
+        BearerToken storedToken;
+        storedToken.id = serviceAccount.id;
+        storedToken.rawToken = encodedToken;
+        storedToken.expiryUTC = bearer.payload.exp;
+        immutable bErr = accountManager.setBearerToken(serviceAccount, storedToken);
+
         /* Create the endpoint model */
         AvalancheEndpoint endpoint;
         endpoint.serviceAccount = serviceAccount.id;
@@ -107,13 +127,7 @@ public final class BuildersService : BuildersAPIv1
 
         /* Get token allocated */
         EnrolAvalancheEvent event = EnrolAvalancheEvent(endpoint);
-        TokenPayload payload;
-        payload.iss = "summit";
-        payload.sub = to!string(serviceAccount.id);
-        Token bearer = tokenManager.createBearerToken(payload);
-        tokenManager.signToken(bearer).match!((TokenError err) {
-            throw new HTTPStatusException(HTTPStatus.internalServerError, err.message);
-        }, (string s) { event.issueToken = s; });
+        event.issueToken = encodedToken;
         event.instancePublicKey = tokenManager.publicKey;
 
         /* Dispatch the event */
