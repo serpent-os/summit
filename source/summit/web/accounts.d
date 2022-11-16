@@ -88,7 +88,7 @@ public struct WebSession
     @method(HTTPMethod.POST) @path("login") void handleLogin(ValidUsername username,
             ValidPassword password) @safe
     {
-        accountManager.authenticateUser(username, password).match!((User user) {
+        accountManager.authenticateUser(username, password).match!((Account user) {
             logInfo(format!"User successfully logged in: %s [%s]"(user.username, user.id));
             startSession();
         }, (DatabaseError e) {

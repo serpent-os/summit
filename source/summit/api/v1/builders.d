@@ -83,8 +83,8 @@ public final class BuildersService : BuildersAPIv1
 
         /* OK - first up we need a service account */
         immutable serviceUser = format!"%s%s"(serviceAccountPrefix, request.id);
-        User serviceAccount;
-        accountManager.registerService(serviceUser, request.adminEmail).match!((User u) {
+        Account serviceAccount;
+        accountManager.registerService(serviceUser, request.adminEmail).match!((Account u) {
             serviceAccount = u;
         }, (DatabaseError e) {
             throw new HTTPStatusException(HTTPStatus.forbidden, e.message);
