@@ -1,5 +1,3 @@
-- import summit.web.accounts : WebSession;
-
 nav.navbar.navbar-expand-lg.navbar-light
     div.container-lg
         div.collapse.navbar-collapse(id="primaryNavigation")
@@ -12,9 +10,17 @@ nav.navbar.navbar-expand-lg.navbar-light
             a.px-4.nav-link#themeSwitcher(href="#")
                 svg#themeSwitcherIcon(width="16px", height="16px")
                     use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-moon")
-            - auto session = WebSession();
-            - if (session.loggedIn) {
-                a.nav-link#accountButton(href="/accounts/logout") Log out
+
+            - string username = req.session ? req.session.get!string("accountName", null) : null;
+            - if (username is null)
+            - {
+                a.nav-link(href="/accounts/login") Login
             - } else {
-                a.nav-link#accountButton(href="/accounts/login") Log in
+                div.nav-item.dropdown
+                    a.nav-link(href="#", data-bs-toggle="dropdown", aria-expanded="false", aria-label="Open account menu")
+                        svg.mx-2#themeSwitcherIcon(width="16px", height="16px")
+                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-user")
+                        span=username
+                    div.dropdown-menu.dropdown-menu-start.dropdown-menu-arrow
+                        a.dropdown-item(href="/accounts/logout") Logout…
             - }

@@ -103,7 +103,7 @@ public final class SummitApplication
         router.get("/static/*", serveStaticFiles(rootDir.buildPath("static/"), fileSettings));
 
         web = new SummitWeb();
-        web.configure(appDB, metaDB, accountManager, router);
+        web.configure(appDB, metaDB, accountManager, tokenManager, router);
 
         /* Get worker system up and running */
         worker = new WorkerSystem(rootDir, appDB, metaDB);

@@ -16,145 +16,31 @@
 module summit.web.accounts;
 
 import vibe.d;
-import vibe.web.validation;
-
 import moss.service.accounts;
+import moss.service.tokens.manager;
 
 /**
- * Allow views to access session information
- * DO NOT use outside of WebInterface APIs
+ * Basic subclass to support local rendering
  */
-public struct WebSession
-{
-    /**
-     * Set true if we're logged in
-     */
-    SessionVar!(bool, "activeSession") loggedIn;
-}
-
-/**
- * Root entry into our web service
- */
-@path("/accounts") public final class AccountsWeb
+public final class SummitAccountsWeb : AccountsWeb
 {
     @disable this();
 
     /**
-     * Construct new AccountsWeb
-     *
-     * Params:
-     *      accountManager = Account management
+     * Construc new accounts web
      */
-    this(AccountManager accountManager) @safe
+    this(AccountManager accountManager, TokenManager tokenManager) @safe
     {
-        this.accountManager = accountManager;
+        super(accountManager, tokenManager);
     }
 
-    /**
-     * Install account management into web app
-     *
-     * Params:
-     *      router = Root namespace
-     */
-    @noRoute void configure(URLRouter router) @safe
-    {
-        router.registerWebInterface(this);
-    }
-
-    /**
-     * Log the session out
-     */
-    @method(HTTPMethod.GET) @path("logout") void logout() @safe
-    {
-        endSession();
-        redirect("/");
-    }
-
-    /**
-     * Render the login form
-     */
-    @method(HTTPMethod.GET) @path("login") void renderLogin() @safe
+    override void renderLogin() @safe
     {
         render!"accounts/login.dt";
     }
 
-    /**
-     * Perform the login
-     *
-     * Params:
-     *      username = Valid username
-     *      password = Valid password
-     */
-    @method(HTTPMethod.POST) @path("login") void handleLogin(ValidUsername username,
-            ValidPassword password) @safe
-    {
-        accountManager.authenticateUser(username, password).match!((Account user) {
-            logInfo(format!"User successfully logged in: %s [%s]"(user.username, user.id));
-            startSession();
-        }, (DatabaseError e) {
-            logError(format!"Failed login for user '%s': %s"(username, e));
-            endSession();
-            throw new HTTPStatusException(HTTPStatus.forbidden, e.message);
-        });
-        redirect("/");
-    }
-
-    /**
-     * Render the registration form
-     */
-    @method(HTTPMethod.GET) @path("register") void renderRegistration() @safe
+    override void renderRegister() @safe
     {
         render!"accounts/register.dt";
     }
-
-    /**
-     * Register a new user
-     *
-     * Params:
-     *      username = New username
-     *      emailAddress = Valid email address
-     *      password = New password
-     *      confirmPassword = Validate password
-     *      policy = Ensure policy is accepted
-     */
-    @method(HTTPMethod.POST) @path("register") void handleRegistration(ValidUsername username,
-            ValidEmail emailAddress, ValidPassword password,
-            Confirm!"password" confirmPassword, bool policy) @safe
-    {
-        scope (exit)
-        {
-            redirect("/");
-        }
-        scope (failure)
-        {
-            endSession();
-        }
-        enforceHTTP(policy, HTTPStatus.forbidden, "Policy must be accepted");
-        immutable err = accountManager.registerUser(username, password, emailAddress);
-        enforceHTTP(err.isNull, HTTPStatus.forbidden, err.message);
-        startSession();
-    }
-
-private:
-
-    /**
-     * Start a login session
-     */
-    void startSession() @safe
-    {
-        auto session = WebSession();
-        session.loggedIn = true;
-    }
-
-    /**
-     * End the session
-     */
-    void endSession() @safe
-    {
-        auto session = WebSession();
-        session.loggedIn = false;
-        terminateSession();
-    }
-
-    AccountManager accountManager;
 }

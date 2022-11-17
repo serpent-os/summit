@@ -22,6 +22,7 @@ import summit.web.collections;
 import moss.service.accounts;
 import moss.db.keyvalue;
 import moss.client.metadb;
+import moss.service.tokens.manager;
 
 /**
  * Root entry into our web service
@@ -29,6 +30,7 @@ import moss.client.metadb;
 @path("/")
 public final class SummitWeb
 {
+
     /**
      * Join SummitWeb into the router
      *
@@ -38,10 +40,10 @@ public final class SummitWeb
      *      router = Base root for the application
      */
     @noRoute void configure(Database appDB, MetaDB metaDB,
-            AccountManager accountManager, URLRouter router) @safe
+            AccountManager accountManager, TokenManager tokenManager, URLRouter router) @safe
     {
         auto root = registerWebInterface(router, this);
-        auto act = new AccountsWeb(accountManager);
+        auto act = new SummitAccountsWeb(accountManager, tokenManager);
         act.configure(root);
         auto col = new CollectionsWeb();
         col.configure(appDB, metaDB, root);
