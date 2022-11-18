@@ -1,8 +1,40 @@
 extends root
 
 block title
-    title Summit
+    title Overview
         
 block content
     div.container
-        h1 TODO: Add activity lists etc.
+
+        // Live graphs
+        div.row.p-2
+            // First graph
+            div.col: div.card: div.card-body
+
+            // Second graph
+            div.col: div.card: div.card-body
+
+            // Third graph
+            div.col: div.card: div.card-body
+
+        // Statistics
+        div.row.p-2
+            // First stat
+            div.col: div.card: div.card-body
+
+            // Second stat
+            div.col: div.card: div.card-body
+
+            // Third stat
+            div.col: div.card: div.card-body
+
+        // Main view
+        div.row.p-2
+
+            // Latest doc?
+            div.col-6
+                div.card: div.card-body
+
+            // Recent events
+            div.col:
+                div.card: div.card-body
