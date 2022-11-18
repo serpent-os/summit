@@ -1,11 +1,12 @@
-- import std.typecons : Tuple;
 - import std.string : startsWith;
-- alias SidebarNavItem = Tuple!(string, "path", string, "name", string, "icon");
-- static SidebarNavItem[] sidebarItems = [
--   SidebarNavItem("/", "Home", "tabler-home"),
+- static struct SidebarNavItem { string path; string name; string icon; }
+- static immutable sidebarItems = [
+-   SidebarNavItem("/", "Overview", "tabler-home"),
+-   SidebarNavItem("/tasks", "Tasks", "tabler-list-check"),
 -   SidebarNavItem("/~", "Collections", "tabler-archive"),
 -   SidebarNavItem("/builders", "Builders", "tabler-bulldozer"),
 -   SidebarNavItem("/users", "Users", "tabler-users"),
+-   SidebarNavItem("/log", "Event log", "tabler-calendar-event")
 - ];
 
 aside.navbar.navbar-vertical.navbar-expand-lg.navbar-dark
@@ -19,11 +20,11 @@ aside.navbar.navbar-vertical.navbar-expand-lg.navbar-dark
                 span.logo.px-2 #[span.subtitle.opacity-75 Summit] Dashboard
         div.collapse.navbar-collapse(id="sidebarNavigation")
             ul.navbar-nav.pt-lg-3
-                - foreach (item; sidebarItems)
-                - {
+                - static foreach (item; sidebarItems)
+                - { {
                     - string className = (req.path == item.path || req.path.startsWith(item.path ~ "/")) ? "nav-link active" : "nav-link";
                     li.nav-item
                         a(class=className, aria-current="page", href=item.path)
                             span.nav-link-icon.d-md-none.d-lg-inline-block: svg(width="24px", height="24px"): use(xlink:href="/static/tabler/tabler-sprite.svg##{item.icon}")
-                            span.nav-link-title=item.name
-                - }
+                            span.ms-2.nav-link-title=item.name
+                - } }
