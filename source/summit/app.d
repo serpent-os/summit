@@ -19,9 +19,7 @@ import vibe.d;
 import moss.client.metadb;
 import moss.core.errors;
 import moss.service.accounts;
-import moss.service.sessionstore;
 import moss.service.models;
-import std.file : mkdirRecurse, exists;
 import std.path : buildPath;
 import summit.web;
 import summit.api;
@@ -33,16 +31,9 @@ import moss.service.tokens;
 import moss.service.tokens.manager;
 import std.base64 : Base64URLNoPadding;
 
-private enum TokenPaths : string
-{
-    Seed = ".seed",
-    PublicKey = ".pubkey",
-    PrivateKey = ".privkey",
-};
-
 /**
- * SummitApplication maintains the core lifecycle of Summit
- * and the event processing
+ * SummitApplication provides the main dashboard application
+ * seen by users after the setup app is complete.
  */
 public final class SummitApplication
 {
@@ -56,11 +47,8 @@ public final class SummitApplication
      */
     this(string rootDir) @safe
     {
-        logInfo(format!"SummitApplication running from %s"(rootDir));
-
         immutable statePath = rootDir.buildPath("state");
         immutable dbPath = statePath.buildPath("db");
-        dbPath.mkdirRecurse();
 
         tokenManager = new TokenManager(statePath);
         logInfo(format!"Instance pubkey: %s"(tokenManager.publicKey));
@@ -80,27 +68,7 @@ public final class SummitApplication
 
         accountManager = new AccountManager(dbPath.buildPath("accounts"));
 
-        router = new URLRouter();
-
-        /* Set up the server */
-        serverSettings = new HTTPServerSettings();
-        serverSettings.disableDistHost = true;
-        serverSettings.useCompressionIfPossible = true;
-        serverSettings.port = 8081;
-        serverSettings.sessionOptions = SessionOption.secure | SessionOption.httpOnly;
-        serverSettings.serverString = "summit/0.0.1";
-        serverSettings.sessionIdCookie = "summit.session_id";
-
-        /* Session persistence */
-        sessionStore = new DBSessionStore(dbPath.buildPath("session"));
-        serverSettings.sessionStore = sessionStore;
-
-        /* File settings for /static/ serving */
-        fileSettings = new HTTPFileServerSettings();
-        fileSettings.serverPathPrefix = "/static";
-        //fileSettings.maxAge = 30.days;
-        fileSettings.options = HTTPFileServerOption.failIfNotFound;
-        router.get("/static/*", serveStaticFiles(rootDir.buildPath("static/"), fileSettings));
+        _router = new URLRouter();
 
         web = new SummitWeb();
         web.configure(appDB, metaDB, accountManager, tokenManager, router);
@@ -111,9 +79,14 @@ public final class SummitApplication
 
         service = new RESTService(rootDir);
         service.configure(worker, accountManager, tokenManager, metaDB, appDB, router);
+    }
 
-        /* Lets go listen */
-        listener = listenHTTP(serverSettings, router);
+    /**
+     * Returns: mapped router
+     */
+    pragma(inline, true) pure @property URLRouter router() @safe @nogc nothrow
+    {
+        return _router;
     }
 
     /**
@@ -121,7 +94,6 @@ public final class SummitApplication
      */
     void close() @safe
     {
-        listener.stopListening();
         appDB.close();
         accountManager.close();
         worker.close();
@@ -132,11 +104,7 @@ private:
 
     RESTService service;
     AccountManager accountManager;
-    HTTPListener listener;
-    HTTPServerSettings serverSettings;
-    HTTPFileServerSettings fileSettings;
-    URLRouter router;
-    DBSessionStore sessionStore;
+    URLRouter _router;
     SummitWeb web;
     Database appDB;
     MetaDB metaDB;
