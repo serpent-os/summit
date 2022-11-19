@@ -16,7 +16,7 @@
 module main;
 
 import vibe.d;
-import summit;
+import summit.server;
 import std.path : absolutePath, asNormalizedPath;
 import std.conv : to;
 import libsodium : sodium_init;
@@ -37,10 +37,10 @@ int main(string[] args) @safe
     immutable rootDir = ".".absolutePath.asNormalizedPath.to!string;
     setLogLevel(LogLevel.trace);
 
-    auto app = new SummitApplication(rootDir);
+    auto server = new SummitServer(rootDir);
     scope (exit)
     {
-        app.close();
+        server.close();
     }
     return runApplication();
 }
