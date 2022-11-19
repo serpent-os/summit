@@ -63,6 +63,10 @@ function nextThemePref(currentThemePref)
 function activateTheme(themePref)
 {
     const svg = document.getElementById('themeSwitcherIcon');
+    if (svg === null)
+    {
+        return;
+    }
     const useIcon = svg.getElementsByTagName('use').item(0);
     switch (themePref)
     {
@@ -94,6 +98,10 @@ function activateTheme(themePref)
  */
 window.addEventListener('DOMContentLoaded', function(ev) {
     const switcher = document.getElementById('themeSwitcher');
+    if (switcher === null)
+    {
+        return;
+    }
     switcher.addEventListener('click', function(ev) {
         const themePref = currentThemePref();
         const newPref = nextThemePref(themePref);
