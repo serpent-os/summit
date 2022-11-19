@@ -23,6 +23,7 @@ import std.string : format;
 import summit.app;
 import summit.context;
 import summit.setup;
+import summit.models;
 import vibe.core.channel;
 import vibe.d;
 
@@ -76,7 +77,16 @@ public final class SummitServer
         /* Lets go listen */
         listener = listenHTTP(serverSettings, &applicationRouting);
 
-        initSetupApp();
+        /* Check our settings pls */
+        Settings settings = getSettings(context.appDB).tryMatch!((Settings s) => s);
+        if (!settings.setupComplete)
+        {
+            initSetupApp();
+        }
+        else
+        {
+            initWebApp();
+        }
     }
 
     /**
