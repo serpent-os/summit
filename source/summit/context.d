@@ -15,13 +15,14 @@
 
 module summit.context;
 
+public import moss.db.keyvalue;
 public import moss.service.accounts;
 public import moss.service.tokens.manager;
-public import moss.db.keyvalue;
-import std.path : buildPath;
-import vibe.d;
-import summit.models;
 import moss.service.models;
+import std.file : mkdirRecurse;
+import std.path : buildPath;
+import summit.models;
+import vibe.d;
 
 /**
  * Shared databases, etc.
@@ -38,6 +39,7 @@ public final class SummitContext
         this._rootDirectory = rootDirectory;
         immutable statePath = rootDirectory.buildPath("state");
         this._dbPath = statePath.buildPath("db");
+        dbPath.mkdirRecurse();
 
         /* Get token manager up and running */
         _tokenManager = new TokenManager(statePath);
