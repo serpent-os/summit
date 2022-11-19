@@ -37,7 +37,8 @@ public final class SetupApplication
      */
     void index() @safe
     {
-        redirect(format!"%s/setup"(request.path));
+        immutable path = request.path.endsWith("/") ? request.path[0 .. $ - 1] : request.path;
+        redirect(format!"%s/setup"(path));
     }
 
     /**
