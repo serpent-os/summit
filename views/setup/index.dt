@@ -24,7 +24,7 @@ block body
                                     div.row.py-2: h3 Configuration
                                     div.row.mb-2
                                         div
-                                            label.opacity-75.form-label(for="instanceURI") Instance URI
+                                            label.opacity-75.form-label(for="instanceURI") Public URL
                                             div.input-icon
                                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-link")
                                                 input#instanceURI.form-control(name="instanceURI", type="text", placeholder="https://somehost:8082", required, minlength="4", value=req.fullURL.toString[0..$-"/setup".length])
