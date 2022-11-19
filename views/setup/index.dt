@@ -16,7 +16,7 @@ block body
                     div.text-center.row.p-1: p.lead.opacity-75 Summit is a dashboard and controller for the Serpent OS build infrastructure. With it, packages are automatically scheduled across various builders for build and inclusion in remote collections.
                     div.text-center.row.p-1: p.lead We just need to go through some basic details before we can get everything up and running.
 
-                    form(autocomplete="off")
+                    form#setupForm(autocomplete="off", action="/setup/apply", method="POST")
                         input(type="hidden", autocomplete="off")
                         div.container.pt-2
                             div.row.p-2
@@ -65,7 +65,10 @@ block body
                 div.card-footer
                     div.d-flex
                         div.col
-                        div.col-auto: a.btn.btn-green(href="#") Install
+                        div.col-auto: a.btn.btn-green#submitButton(href="#") Install
 
 
         include footer
+
+block scripts
+    script(src="/static/setup.js", module)

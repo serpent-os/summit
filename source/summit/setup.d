@@ -17,6 +17,7 @@ module summit.setup;
 
 import vibe.d;
 import vibe.core.channel;
+import vibe.web.validation;
 
 /**
  * SetupApplication is only constructed when we actually
@@ -52,6 +53,29 @@ public final class SetupApplication
     void setupIndex() @safe
     {
         render!"setup/index.dt";
+    }
+
+    /**
+     * Attempt to apply setup.
+     *
+     * Params:
+     *      instanceURI = Our public instance URI
+     *      description = Friendly description for our instance
+     *      username = Administrator username
+     *      emailAddress = Admin email
+     *      password = Admin password
+     *      confirmPassword = Confirmation that password matches
+     */
+    @path("setup/apply") @method(HTTPMethod.POST) void applySetup(string instanceURI,
+            string description, ValidUsername username,
+            ValidEmail emailAddress, ValidPassword password, Confirm!"password" confirmPassword) @sanitizeUTF8
+    {
+        /* Unlock instance */
+        scope (success)
+        {
+            notifier.put(true);
+            redirect("/");
+        }
     }
 
     /**
