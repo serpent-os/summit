@@ -33,15 +33,24 @@ public final class SetupApplication
     }
 
     /**
-     * Render the index page
+     * / redirects to make our intent obvious
      */
     void index() @safe
+    {
+        redirect(format!"%s/setup"(request.path));
+    }
+
+    /**
+     * Real index page
+     */
+    @path("setup") @method(HTTPMethod.GET)
+    void setupIndex() @safe
     {
         render!"setup/index.dt";
     }
 
     /**
-     * Access the underlying URLRouter
+     * Returns: the underlying URLRouter
      */
     @noRoute pragma(inline, true) pure @property URLRouter router() @safe @nogc nothrow
     {
