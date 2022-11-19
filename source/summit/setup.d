@@ -18,6 +18,8 @@ module summit.setup;
 import vibe.d;
 import vibe.core.channel;
 import vibe.web.validation;
+import summit.context;
+import summit.models;
 
 /**
  * SetupApplication is only constructed when we actually
@@ -30,8 +32,9 @@ public final class SetupApplication
     /**
      * Construct a new SetupApplication
      */
-    this(Channel!(bool, 1) notifier) @safe
+    this(SummitContext context, Channel!(bool, 1) notifier) @safe
     {
+        this.context = context;
         this.notifier = notifier;
         _router = new URLRouter();
         _router.registerWebInterface(this);
@@ -70,12 +73,34 @@ public final class SetupApplication
             string description, ValidUsername username,
             ValidEmail emailAddress, ValidPassword password, Confirm!"password" confirmPassword) @sanitizeUTF8
     {
-        /* Unlock instance */
-        scope (success)
-        {
-            notifier.put(true);
-            redirect("/");
-        }
+        Settings appSettings;
+
+        /* Try to get our settings */
+        getSettings(context.appDB).match!((Settings s) { appSettings = s; }, (DatabaseError err) {
+            throw new HTTPStatusException(HTTPStatus.internalServerError, err.message);
+        });
+
+        /* Basic settings */
+        appSettings.instanceDescription = description;
+        appSettings.instanceURI = instanceURI;
+        appSettings.setupComplete = true;
+
+        /*  Add admin account :) */
+        context.accountManager.registerUser(username, password, emailAddress).match!((Account acct) {
+            immutable err = context.accountManager.addAccountToGroups(acct.id,
+                [BuiltinGroups.Admin, BuiltinGroups.Users]);
+            enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+        }, (DatabaseError err) {
+            throw new HTTPStatusException(HTTPStatus.internalServerError, err.message);
+        });
+
+        /* Now save the settings! */
+        immutable err = context.appDB.update((scope tx) => appSettings.save(tx));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+
+        /* Done! */
+        notifier.put(true);
+        redirect("/");
     }
 
     /**
@@ -90,4 +115,5 @@ private:
 
     URLRouter _router;
     Channel!(bool, 1) notifier;
+    SummitContext context;
 }

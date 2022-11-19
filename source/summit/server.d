@@ -151,7 +151,7 @@ private:
         });
 
         appMode = ApplicationMode.Setup;
-        setupApp = new SetupApplication(doneWork);
+        setupApp = new SetupApplication(context, doneWork);
         setupApp.router.get("/static/*", fileHandler);
     }
 
