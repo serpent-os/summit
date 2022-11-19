@@ -16,14 +16,15 @@
 
 module summit.server;
 
-import vibe.d;
 import moss.service.sessionstore;
+import std.file : mkdirRecurse;
 import std.path : buildPath;
 import std.string : format;
-import std.file : mkdirRecurse;
 import summit.app;
+import summit.context;
 import summit.setup;
 import vibe.core.channel;
+import vibe.d;
 
 private enum ApplicationMode
 {
@@ -50,9 +51,7 @@ public final class SummitServer
         logInfo(format!"SummitServer running from %s"(rootDir));
         this.rootDir = rootDir;
 
-        immutable statePath = rootDir.buildPath("state");
-        immutable dbPath = statePath.buildPath("db");
-        dbPath.mkdirRecurse();
+        context = new SummitContext(rootDir);
 
         /* Set up the server */
         serverSettings = new HTTPServerSettings();
@@ -64,7 +63,7 @@ public final class SummitServer
         serverSettings.sessionIdCookie = "summit.session_id";
 
         /* Session persistence */
-        sessionStore = new DBSessionStore(dbPath.buildPath("session"));
+        sessionStore = new DBSessionStore(context.dbPath.buildPath("session"));
         serverSettings.sessionStore = sessionStore;
 
         /* File settings for /static/ serving */
@@ -86,6 +85,11 @@ public final class SummitServer
     void close() @safe
     {
         listener.stopListening();
+        if (webApp !is null)
+        {
+            webApp.close();
+        }
+        context.close();
     }
 
     /**
@@ -116,7 +120,7 @@ private:
     void initWebApp() @safe
     {
         appMode = ApplicationMode.Standard;
-        webApp = new SummitApplication(rootDir);
+        webApp = new SummitApplication(context);
         webApp.router.get("/static/*", fileHandler);
     }
 
@@ -145,6 +149,7 @@ private:
     ApplicationMode appMode = ApplicationMode.Setup;
     SummitApplication webApp;
     SetupApplication setupApp;
+    SummitContext context;
 
     HTTPListener listener;
     HTTPServerSettings serverSettings;
