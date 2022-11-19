@@ -1,0 +1,7 @@
+extends root
+
+block title
+    title Setup Summit
+
+block content
+    h3 TODO: Construct a setup application
