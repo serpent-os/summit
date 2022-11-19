@@ -20,7 +20,7 @@ block body
                         input(type="hidden", autocomplete="off")
                         div.container.pt-2
                             div.row.p-2
-                                div.col.px-4
+                                div.col-lg-6.col-md-12.px-4
 
                                     h4.opacity-75 Configuration
                                     div.row.mb-2
@@ -34,7 +34,7 @@ block body
                                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-ballpen")
                                                 input#description.form-control(name="description", type="text", placeholder="Useful description", required, minlength="4")
 
-                                div.col.px-4
+                                div.col-lg-6.col-md-12.px-4
                                     h4.opacity-75 Administrator
                                     div.row.mb-2
                                         div
