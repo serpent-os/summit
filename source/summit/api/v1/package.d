@@ -23,6 +23,7 @@ import moss.client.metadb;
 
 import summit.api.v1.builders;
 import summit.api.v1.collections;
+import summit.api.v1.pairing;
 import summit.api.v1.repositories;
 import summit.api.v1.recipes;
 import moss.service.tokens.manager;
@@ -59,6 +60,7 @@ public final class RESTService : SummitAPIv1
         router.registerRestInterface(new CollectionsService(appDB));
         router.registerRestInterface(new RepositoriesService(worker, appDB));
         router.registerRestInterface(new RecipesService(metaDB, appDB));
+        router.registerRestInterface(new PairingService(tokenManager, accountManager, appDB));
     }
 
     /**
