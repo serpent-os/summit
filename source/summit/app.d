@@ -23,13 +23,9 @@ import moss.service.models;
 import std.path : buildPath;
 import summit.web;
 import summit.api;
-import moss.db.keyvalue;
-import moss.db.keyvalue.orm;
+import summit.context;
 import summit.models;
 import summit.workers;
-import moss.service.tokens;
-import moss.service.tokens.manager;
-import std.base64 : Base64URLNoPadding;
 
 /**
  * SummitApplication provides the main dashboard application
@@ -43,42 +39,25 @@ public final class SummitApplication
      * Construct new App 
      *
      * Params:
-     *      rootDir = Root directory
+     *      context = application context
      */
-    this(string rootDir) @safe
+    this(SummitContext context) @safe
     {
-        immutable statePath = rootDir.buildPath("state");
-        immutable dbPath = statePath.buildPath("db");
-
-        tokenManager = new TokenManager(statePath);
-        logInfo(format!"Instance pubkey: %s"(tokenManager.publicKey));
-
-        /* *has* to work */
-        Database.open(format!"lmdb://%s"(dbPath.buildPath("app")),
-                DatabaseFlags.CreateIfNotExists).tryMatch!((Database db) {
-            appDB = db;
-        });
-
-        metaDB = new MetaDB(dbPath.buildPath("metaDB"), true);
+        this.context = context;
+        metaDB = new MetaDB(context.dbPath.buildPath("metaDB"), true);
         metaDB.connect.tryMatch!((Success _) {});
-
-        immutable dbErr = appDB.update((scope tx) => tx.createModel!(PackageCollection,
-                Repository, AvalancheEndpoint, Settings));
-        enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
-
-        accountManager = new AccountManager(dbPath.buildPath("accounts"));
-
         _router = new URLRouter();
 
         web = new SummitWeb();
-        web.configure(appDB, metaDB, accountManager, tokenManager, router);
+        web.configure(context.appDB, metaDB, context.accountManager, context.tokenManager, router);
 
         /* Get worker system up and running */
-        worker = new WorkerSystem(rootDir, appDB, metaDB);
+        worker = new WorkerSystem(context.rootDirectory, context.appDB, metaDB);
         worker.start();
 
-        service = new RESTService(rootDir);
-        service.configure(worker, accountManager, tokenManager, metaDB, appDB, router);
+        service = new RESTService(context.rootDirectory);
+        service.configure(worker, context.accountManager, context.tokenManager,
+                metaDB, context.appDB, router);
     }
 
     /**
@@ -94,20 +73,16 @@ public final class SummitApplication
      */
     void close() @safe
     {
-        appDB.close();
-        accountManager.close();
         worker.close();
         metaDB.close();
     }
 
 private:
 
+    SummitContext context;
     RESTService service;
-    AccountManager accountManager;
     URLRouter _router;
     SummitWeb web;
-    Database appDB;
     MetaDB metaDB;
     WorkerSystem worker;
-    TokenManager tokenManager;
 }
