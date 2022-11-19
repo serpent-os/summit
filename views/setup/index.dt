@@ -5,21 +5,30 @@ block title
 
 block body
     body.d-flex.flex-column.min-vh-100
-        main
-            div.container-fluid.py-0.px-0.my-0.mx-0
-                div.container-fluid.py-0.px-0.mx-0.my-0
-                    div.row.align-items-center.justify-content-center.main-view
-                        div.col-5
-                            div.card.shadow
-                                div.card-status-top.bg-info
-                                div.card-body
-                                    h5.card-title.opacity-75 Setup Summit
-                                    p Welcome to your shiny new installation of Summit
-                                    p We just need to go through some basic details before we can get everything up and running.
-    
-                                div.card-footer
-                                    div.d-flex
-                                        div.col
-                                        div.col-auto: a.btn.btn-primary(href="#") Proceed
+        div.d-flex.vh-100.vw-100.align-items-center.justify-content-center
+  
+            div.container.container-tight
+                div.card
+                    div.card-body.align-items-center.justify-content-center
+                        div.text-center:
+                            svg.primaryLogo.logo.text-azure(width="96px", height="96px")
+                                use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-dashboard")
+                        div.text-center.row.p-4: h6.display-6 Welcome to Summit
+                        div.text-center.row.p-1: p.lead.opacity-75 Summit is a dashboard and controller for the Serpent OS build infrastructure. With it, packages are automatically scheduled across various builders for build and inclusion in remote collections.
+                        div.row.p-2: p We just need to go through some basic details before we can get everything up and running.
+
+                        div.hr-text: span Configuration
+                        form
+                            div.mb-3
+                                div.row: label.form-label(for="instanceURI") Public URL
+                                div.row: input.form-control(name="instanceURI", type="text", placeholder="Where can we reach this instance on the web?")
+                            div.mb-3
+                                div.row: label.form-label(for="description") Description
+                                div.row: input.form-control(name="description", type="text", placeholder="Describe this instance to simplify connections")
+                    div.card-footer
+                        div.d-flex
+                            div.col
+                            div.col-auto: a.btn.btn-green(href="#") Install
+
 
         include footer
