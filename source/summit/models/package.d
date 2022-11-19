@@ -17,3 +17,4 @@ module summit.models;
 
 public import summit.models.collection;
 public import summit.models.repository;
+public import summit.models.settings;

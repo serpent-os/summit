@@ -63,7 +63,7 @@ public final class SummitApplication
         metaDB.connect.tryMatch!((Success _) {});
 
         immutable dbErr = appDB.update((scope tx) => tx.createModel!(PackageCollection,
-                Repository, AvalancheEndpoint));
+                Repository, AvalancheEndpoint, Settings));
         enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
 
         accountManager = new AccountManager(dbPath.buildPath("accounts"));
