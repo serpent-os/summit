@@ -7,28 +7,60 @@ block body
     body.d-flex.flex-column.min-vh-100
         div.d-flex.vh-100.vw-100.align-items-center.justify-content-center
   
-            div.container.container-tight
-                div.card
-                    div.card-body.align-items-center.justify-content-center
-                        div.text-center:
-                            svg.primaryLogo.logo.text-azure(width="96px", height="96px")
-                                use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-dashboard")
-                        div.text-center.row.p-4: h6.display-6 Welcome to Summit
-                        div.text-center.row.p-1: p.lead.opacity-75 Summit is a dashboard and controller for the Serpent OS build infrastructure. With it, packages are automatically scheduled across various builders for build and inclusion in remote collections.
-                        div.row.p-2: p We just need to go through some basic details before we can get everything up and running.
+            div.card.col-5.shadow-sm
+                div.card-body.align-items-center.justify-content-center
+                    div.text-center:
+                        svg.primaryLogo.logo.text-azure(width="96px", height="96px")
+                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-dashboard")
+                    div.text-center.row.p-4: h6.display-6 Welcome to Summit
+                    div.text-center.row.p-1: p.lead.opacity-75 Summit is a dashboard and controller for the Serpent OS build infrastructure. With it, packages are automatically scheduled across various builders for build and inclusion in remote collections.
+                    div.text-center.row.p-1: p.lead We just need to go through some basic details before we can get everything up and running.
 
-                        div.hr-text: span Configuration
-                        form
-                            div.mb-3
-                                div.row: label.form-label(for="instanceURI") Public URL
-                                div.row: input.form-control(name="instanceURI", type="text", placeholder="Where can we reach this instance on the web?")
-                            div.mb-3
-                                div.row: label.form-label(for="description") Description
-                                div.row: input.form-control(name="description", type="text", placeholder="Describe this instance to simplify connections")
-                    div.card-footer
-                        div.d-flex
-                            div.col
-                            div.col-auto: a.btn.btn-green(href="#") Install
+                    form(autocomplete="off")
+                        input(type="hidden", autocomplete="off")
+                        div.container.pt-2
+                            div.row.p-2
+                                div.col.px-4
+
+                                    h4.opacity-75 Configuration
+                                    div.row.mb-2
+                                        div
+                                            div.input-icon
+                                                span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-link")
+                                                input#instanceURI.form-control(name="instanceURI", type="text", placeholder="Instance URI", required, minlength="4")
+                                    div.row.mb-2
+                                        div
+                                            div.input-icon
+                                                span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-ballpen")
+                                                input#description.form-control(name="description", type="text", placeholder="Useful description", required, minlength="4")
+
+                                div.col.px-4
+                                    h4.opacity-75 Administrator
+                                    div.row.mb-2
+                                        div
+                                            div.input-icon
+                                                span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-user")
+                                                input#username.form-control(name="username", type="text", placeholder="Pick a unique username", required, minlength="4")
+                                    div.row.mb-2
+                                        div
+                                            div.input-icon
+                                                span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-mail")
+                                                input#emailAddress.form-control(name="emailAddress", type="email", placeholder="Valid email address", required)
+                                    div.row.mb-2
+                                        div
+                                            div.input-icon
+                                                span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-lock")
+                                                input#password.form-control(name="password", type="password", placeholder="Type your password", required, minlength="6")
+                                    div.row.mb-2
+                                        div
+                                            div.input-icon
+                                                span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-lock")
+                                                input#confirmPassword.form-control(name="confirmPassword", type="password", placeholder="And confirm your password", required, minlength="6")
+
+                div.card-footer
+                    div.d-flex
+                        div.col
+                        div.col-auto: a.btn.btn-green(href="#") Install
 
 
         include footer
