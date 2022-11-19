@@ -21,37 +21,40 @@ block body
                         div.container.pt-2
                             div.row.p-2
                                 div.col-lg-6.col-md-12.px-4
-
-                                    h4.opacity-75 Configuration
                                     div.row.mb-2
                                         div
+                                            label.form-label(for="instanceURI") Instance URI
                                             div.input-icon
                                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-link")
-                                                input#instanceURI.form-control(name="instanceURI", type="text", placeholder="Instance URI", required, minlength="4")
+                                                input#instanceURI.form-control(name="instanceURI", type="text", placeholder="Instance URI", required, minlength="4", value=req.fullURL.toString[0..$-"/setup".length])
                                     div.row.mb-2
                                         div
+                                            label.form-label(for="description") Description
                                             div.input-icon
                                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-ballpen")
                                                 input#description.form-control(name="description", type="text", placeholder="Useful description", required, minlength="4")
 
                                 div.col-lg-6.col-md-12.px-4
-                                    h4.opacity-75 Administrator
                                     div.row.mb-2
+                                        label.form-label(for="username") Username
                                         div
                                             div.input-icon
                                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-user")
                                                 input#username.form-control(name="username", type="text", placeholder="Pick a unique username", required, minlength="4")
                                     div.row.mb-2
+                                        label.form-label(for="email") Email address
                                         div
                                             div.input-icon
                                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-mail")
                                                 input#emailAddress.form-control(name="emailAddress", type="email", placeholder="Valid email address", required)
                                     div.row.mb-2
+                                        label.form-label(for="password") Password
                                         div
                                             div.input-icon
                                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-lock")
                                                 input#password.form-control(name="password", type="password", placeholder="Type your password", required, minlength="6")
                                     div.row.mb-2
+                                        label.form-label(for="confirmPassword") Confirm password
                                         div
                                             div.input-icon
                                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-lock")
