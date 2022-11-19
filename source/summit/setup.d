@@ -16,6 +16,7 @@
 module summit.setup;
 
 import vibe.d;
+import vibe.core.channel;
 
 /**
  * SetupApplication is only constructed when we actually
@@ -23,11 +24,14 @@ import vibe.d;
  */
 public final class SetupApplication
 {
+    @disable this();
+
     /**
      * Construct a new SetupApplication
      */
-    this() @safe
+    this(Channel!(bool, 1) notifier) @safe
     {
+        this.notifier = notifier;
         _router = new URLRouter();
         _router.registerWebInterface(this);
     }
@@ -61,4 +65,5 @@ public final class SetupApplication
 private:
 
     URLRouter _router;
+    Channel!(bool, 1) notifier;
 }

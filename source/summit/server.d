@@ -23,6 +23,7 @@ import std.string : format;
 import std.file : mkdirRecurse;
 import summit.app;
 import summit.setup;
+import vibe.core.channel;
 
 private enum ApplicationMode
 {
@@ -124,8 +125,19 @@ private:
      */
     void initSetupApp() @safe
     {
+        /* Notifier channel */
+        Channel!(bool, 1) doneWork = createChannel!(bool, 1);
+        runTask({
+            bool done;
+            doneWork.tryConsumeOne(done);
+
+            /* Switch from setup to running application */
+            setupApp = null;
+            initWebApp();
+        });
+
         appMode = ApplicationMode.Setup;
-        setupApp = new SetupApplication();
+        setupApp = new SetupApplication(doneWork);
         setupApp.router.get("/static/*", fileHandler);
     }
 
