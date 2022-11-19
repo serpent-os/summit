@@ -20,22 +20,10 @@ html
             link(rel="icon", type="image/png", sizes="#{size}x#{size}", href="/static/img/favicon-#{size}x#{size}.png")   
         - }
     body.d-flex.flex-column.min-vh-100
-        block banner
-        main
-            div.container-fluid.py-0.px-0.my-0.mx-0
-                include sidebar_navigation
-                div.container-fluid.py-0.px-0.mx-0.my-0
-                    include header_navigation
-                    div.container.py-4
-                        block content
-                            div.container
-                                h1 undefined content
-        include footer
+        block body
+            h1 add a body
 
-        block dialogs
-            // Add dialogs in this here
     
-
     // TODO: Use a site prefix
     script(src="/static/tabler/js/tabler.min.js", defer, async)
     script(src="/static/darkMode.js")

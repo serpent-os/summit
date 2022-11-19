@@ -1,0 +1,18 @@
+extends root
+
+block body
+    body.d-flex.flex-column.min-vh-100
+        block banner
+        main
+            div.container-fluid.py-0.px-0.my-0.mx-0
+                include sidebar_navigation
+                div.container-fluid.py-0.px-0.mx-0.my-0
+                    include header_navigation
+                    div.container.py-4
+                        block content
+                            div.container
+                                h1 undefined content
+        include footer
+
+        block dialogs
+            // Add dialogs in this here
