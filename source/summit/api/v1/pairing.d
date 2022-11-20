@@ -49,27 +49,27 @@ public final class PairingService : ServiceEnrolmentAPI
         throw new HTTPStatusException(HTTPStatus.notImplemented, "Summit does not support .enrol()");
     }
 
-    override string refreshToken() @safe
+    override string refreshToken(NullableToken token) @safe
     {
         return "";
     }
 
-    override string refreshIssueToken() @safe
+    override string refreshIssueToken(NullableToken token) @safe
     {
         return "";
     }
 
-    override void accept(ServiceEnrolmentRequest request) @safe
+    override void accept(ServiceEnrolmentRequest request, NullableToken token) @safe
     {
         throw new HTTPStatusException(HTTPStatus.notImplemented, "accept(): Not yet implemented");
     }
 
-    override void decline() @safe
+    override void decline(NullableToken token) @safe
     {
         throw new HTTPStatusException(HTTPStatus.notImplemented, "decline(): Not yet implemented");
     }
 
-    override void leave() @safe
+    override void leave(NullableToken token) @safe
     {
         throw new HTTPStatusException(HTTPStatus.notImplemented, "leave(): Not yet implemented");
     }
