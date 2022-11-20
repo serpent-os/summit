@@ -20,6 +20,7 @@ import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import moss.service.models.bearertoken;
 import moss.service.models.endpoints;
+import summit.models.settings;
 import moss.service.interfaces;
 import std.algorithm : map;
 import std.array : array;
@@ -129,6 +130,9 @@ public final class BuildersService : BuildersAPIv1
         EnrolAvalancheEvent event = EnrolAvalancheEvent(endpoint);
         event.issueToken = encodedToken;
         event.instancePublicKey = tokenManager.publicKey;
+
+        Settings settings = appDB.getSettings().tryMatch!((Settings s) => s);
+        event.instanceURI = settings.instanceURI;
 
         /* Dispatch the event */
         queue.put(ControlEvent(event));

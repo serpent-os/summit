@@ -103,6 +103,11 @@ public struct EnrolAvalancheEvent
      */
     string instancePublicKey;
 
+    /**
+     * Our own install URI
+     */
+    string instanceURI;
+
     /** 
      * The initial issue token we'll give them. Nice of us.
      */

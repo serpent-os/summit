@@ -39,7 +39,7 @@ public void handleEnrolBuilder(scope HandlerContext context, scope const ref Con
     req.issueToken = enrol.issueToken;
     req.issuer.publicKey = enrol.instancePublicKey;
     req.issuer.role = EnrolmentRole.Hub;
-
+    req.issuer.url = enrol.instanceURI;
     /* Enrol with the remote system */
     auto api = new RestInterfaceClient!ServiceEnrolmentAPI(event.endpoint.hostAddress);
     api.enrol(req);

@@ -61,6 +61,7 @@ public final class PairingService : ServiceEnrolmentAPI
 
     override void accept(ServiceEnrolmentRequest request, NullableToken token) @safe
     {
+        logInfo(format!"Incoming request from %s"(token.get));
         throw new HTTPStatusException(HTTPStatus.notImplemented, "accept(): Not yet implemented");
     }
 
