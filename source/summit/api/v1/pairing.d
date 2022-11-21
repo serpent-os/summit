@@ -24,6 +24,7 @@ import moss.service.tokens;
 import moss.service.tokens.manager;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
+import moss.service.models;
 
 /**
  * Implementation of the hub-aspect enrolment API
@@ -61,8 +62,21 @@ public final class PairingService : ServiceEnrolmentAPI
 
     override void accept(ServiceEnrolmentRequest request, NullableToken token) @safe
     {
-        logInfo(format!"Incoming request from %s"(token.get));
-        throw new HTTPStatusException(HTTPStatus.notImplemented, "accept(): Not yet implemented");
+        /* We can handle avalanche and vessel requests only */
+        switch (token.payload.aud)
+        {
+        case "avalanche":
+            AvalancheEndpoint endpoint;
+            immutable err = appDB.view((in tx) => endpoint.load(tx, token.payload.sub));
+            enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
+            endpoint.status = EndpointStatus.Operational;
+            immutable errStore = appDB.update((scope tx) => endpoint.save(tx));
+            enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+            logInfo(format!"Completed pairing of %s via token %s"(request, token.get));
+            break;
+        default:
+            throw new HTTPStatusException(HTTPStatus.badRequest, "Unsupported token audience");
+        }
     }
 
     override void decline(NullableToken token) @safe

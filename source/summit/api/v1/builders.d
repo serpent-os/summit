@@ -93,13 +93,20 @@ public final class BuildersService : BuildersAPIv1
 
         logInfo(format!"Constructed new service account '%s': %s"(serviceAccount.id, serviceUser));
 
-        /* Construct the bearer token */
+        /**
+         * Construct the bearer token
+         * NOTE:
+         *  aud = avalanche ALWAYS
+         *  sub = `request.id` - so we can map to AvalancheEndpoint in the DB
+         * This varies from user accounts where `sub` = `username`
+         */
         string encodedToken;
         TokenPayload payload;
         payload.iss = "summit";
-        payload.sub = serviceAccount.username;
+        payload.sub = request.id;
         payload.uid = serviceAccount.id;
         payload.act = serviceAccount.type;
+        payload.aud = "avalanche";
         Token bearer = tokenManager.createBearerToken(payload);
         tokenManager.signToken(bearer).match!((TokenError err) {
             throw new HTTPStatusException(HTTPStatus.internalServerError, err.message);
