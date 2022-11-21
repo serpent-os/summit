@@ -31,7 +31,7 @@ public final class SummitAccountsWeb : AccountsWeb
      */
     this(AccountManager accountManager, TokenManager tokenManager) @safe
     {
-        super(accountManager, tokenManager);
+        super(accountManager, tokenManager, "summit");
     }
 
     override void renderLogin() @safe
