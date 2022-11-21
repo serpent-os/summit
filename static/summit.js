@@ -29,12 +29,25 @@ const colors = [
     "bg-cyan-lt"
 ];
 
+const EndpointStatus = Object.freeze({
+    AwaitingAcceptance: 0,
+    AwaitingEnrolment: 1,
+    Failed: 2,
+    Operational: 3
+});
+
+const EndpointColors = Object.freeze({
+    0: 'status-orange',
+    1: 'status-grey',
+    2: 'status-red',
+    3: 'status-green',
+});
+
  window.addEventListener('load', function(ev)
  {
      integrateList();
      ev.preventDefault();
  });
-
  
 /**
  * Current context
@@ -297,7 +310,7 @@ function renderElement(context, element, idx)
                 <div class="list-group-item list-group-hoverable">
                 <div class="row align-items-center">
                     <div class="col-auto">
-                        <span class="status-dot status-dot-animated status-red"></span>
+                        <span class="status-dot status-dot-animated ${EndpointColors[element.status]}"></span>
                     </div>
                     <div class="col-auto">
                         <span class="avatar ${color}">${element.title[0]}</span>

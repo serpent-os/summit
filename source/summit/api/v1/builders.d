@@ -64,6 +64,7 @@ public final class BuildersService : BuildersAPIv1
                     v.id = i.id;
                     v.title = i.id;
                     v.subtitle = i.description;
+                    v.status = i.status;
                     return v;
                 });
             ret = () @trusted { return items.array; }();

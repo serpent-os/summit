@@ -117,6 +117,9 @@ public struct ListItem
      */
     string subtitle;
 
+    /* any special status enums */
+    int status = 0;
+
     /**
      * An item may have children too
      */
