@@ -15,10 +15,39 @@
 
 module summit.collections.collection;
 
+import summit.context;
+import summit.models.collection;
+
 /**
  * A collection explicitly managed by Summit
  */
 public final class ManagedCollection
 {
+    @disable this();
 
+    /** 
+     * Construct a new ManagedCollection
+     *
+     * Params:
+     *      context = global context
+     *      model = Database model
+     */
+    this(SummitContext context, PackageCollection model) @safe
+    {
+        this.context = context;
+        this._model = model;
+    }
+
+    /**
+     * Returns: Underlying DB model
+     */
+    pure @property PackageCollection model() @safe @nogc nothrow
+    {
+        return _model;
+    }
+
+private:
+
+    SummitContext context;
+    PackageCollection _model;
 }
