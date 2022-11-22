@@ -5,7 +5,7 @@
  */
 
 /**
- * summit.collections
+ * summit.context
  *
  * Collection management
  *
@@ -13,8 +13,12 @@
  * License: Zlib
  */
 
-module summit.collections;
+module summit.collections.collection;
 
-public import summit.collections.collection;
-public import summit.collections.manager;
-public import summit.collections.repository;
+/**
+ * A collection explicitly managed by Summit
+ */
+public final class ManagedCollection
+{
+
+}

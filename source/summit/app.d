@@ -15,17 +15,18 @@
 
 module summit.app;
 
-import vibe.d;
 import moss.client.metadb;
 import moss.core.errors;
 import moss.service.accounts;
 import moss.service.models;
 import std.path : buildPath;
-import summit.web;
 import summit.api;
+import summit.collections;
 import summit.context;
 import summit.models;
+import summit.web;
 import summit.workers;
+import vibe.d;
 
 /**
  * SummitApplication provides the main dashboard application
@@ -44,6 +45,8 @@ public final class SummitApplication
     this(SummitContext context) @safe
     {
         this.context = context;
+        this.collectionManager = new CollectionManager(context);
+
         metaDB = new MetaDB(context.dbPath.buildPath("metaDB"), true);
         metaDB.connect.tryMatch!((Success _) {});
         _router = new URLRouter();
@@ -79,6 +82,7 @@ public final class SummitApplication
 
 private:
 
+    CollectionManager collectionManager;
     SummitContext context;
     RESTService service;
     URLRouter _router;
