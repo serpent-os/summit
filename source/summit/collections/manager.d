@@ -55,6 +55,7 @@ public final class CollectionManager
                 {
                     return err;
                 }
+                managed ~= c;
             }
             return NoDatabaseError;
         }
@@ -62,7 +63,16 @@ public final class CollectionManager
         return context.appDB.view(&colLoader);
     }
 
+    /**
+     * Returns: all managed collections
+     */
+    pure auto @property collections() @safe @nogc nothrow
+    {
+        return managed;
+    }
+
 private:
 
     SummitContext context;
+    ManagedCollection[] managed;
 }

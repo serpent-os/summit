@@ -49,6 +49,14 @@ public final class ManagedCollection
         return _model;
     }
 
+    /**
+     * Returns: This collection's managed repositories
+     */
+    pure @property auto repositories() @safe @nogc nothrow
+    {
+        return managed;
+    }
+
 package:
 
     /**
@@ -59,6 +67,7 @@ package:
         foreach (repo; tx.list!Repository)
         {
             auto r = new ManagedRepository(context, this, repo);
+            managed ~= r;
         }
         return NoDatabaseError;
     }
@@ -67,4 +76,5 @@ private:
 
     SummitContext context;
     PackageCollection _model;
+    ManagedRepository[] managed;
 }
