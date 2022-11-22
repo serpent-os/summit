@@ -122,7 +122,8 @@ public final class BuildersService : BuildersAPIv1
         /* Create the endpoint model */
         AvalancheEndpoint endpoint;
         endpoint.serviceAccount = serviceAccount.id;
-        endpoint.status = EndpointStatus.AwaitingEnrolment;
+        endpoint.status = EndpointStatus.AwaitingAcceptance;
+        endpoint.statusText = "Newly added";
         endpoint.adminEmail = request.adminEmail;
         endpoint.adminName = request.adminName;
         endpoint.hostAddress = request.instanceURI;
@@ -145,7 +146,19 @@ public final class BuildersService : BuildersAPIv1
          * something to happen. */
         runTask({
             auto api = new RestInterfaceClient!ServiceEnrolmentAPI(endpoint.hostAddress);
-            api.enrol(req);
+            try
+            {
+                api.enrol(req);
+                endpoint.status = EndpointStatus.AwaitingAcceptance;
+                endpoint.statusText = "Awaiting acceptance";
+            }
+            catch (RestException rx)
+            {
+                endpoint.status = EndpointStatus.Failed;
+                endpoint.statusText = format!"Negotiation failure: %s"(rx.message);
+            }
+            immutable err = appDB.update((scope tx) => endpoint.save(tx));
+            enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
         });
     }
 
