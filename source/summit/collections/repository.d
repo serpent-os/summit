@@ -63,6 +63,14 @@ public final class ManagedRepository
         return _model;
     }
 
+    /**
+     * Close underlying resources
+     */
+    void close() @safe
+    {
+        _db.close();
+    }
+
 private:
 
     SummitContext context;

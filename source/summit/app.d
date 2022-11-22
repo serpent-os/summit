@@ -78,6 +78,7 @@ public final class SummitApplication
     {
         worker.close();
         metaDB.close();
+        collectionManager.close();
     }
 
 private:

@@ -57,6 +57,17 @@ public final class ManagedCollection
         return managed;
     }
 
+    /**
+     * Close all underlying resources
+     */
+    void close() @safe
+    {
+        foreach (m; managed)
+        {
+            m.close();
+        }
+    }
+
 package:
 
     /**

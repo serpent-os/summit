@@ -64,6 +64,17 @@ public final class CollectionManager
     }
 
     /**
+     * Close all underlying resources
+     */
+    void close() @safe
+    {
+        foreach (m; managed)
+        {
+            m.close();
+        }
+    }
+
+    /**
      * Returns: all managed collections
      */
     pure auto @property collections() @safe @nogc nothrow
