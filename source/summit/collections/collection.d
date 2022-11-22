@@ -16,6 +16,8 @@
 module summit.collections.collection;
 
 import moss.db.keyvalue;
+import std.conv : to;
+import std.path : buildPath;
 import summit.collections.repository;
 import summit.context;
 import summit.models.collection;
@@ -39,6 +41,8 @@ public final class ManagedCollection
     {
         this.context = context;
         this._model = model;
+        /* The ID field never changes */
+        this._dbPath = context.dbPath.buildPath("collections", to!string(model.id));
     }
 
     /**
@@ -68,6 +72,14 @@ public final class ManagedCollection
         }
     }
 
+    /**
+     * Returns: dbPath specific to this collection
+     */
+    pure @property string dbPath() @safe @nogc nothrow const
+    {
+        return _dbPath;
+    }
+
 package:
 
     /**
@@ -88,4 +100,5 @@ private:
     SummitContext context;
     PackageCollection _model;
     ManagedRepository[] managed;
+    string _dbPath;
 }

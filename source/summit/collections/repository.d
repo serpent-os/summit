@@ -16,6 +16,8 @@
 module summit.collections.repository;
 
 import moss.client.metadb;
+import std.conv : to;
+import std.path : buildPath;
 import summit.collections.collection;
 import summit.context;
 import summit.models.repository;
@@ -45,6 +47,8 @@ public final class ManagedRepository
     this(SummitContext context, ManagedCollection parent, Repository model) @safe
     {
         this._model = model;
+        /* ID field never changes */
+        this._dbPath = parent.dbPath.buildPath(to!string(model.id));
     }
 
     /**
@@ -64,6 +68,14 @@ public final class ManagedRepository
     }
 
     /**
+     * Returns: database path specific to this repository
+     */
+    pure @property string dbPath() @safe @nogc nothrow const
+    {
+        return _dbPath;
+    }
+
+    /**
      * Close underlying resources
      */
     void close() @safe
@@ -76,4 +88,5 @@ private:
     SummitContext context;
     MetaDB _db;
     Repository _model;
+    string _dbPath;
 }
