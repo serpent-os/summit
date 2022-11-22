@@ -31,7 +31,7 @@ public final class CollectionManager
      */
     this(SummitContext context) @safe
     {
-
+        this.context = context;
     }
 
 private:
