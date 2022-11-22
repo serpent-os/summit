@@ -27,7 +27,7 @@ public final class CollectionManager
     @disable this();
 
     /**
-     * Construct a new CollectionsManager for the given context
+     * Construct a new CollectionManager for the given context
      */
     this(SummitContext context) @safe
     {
