@@ -39,13 +39,11 @@ public final class BuildersService : BuildersAPIv1
     /**
      * Construct new BuildersService
      */
-    this(scope WorkerSystem workerSystem, AccountManager accountManager,
-            TokenManager tokenManager, Database appDB) @safe
+    this(AccountManager accountManager, TokenManager tokenManager, Database appDB) @safe
     {
         this.appDB = appDB;
         this.tokenManager = tokenManager;
         this.accountManager = accountManager;
-        queue = workerSystem.controlQueue;
     }
 
     /**
@@ -113,7 +111,7 @@ public final class BuildersService : BuildersAPIv1
             throw new HTTPStatusException(HTTPStatus.internalServerError, err.message);
         }, (string s) { encodedToken = s; });
 
-        /* Set the token in the DB now */
+        /* Set the bearer token in the DB now */
         BearerToken storedToken;
         storedToken.id = serviceAccount.id;
         storedToken.rawToken = encodedToken;
@@ -130,25 +128,26 @@ public final class BuildersService : BuildersAPIv1
         endpoint.publicKey = request.pubkey;
         endpoint.description = request.summary;
         endpoint.id = request.id;
-
         immutable err = appDB.update((scope tx) => endpoint.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
-        /* Get token allocated */
-        EnrolAvalancheEvent event = EnrolAvalancheEvent(endpoint);
-        event.issueToken = encodedToken;
-        event.instancePublicKey = tokenManager.publicKey;
+        /* Sort out the enrolment request */
+        const settings = appDB.getSettings().tryMatch!((Settings s) => s);
+        ServiceEnrolmentRequest req;
+        req.role = EnrolmentRole.Builder;
+        req.issueToken = encodedToken;
+        req.issuer.publicKey = tokenManager.publicKey;
+        req.issuer.role = EnrolmentRole.Hub;
+        req.issuer.url = settings.instanceURI;
 
-        Settings settings = appDB.getSettings().tryMatch!((Settings s) => s);
-        event.instanceURI = settings.instanceURI;
-
-        /* Dispatch the event */
-        queue.put(ControlEvent(event));
+        /* Dispatch ! */
+        auto api = new RestInterfaceClient!ServiceEnrolmentAPI(endpoint.hostAddress);
+        api.enrol(req);
     }
 
 private:
+
     Database appDB;
-    ControlQueue queue;
     TokenManager tokenManager;
     AccountManager accountManager;
 }

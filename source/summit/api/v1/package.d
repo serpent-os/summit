@@ -55,8 +55,7 @@ public final class RESTService : SummitAPIv1
             TokenManager tokenManager, MetaDB metaDB, Database appDB, URLRouter router) @safe
     {
         router.registerRestInterface(this);
-        router.registerRestInterface(new BuildersService(worker, accountManager,
-                tokenManager, appDB));
+        router.registerRestInterface(new BuildersService(accountManager, tokenManager, appDB));
         router.registerRestInterface(new CollectionsService(appDB));
         router.registerRestInterface(new RepositoriesService(worker, appDB));
         router.registerRestInterface(new RecipesService(metaDB, appDB));

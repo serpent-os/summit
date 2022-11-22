@@ -23,7 +23,6 @@ import std.string : format;
 /* Handlers */
 import summit.workers.handlers.git : handleImportRepository;
 import summit.workers.handlers.scanner : handleScanManifests;
-import summit.workers.handlers.pairing : handleEnrolBuilder;
 
 /**
  * Handler function
@@ -43,7 +42,6 @@ shared static this()
     HandlerFT[ControlEvent.Kind] workerTable = [
         ControlEvent.Kind.importRepo: &handleImportRepository,
         ControlEvent.Kind.scanManifests: &handleScanManifests,
-        ControlEvent.Kind.enrolBuilder: &handleEnrolBuilder,
     ];
     handlerVtable = assumeUnique(workerTable);
 }

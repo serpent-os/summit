@@ -88,33 +88,6 @@ public struct ImportManifestEvent
 }
 
 /**
- * We've got a new endpoint added but it needs enroling into
- * our system.
- */
-public struct EnrolAvalancheEvent
-{
-    /**
-     * The target endpoint. We'll form our own enrolment request
-     */
-    AvalancheEndpoint endpoint;
-
-    /**
-     * Our own public key
-     */
-    string instancePublicKey;
-
-    /**
-     * Our own install URI
-     */
-    string instanceURI;
-
-    /** 
-     * The initial issue token we'll give them. Nice of us.
-     */
-    string issueToken;
-}
-
-/**
  * A set of known events
  */
 public union ControlEventSet
@@ -143,11 +116,6 @@ public union ControlEventSet
      * Import a single manifest path
      */
     ImportManifestEvent importManifest;
-
-    /**
-     * Enrol a builder
-     */
-    EnrolAvalancheEvent enrolBuilder;
 }
 
 /**
