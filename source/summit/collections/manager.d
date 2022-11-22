@@ -16,6 +16,9 @@
 module summit.collections.manager;
 
 import summit.context;
+import summit.models.collection;
+import moss.db.keyvalue;
+import summit.collections.collection;
 
 /**
  * The CollectionManager helps us to control the correlation between
@@ -32,6 +35,31 @@ public final class CollectionManager
     this(SummitContext context) @safe
     {
         this.context = context;
+    }
+
+    /**
+     * Connect with the underlying database and initialise the managed
+     * instances
+     *
+     * Returns: Nullable error
+     */
+    DatabaseResult connect() @safe
+    {
+        DatabaseResult colLoader(in Transaction tx) @safe
+        {
+            foreach (model; tx.list!PackageCollection)
+            {
+                auto c = new ManagedCollection(context, model);
+                immutable err = c.connect(tx);
+                if (!err.isNull)
+                {
+                    return err;
+                }
+            }
+            return NoDatabaseError;
+        }
+
+        return context.appDB.view(&colLoader);
     }
 
 private:

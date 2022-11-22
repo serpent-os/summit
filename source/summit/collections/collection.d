@@ -15,8 +15,11 @@
 
 module summit.collections.collection;
 
+import moss.db.keyvalue;
+import summit.collections.repository;
 import summit.context;
 import summit.models.collection;
+import summit.models.repository;
 
 /**
  * A collection explicitly managed by Summit
@@ -44,6 +47,20 @@ public final class ManagedCollection
     pure @property PackageCollection model() @safe @nogc nothrow
     {
         return _model;
+    }
+
+package:
+
+    /**
+     * Connect via the given transaction to initialise this collection
+     */
+    DatabaseResult connect(in Transaction tx) @safe
+    {
+        foreach (repo; tx.list!Repository)
+        {
+            auto r = new ManagedRepository(context, this, repo);
+        }
+        return NoDatabaseError;
     }
 
 private:
