@@ -140,9 +140,12 @@ public final class BuildersService : BuildersAPIv1
         req.issuer.role = EnrolmentRole.Hub;
         req.issuer.url = settings.instanceURI;
 
-        /* Dispatch ! */
-        auto api = new RestInterfaceClient!ServiceEnrolmentAPI(endpoint.hostAddress);
-        api.enrol(req);
+        /* This may take some time, timeout, etc, so don't block the response waiting for
+         * something to happen. */
+        runTask({
+            auto api = new RestInterfaceClient!ServiceEnrolmentAPI(endpoint.hostAddress);
+            api.enrol(req);
+        });
     }
 
 private:
