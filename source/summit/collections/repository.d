@@ -21,7 +21,7 @@ import std.path : buildPath, dirName;
 import summit.collections.collection;
 import summit.context;
 import summit.models.repository;
-import std.file : mkdirRecurse;
+import std.file : mkdirRecurse, rmdirRecurse, exists;
 import vibe.d;
 import vibe.core.process;
 
@@ -49,6 +49,8 @@ public final class ManagedRepository
      */
     this(SummitContext context, ManagedCollection parent, Repository model) @safe
     {
+        this.context = context;
+
         this._model = model;
         /* ID field never changes */
         this._dbPath = parent.dbPath.buildPath(to!string(model.id));
@@ -138,7 +140,15 @@ public final class ManagedRepository
      */
     void clone() @safe
     {
-        model.status = RepositoryStatus.Cloning;
+        /* We need the *parent* clone directory to exist */
+        if (clonePath.exists)
+        {
+            clonePath.rmdirRecurse();
+        }
+        clonePath.dirName.mkdirRecurse();
+
+        /* Update the marker for cloning */
+        _model.status = RepositoryStatus.Cloning;
         immutable err = context.appDB.update((scope tx) => _model.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
@@ -155,6 +165,11 @@ public final class ManagedRepository
             logError(format!"Failed to update %s: %s"(model, statusCode));
             return;
         }
+
+        /* Now mark us idle - ready for checkouts, etc. */
+        _model.status = RepositoryStatus.Fresh;
+        immutable errMark = context.appDB.update((scope tx) => _model.save(tx));
+        enforceHTTP(errMark.isNull, HTTPStatus.internalServerError, err.message);
     }
 
 private:
