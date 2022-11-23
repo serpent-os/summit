@@ -22,6 +22,7 @@ import summit.collections.repository;
 import summit.context;
 import summit.models.collection;
 import summit.models.repository;
+import moss.core.errors;
 
 /**
  * A collection explicitly managed by Summit
@@ -84,13 +85,25 @@ package:
 
     /**
      * Connect via the given transaction to initialise this collection
+     *
+     * Params:
+     *      tx = read-only transaction
+     * Returns: nullable database error
      */
     DatabaseResult connect(in Transaction tx) @safe
     {
         foreach (repo; tx.list!Repository)
         {
             auto r = new ManagedRepository(context, this, repo);
+            DatabaseResult err = r.connect.match!((Failure f) => DatabaseResult(
+                    DatabaseError(cast(DatabaseErrorCode) f.specifier, f.message)),
+                    (Success s) => NoDatabaseError);
+            if (!err.isNull)
+            {
+                return err;
+            }
             managed ~= r;
+
         }
         return NoDatabaseError;
     }

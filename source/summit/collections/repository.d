@@ -17,10 +17,11 @@ module summit.collections.repository;
 
 import moss.client.metadb;
 import std.conv : to;
-import std.path : buildPath;
+import std.path : buildPath, dirName;
 import summit.collections.collection;
 import summit.context;
 import summit.models.repository;
+import std.file : mkdirRecurse;
 
 /**
  * An explicitly managed repository
@@ -49,6 +50,9 @@ public final class ManagedRepository
         this._model = model;
         /* ID field never changes */
         this._dbPath = parent.dbPath.buildPath(to!string(model.id));
+
+        /* We need read/write pls */
+        this._db = new MetaDB(dbPath, true);
     }
 
     /**
@@ -81,6 +85,19 @@ public final class ManagedRepository
     void close() @safe
     {
         _db.close();
+    }
+
+    /**
+     * Attempt to connect with underlying storage
+     *
+     * Returns: nullable error
+     */
+    auto connect() @safe
+    {
+        auto parentDbPath = dbPath.dirName;
+        parentDbPath.mkdirRecurse();
+
+        return _db.connect();
     }
 
 private:
