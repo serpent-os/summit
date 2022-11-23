@@ -22,6 +22,8 @@ import summit.collections.collection;
 import summit.context;
 import summit.models.repository;
 import std.file : mkdirRecurse;
+import vibe.d;
+import vibe.core.process;
 
 /**
  * An explicitly managed repository
@@ -126,6 +128,31 @@ public final class ManagedRepository
     {
         if (model.status != RepositoryStatus.Idle)
         {
+            logDiagnostic(format!"%s: Non idle repository"(model.name));
+            return;
+        }
+    }
+
+    /**
+     * Clone repository for the first time
+     */
+    void clone() @safe
+    {
+        model.status = RepositoryStatus.Cloning;
+        immutable err = context.appDB.update((scope tx) => _model.save(tx));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+
+        string[] cmd = [
+            "git", "clone", "--mirror", "--", model.originURI, clonePath
+        ];
+        string[string] env;
+        auto ret = spawnProcess(cmd, env, Config.none, NativePath(context.cachePath));
+        auto statusCode = ret.wait();
+
+        /* Check if we can clone */
+        if (statusCode != 0)
+        {
+            logError(format!"Failed to update %s: %s"(model, statusCode));
             return;
         }
     }
