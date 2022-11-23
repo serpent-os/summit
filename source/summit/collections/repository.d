@@ -51,6 +51,9 @@ public final class ManagedRepository
         /* ID field never changes */
         this._dbPath = parent.dbPath.buildPath(to!string(model.id));
 
+        this._workPath = context.cachePath.buildPath("repository", to!string(model.id), "work");
+        this._clonePath = context.cachePath.buildPath("repository", to!string(model.id), "clone");
+
         /* We need read/write pls */
         this._db = new MetaDB(dbPath, true);
     }
@@ -77,6 +80,22 @@ public final class ManagedRepository
     pure @property string dbPath() @safe @nogc nothrow const
     {
         return _dbPath;
+    }
+
+    /** 
+     * Returns: git clone path
+     */
+    pure @property string clonePath() @safe @nogc nothrow const
+    {
+        return _clonePath;
+    }
+
+    /**
+     * Returns: work indexing path
+     */
+    pure @property string workPath() @safe @nogc nothrow const
+    {
+        return _workPath;
     }
 
     /**
@@ -106,4 +125,6 @@ private:
     MetaDB _db;
     Repository _model;
     string _dbPath;
+    string _clonePath;
+    string _workPath;
 }
