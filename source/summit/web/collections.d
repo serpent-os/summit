@@ -15,11 +15,8 @@
 
 module summit.web.collections;
 
-import moss.db.keyvalue;
-import moss.db.keyvalue.orm;
 import summit.context;
-import summit.models.collection;
-import summit.models.repository;
+import summit.collections;
 import vibe.d;
 
 /**
@@ -36,9 +33,10 @@ public final class CollectionsWeb
      * Params:
      *      context = global context
      */
-    this(SummitContext context) @safe
+    this(SummitContext context, CollectionManager collectionManager) @safe
     {
         this.context = context;
+        this.collectionManager = collectionManager;
     }
 
     /**
@@ -58,10 +56,7 @@ public final class CollectionsWeb
     @path("/:slug") @method(HTTPMethod.GET)
     void view(string _slug)
     {
-        PackageCollection collection;
-        immutable err = context.appDB.view((in tx) => collection.load!"slug"(tx, _slug));
-        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
-        render!("collections/view.dt", collection);
+        throw new HTTPStatusException(HTTPStatus.notImplemented);
     }
 
     /**
@@ -74,20 +69,7 @@ public final class CollectionsWeb
     @path("/:slug/:repo") @method(HTTPMethod.GET)
     void viewRepo(string _slug, string _repo)
     {
-        PackageCollection collection;
-        Repository repo;
-        /* TODO: Exist outside global constraints */
-        immutable err = context.appDB.view((in tx) @safe {
-            auto eCol = collection.load!"slug"(tx, _slug);
-            if (!eCol.isNull)
-            {
-                return eCol;
-            }
-
-            return repo.load!"name"(tx, _repo);
-        });
-        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
-        render!("collections/repo.dt", collection, repo);
+        throw new HTTPStatusException(HTTPStatus.notImplemented);
     }
 
     @path("/:slug/:repo/:recipeID") @method(HTTPMethod.GET)
@@ -99,4 +81,5 @@ public final class CollectionsWeb
 private:
 
     SummitContext context;
+    CollectionManager collectionManager;
 }

@@ -19,6 +19,7 @@ import vibe.d;
 import summit.web.accounts;
 import summit.web.collections;
 import summit.context;
+import summit.collections;
 
 /**
  * Root entry into our web service
@@ -33,13 +34,14 @@ public final class SummitWeb
      *
      * Params:
      *      context = global context
+     *      collectionManager = collection management
      *      router = nested routes
      */
-    this(SummitContext context, URLRouter router) @safe
+    this(SummitContext context, CollectionManager collectionManager, URLRouter router) @safe
     {
         auto root = router.registerWebInterface(this);
         root.registerWebInterface(cast(AccountsWeb) new SummitAccountsWeb(context));
-        root.registerWebInterface(new CollectionsWeb(context));
+        root.registerWebInterface(new CollectionsWeb(context, collectionManager));
     }
 
     /**
