@@ -21,7 +21,7 @@ import summit.context;
 /**
  * Basic subclass to support local rendering
  */
-@path("accounts") public final class SummitAccountsWeb : AccountsWeb
+@path("/accounts") public final class SummitAccountsWeb : AccountsWeb
 {
     @disable this();
 

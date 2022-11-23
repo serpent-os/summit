@@ -37,8 +37,8 @@ public final class SummitWeb
      */
     this(SummitContext context, URLRouter router) @safe
     {
-        auto root = registerWebInterface(router, this);
-        root.registerWebInterface(new SummitAccountsWeb(context));
+        auto root = router.registerWebInterface(this);
+        root.registerWebInterface(cast(AccountsWeb) new SummitAccountsWeb(context));
         root.registerWebInterface(new CollectionsWeb(context));
     }
 
