@@ -57,9 +57,21 @@ public final class ManagedCollection
     /**
      * Returns: This collection's managed repositories
      */
-    pure @property auto repositories() @safe @nogc nothrow
+    pure @property auto repositories() @safe nothrow
     {
-        return managed;
+        return managed.values;
+    }
+
+    /** 
+     * Returns: Repository within this collection
+     *
+     * Params:
+     *      slug = Unique identifier
+     */
+    pure @property auto bySlug(in string slug) @safe nothrow
+    {
+        auto repo = (slug in managed);
+        return repo ? *repo : null;
     }
 
     /**
@@ -67,9 +79,9 @@ public final class ManagedCollection
      */
     void close() @safe
     {
-        foreach (m; managed)
+        foreach (k, r; managed)
         {
-            m.close();
+            r.close();
         }
     }
 
@@ -102,7 +114,7 @@ package:
             {
                 return err;
             }
-            managed ~= r;
+            managed[repo.name] = r;
 
         }
         return NoDatabaseError;
@@ -112,6 +124,6 @@ private:
 
     SummitContext context;
     PackageCollection _model;
-    ManagedRepository[] managed;
+    ManagedRepository[string] managed;
     string _dbPath;
 }
