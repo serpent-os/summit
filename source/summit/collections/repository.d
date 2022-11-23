@@ -119,6 +119,17 @@ public final class ManagedRepository
         return _db.connect();
     }
 
+    /**
+     * Refresh this repository
+     */
+    void refresh() @safe
+    {
+        if (model.status != RepositoryStatus.Idle)
+        {
+            return;
+        }
+    }
+
 private:
 
     SummitContext context;

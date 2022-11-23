@@ -20,6 +20,9 @@ import summit.models.collection;
 import moss.db.keyvalue;
 import summit.collections.collection;
 
+import vibe.core.core : setTimer;
+import vibe.d;
+
 /**
  * The CollectionManager helps us to control the correlation between
  * the database model of collections and *usable* objects from within
@@ -60,7 +63,17 @@ public final class CollectionManager
             return NoDatabaseError;
         }
 
-        return context.appDB.view(&colLoader);
+        /* Set up the model in memory */
+        immutable err = context.appDB.view(&colLoader);
+        if (!err.isNull)
+        {
+            return err;
+        }
+
+        /* Start interval timer */
+        running = true;
+        () @trusted { curTimer = setTimer(30.seconds, &updateCollections); }();
+        return NoDatabaseError;
     }
 
     /**
@@ -68,6 +81,9 @@ public final class CollectionManager
      */
     void close() @safe
     {
+        running = false;
+        curTimer.stop();
+
         foreach (k, c; managed)
         {
             c.close();
@@ -96,6 +112,33 @@ public final class CollectionManager
 
 private:
 
+    /**
+     * Iterate all collections and request they update themselves, and obviously, their repos
+     */
+    void updateCollections() @safe
+    {
+        auto now = Clock.currTime();
+        logInfo(format!"Updating collections at %s"(now));
+        scope (exit)
+        {
+            runTask({
+                /* Reinstall the timer */
+                () @trusted {
+                    curTimer = setTimer(30.seconds, &updateCollections);
+                }();
+            });
+        }
+
+        /* Update each collection */
+        foreach (slug, col; managed)
+        {
+            logDiagnostic(format!"Requesting update check for %s"(slug));
+            col.refresh();
+        }
+    }
+
     SummitContext context;
     ManagedCollection[string] managed;
+    bool running;
+    Timer curTimer;
 }

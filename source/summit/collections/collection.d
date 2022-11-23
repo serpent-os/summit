@@ -23,6 +23,7 @@ import summit.context;
 import summit.models.collection;
 import summit.models.repository;
 import moss.core.errors;
+import vibe.d : runTask;
 
 /**
  * A collection explicitly managed by Summit
@@ -118,6 +119,18 @@ package:
 
         }
         return NoDatabaseError;
+    }
+
+    /**
+     * Attempt to update all repositories
+     * At this point, go wide.
+     */
+    void refresh() @safe
+    {
+        foreach (slug, repo; managed)
+        {
+            runTask({ repo.refresh(); });
+        }
     }
 
 private:
