@@ -55,7 +55,7 @@ public final class CollectionManager
                 {
                     return err;
                 }
-                managed ~= c;
+                managed[model.slug] = c;
             }
             return NoDatabaseError;
         }
@@ -68,22 +68,34 @@ public final class CollectionManager
      */
     void close() @safe
     {
-        foreach (m; managed)
+        foreach (k, c; managed)
         {
-            m.close();
+            c.close();
         }
     }
 
     /**
      * Returns: all managed collections
      */
-    pure auto @property collections() @safe @nogc nothrow
+    pure auto @property collections() @safe nothrow
     {
-        return managed;
+        return managed.values;
+    }
+
+    /**
+     * Returns: a collection by slug
+     *
+     * Params:
+     *      slug = Slug identifier
+     */
+    pure auto bySlug(in string slug) @safe nothrow
+    {
+        auto result = (slug in managed);
+        return result ? *result : null;
     }
 
 private:
 
     SummitContext context;
-    ManagedCollection[] managed;
+    ManagedCollection[string] managed;
 }
