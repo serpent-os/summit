@@ -22,7 +22,6 @@ import summit.models.collection;
 import summit.models.repository;
 import std.algorithm : filter, map;
 import std.array : array;
-import summit.workers;
 
 /**
  * Implements the CollectionsAPIv1
@@ -34,10 +33,9 @@ public final class RepositoriesService : RepositoriesAPIv1
     /**
      * Construct new CollectionsService
      */
-    this(scope WorkerSystem worker, Database appDB) @safe
+    this(Database appDB) @safe
     {
         this.appDB = appDB;
-        this.controlQueue = worker.controlQueue;
     }
 
     /**
@@ -94,12 +92,8 @@ public final class RepositoriesService : RepositoriesAPIv1
         immutable err = appDB.update((scope tx) => repo.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.forbidden, err.message);
         logInfo(format!"Create at %s: %s"(_collection, request));
-
-        /* Get this repo imported */
-        controlQueue.put(ControlEvent(ImportRepositoryEvent(repo)));
     }
 
 private:
     Database appDB;
-    ControlQueue controlQueue;
 }

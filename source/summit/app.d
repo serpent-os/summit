@@ -15,7 +15,6 @@
 
 module summit.app;
 
-import moss.client.metadb;
 import moss.core.errors;
 import moss.service.accounts;
 import moss.service.models;
@@ -25,7 +24,6 @@ import summit.collections;
 import summit.context;
 import summit.models;
 import summit.web;
-import summit.workers;
 import vibe.d;
 
 /**
@@ -46,21 +44,13 @@ public final class SummitApplication
     {
         this.context = context;
         this.collectionManager = new CollectionManager(context);
-
-        metaDB = new MetaDB(context.dbPath.buildPath("metaDB"), true);
-        metaDB.connect.tryMatch!((Success _) {});
         _router = new URLRouter();
 
         web = new SummitWeb();
-        web.configure(context.appDB, metaDB, context.accountManager, context.tokenManager, router);
-
-        /* Get worker system up and running */
-        worker = new WorkerSystem(context.rootDirectory, context.appDB, metaDB);
-        worker.start();
+        web.configure(context.appDB, context.accountManager, context.tokenManager, router);
 
         service = new RESTService(context.rootDirectory);
-        service.configure(worker, context.accountManager, context.tokenManager,
-                metaDB, context.appDB, router);
+        service.configure(context.accountManager, context.tokenManager, context.appDB, router);
     }
 
     /**
@@ -76,8 +66,6 @@ public final class SummitApplication
      */
     void close() @safe
     {
-        worker.close();
-        metaDB.close();
         collectionManager.close();
     }
 
@@ -88,6 +76,4 @@ private:
     RESTService service;
     URLRouter _router;
     SummitWeb web;
-    MetaDB metaDB;
-    WorkerSystem worker;
 }

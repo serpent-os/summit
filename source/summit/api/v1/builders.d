@@ -24,7 +24,6 @@ import summit.models.settings;
 import moss.service.interfaces;
 import std.algorithm : map;
 import std.array : array;
-import summit.workers;
 import moss.service.tokens;
 import moss.service.tokens.manager;
 import moss.service.accounts;

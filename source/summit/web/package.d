@@ -39,14 +39,14 @@ public final class SummitWeb
      *      accountManager = Account management interface
      *      router = Base root for the application
      */
-    @noRoute void configure(Database appDB, MetaDB metaDB,
-            AccountManager accountManager, TokenManager tokenManager, URLRouter router) @safe
+    @noRoute void configure(Database appDB, AccountManager accountManager,
+            TokenManager tokenManager, URLRouter router) @safe
     {
         auto root = registerWebInterface(router, this);
         auto act = new SummitAccountsWeb(accountManager, tokenManager);
         act.configure(root);
         auto col = new CollectionsWeb();
-        col.configure(appDB, metaDB, root);
+        col.configure(appDB, root);
         auto build = new BuildersWeb();
         build.configure(appDB, root);
     }

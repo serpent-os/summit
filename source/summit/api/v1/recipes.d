@@ -32,10 +32,9 @@ public final class RecipesService : RecipesAPIv1
     /**
      * Construct new RecipesService
      */
-    this(MetaDB metaDB, Database appDB) @safe
+    this(Database appDB) @safe
     {
         this.appDB = appDB;
-        this.metaDB = metaDB;
     }
 
     /**
@@ -50,21 +49,9 @@ public final class RecipesService : RecipesAPIv1
     override Paginator!ListItem enumerate(string _collection, string _repo, ulong pageNumber = 0) @safe
     {
         ListItem[] ret;
-        auto items = metaDB.list.map!((m) {
-            ListItem i;
-            i.id = m.pkgID;
-            i.context = ListContext.Recipes;
-            i.title = format!"%s - %s-%s"(m.sourceID, m.versionIdentifier, m.sourceRelease);
-            i.slug = format!"/~/%s/%s/%s"(_collection, _repo, m.sourceID);
-            i.subtitle = m.summary;
-            return i;
-        });
-        ret = () @trusted { return items.array; }();
-        ret.sort!((a, b) => a.title < b.title);
         return Paginator!ListItem(ret, pageNumber);
     }
 
 private:
     Database appDB;
-    MetaDB metaDB;
 }
