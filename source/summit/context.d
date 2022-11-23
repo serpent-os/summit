@@ -39,7 +39,9 @@ public final class SummitContext
         this._rootDirectory = rootDirectory;
         immutable statePath = rootDirectory.buildPath("state");
         this._dbPath = statePath.buildPath("db");
-        dbPath.mkdirRecurse();
+        _dbPath.mkdirRecurse();
+        this._cachePath = statePath.buildPath("cache");
+        _cachePath.mkdirRecurse();
 
         /* Get token manager up and running */
         _tokenManager = new TokenManager(statePath);
@@ -109,6 +111,14 @@ public final class SummitContext
         return _dbPath;
     }
 
+    /**
+     * Returns: the cache path
+     */
+    pragma(inline, true) pure @property string cachePath() @safe @nogc nothrow const
+    {
+        return _cachePath;
+    }
+
 private:
 
     TokenManager _tokenManager;
@@ -117,4 +127,5 @@ private:
 
     string _rootDirectory;
     string _dbPath;
+    string _cachePath;
 }
