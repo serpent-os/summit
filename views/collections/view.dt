@@ -1,7 +1,7 @@
 extends base
 
 block title
-    title Summit - #{collection.name}
+    title Summit - #{collection.model.name}
 
 block content
     div.container
@@ -13,9 +13,9 @@ block content
                         ol.breadcrumb.breadcrumb-arrows.py-1(aria-label="breadcrumbs")
                             li.breadcrumb-item: a(href="/") Home
                             li.breadcrumb-item: a(href="/~") Collections
-                            li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{collection.slug}") #{collection.name}
+                            li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{collection.model.slug}") #{collection.model.name}
 
-                        h2.page-title #{collection.summary}
+                        h2.page-title #{collection.model.summary}
                     div.col-auto
                         div.btn-list
                             button.btn-azure.btn.d-none.d-md-inline-flex(data-bs-toggle="modal", data-bs-target="#creationDialog")
@@ -26,7 +26,7 @@ block content
 
             div.py-1
                 div.card
-                    div.list-group.list-group-flush#summitList.row(summit:context="repositories", summit:mode="add", summit:parent=collection.slug)
+                    div.list-group.list-group-flush#summitList.row(summit:context="repositories", summit:mode="add", summit:parent=collection.model.slug)
 
 block dialogs
     include collections/add_repo

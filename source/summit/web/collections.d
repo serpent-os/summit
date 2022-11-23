@@ -56,7 +56,9 @@ public final class CollectionsWeb
     @path("/:slug") @method(HTTPMethod.GET)
     void view(string _slug)
     {
-        throw new HTTPStatusException(HTTPStatus.notImplemented);
+        auto collection = collectionManager.bySlug(_slug);
+        enforceHTTP(collection !is null, HTTPStatus.notFound);
+        render!("collections/view.dt", collection);
     }
 
     /**
