@@ -78,6 +78,14 @@ public final class CollectionsWeb
         render!("collections/repo.dt", collection, repository);
     }
 
+    /** 
+     * View a recipe within a specific collection's repository
+     *
+     * Params:
+     *      _slug = Collection ID
+     *      _repo = Repository ID
+     *      _recipeID = Recipe ID
+     */
     @path("/:slug/:repo/:recipeID") @method(HTTPMethod.GET)
     void viewRecipe(string _slug, string _repo, string _recipeID) @safe
     {
