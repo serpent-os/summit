@@ -18,13 +18,10 @@ module summit.api.v1.pairing;
 public import moss.service.interfaces;
 
 import vibe.d;
-import moss.service.accounts;
-import moss.service.accounts.auth;
-import moss.service.tokens;
-import moss.service.tokens.manager;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import moss.service.models;
+import summit.context;
 
 /**
  * Implementation of the hub-aspect enrolment API
@@ -33,16 +30,14 @@ public final class PairingService : ServiceEnrolmentAPI
 {
     @disable this();
 
-    mixin AppAuthenticator;
+    mixin AppAuthenticatorContext;
 
     /** 
      * Construct new pairing API
      */
-    this(TokenManager tokenManager, AccountManager accountManager, Database appDB) @safe
+    this(SummitContext context) @safe
     {
-        this.tokenManager = tokenManager;
-        this.accountManager = accountManager;
-        this.appDB = appDB;
+        this.context = context;
     }
 
     override void enrol(ServiceEnrolmentRequest request) @safe
@@ -67,10 +62,10 @@ public final class PairingService : ServiceEnrolmentAPI
         {
         case "avalanche":
             AvalancheEndpoint endpoint;
-            immutable err = appDB.view((in tx) => endpoint.load(tx, token.payload.sub));
+            immutable err = context.appDB.view((in tx) => endpoint.load(tx, token.payload.sub));
             enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
             endpoint.status = EndpointStatus.Operational;
-            immutable errStore = appDB.update((scope tx) => endpoint.save(tx));
+            immutable errStore = context.appDB.update((scope tx) => endpoint.save(tx));
             enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
             logInfo(format!"Completed pairing of %s via token %s"(request, token.get));
             break;
@@ -99,7 +94,5 @@ public final class PairingService : ServiceEnrolmentAPI
 
 private:
 
-    TokenManager tokenManager;
-    AccountManager accountManager;
-    Database appDB;
+    SummitContext context;
 }

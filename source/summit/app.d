@@ -49,8 +49,7 @@ public final class SummitApplication
         web = new SummitWeb();
         web.configure(context.appDB, context.accountManager, context.tokenManager, router);
 
-        service = new RESTService(context.rootDirectory);
-        service.configure(context.accountManager, context.tokenManager, context.appDB, router);
+        service = new RESTService(context, router);
     }
 
     /**

@@ -15,12 +15,12 @@
 module summit.api.v1.recipes;
 
 public import summit.api.v1.interfaces;
-import vibe.d;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
-import moss.client.metadb;
-import std.array : array;
 import std.algorithm : map, sort;
+import std.array : array;
+import summit.context;
+import vibe.d;
 
 /**
  * Implements the RecipesAPIv1
@@ -31,10 +31,13 @@ public final class RecipesService : RecipesAPIv1
 
     /**
      * Construct new RecipesService
+     *
+     * Params:
+     *      context = global context
      */
-    this(Database appDB) @safe
+    this(SummitContext context) @safe
     {
-        this.appDB = appDB;
+        this.context = context;
     }
 
     /**
@@ -53,5 +56,5 @@ public final class RecipesService : RecipesAPIv1
     }
 
 private:
-    Database appDB;
+    SummitContext context;
 }

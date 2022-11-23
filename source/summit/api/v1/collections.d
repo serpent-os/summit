@@ -15,12 +15,13 @@
 module summit.api.v1.collections;
 
 public import summit.api.v1.interfaces;
-import vibe.d;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
-import summit.models.collection;
 import std.algorithm : map;
 import std.array : array;
+import summit.context;
+import summit.models.collection;
+import vibe.d;
 
 /**
  * Implements the CollectionsAPIv1
@@ -31,10 +32,13 @@ public final class CollectionsService : CollectionsAPIv1
 
     /**
      * Construct new CollectionsService
+     *
+     * Params:
+     *      context = global context
      */
-    this(Database appDB) @safe
+    this(SummitContext context) @safe
     {
-        this.appDB = appDB;
+        this.context = context;
     }
 
     /**
@@ -45,7 +49,7 @@ public final class CollectionsService : CollectionsAPIv1
     override ListItem[] enumerate() @safe
     {
         ListItem[] renderable;
-        appDB.view((in tx) @safe {
+        context.appDB.view((in tx) @safe {
             auto items = tx.list!PackageCollection
                 .map!((c) {
                     ListItem ret;
@@ -76,10 +80,10 @@ public final class CollectionsService : CollectionsAPIv1
         c.slug = request.slug;
         c.vscURI = request.releaseURI;
         c.summary = request.summary;
-        immutable err = appDB.update((scope tx) => c.save(tx));
+        immutable err = context.appDB.update((scope tx) => c.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.badRequest, err.message);
     }
 
 private:
-    Database appDB;
+    SummitContext context;
 }

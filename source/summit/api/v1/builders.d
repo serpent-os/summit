@@ -15,18 +15,17 @@
 module summit.api.v1.builders;
 
 public import summit.api.v1.interfaces;
-import vibe.d;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
+import moss.service.interfaces;
 import moss.service.models.bearertoken;
 import moss.service.models.endpoints;
-import summit.models.settings;
-import moss.service.interfaces;
+import moss.service.tokens;
 import std.algorithm : map;
 import std.array : array;
-import moss.service.tokens;
-import moss.service.tokens.manager;
-import moss.service.accounts;
+import summit.context;
+import summit.models.settings;
+import vibe.d;
 
 /**
  * Implements the BuildersService
@@ -38,11 +37,9 @@ public final class BuildersService : BuildersAPIv1
     /**
      * Construct new BuildersService
      */
-    this(AccountManager accountManager, TokenManager tokenManager, Database appDB) @safe
+    this(SummitContext context) @safe
     {
-        this.appDB = appDB;
-        this.tokenManager = tokenManager;
-        this.accountManager = accountManager;
+        this.context = context;
     }
 
     /**
@@ -53,7 +50,7 @@ public final class BuildersService : BuildersAPIv1
     override ListItem[] enumerate() @safe
     {
         ListItem[] ret;
-        appDB.view((in tx) @safe {
+        context.appDB.view((in tx) @safe {
             auto items = tx.list!AvalancheEndpoint
                 .map!((i) {
                     ListItem v;
@@ -84,7 +81,7 @@ public final class BuildersService : BuildersAPIv1
         /* OK - first up we need a service account */
         immutable serviceUser = format!"%s%s"(serviceAccountPrefix, request.id);
         Account serviceAccount;
-        accountManager.registerService(serviceUser, request.adminEmail).match!((Account u) {
+        context.accountManager.registerService(serviceUser, request.adminEmail).match!((Account u) {
             serviceAccount = u;
         }, (DatabaseError e) {
             throw new HTTPStatusException(HTTPStatus.forbidden, e.message);
@@ -106,8 +103,8 @@ public final class BuildersService : BuildersAPIv1
         payload.uid = serviceAccount.id;
         payload.act = serviceAccount.type;
         payload.aud = "avalanche";
-        Token bearer = tokenManager.createBearerToken(payload);
-        tokenManager.signToken(bearer).match!((TokenError err) {
+        Token bearer = context.tokenManager.createBearerToken(payload);
+        context.tokenManager.signToken(bearer).match!((TokenError err) {
             throw new HTTPStatusException(HTTPStatus.internalServerError, err.message);
         }, (string s) { encodedToken = s; });
 
@@ -116,7 +113,7 @@ public final class BuildersService : BuildersAPIv1
         storedToken.id = serviceAccount.id;
         storedToken.rawToken = encodedToken;
         storedToken.expiryUTC = bearer.payload.exp;
-        immutable bErr = accountManager.setBearerToken(serviceAccount, storedToken);
+        immutable bErr = context.accountManager.setBearerToken(serviceAccount, storedToken);
 
         /* Create the endpoint model */
         AvalancheEndpoint endpoint;
@@ -129,15 +126,15 @@ public final class BuildersService : BuildersAPIv1
         endpoint.publicKey = request.pubkey;
         endpoint.description = request.summary;
         endpoint.id = request.id;
-        immutable err = appDB.update((scope tx) => endpoint.save(tx));
+        immutable err = context.appDB.update((scope tx) => endpoint.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
         /* Sort out the enrolment request */
-        const settings = appDB.getSettings().tryMatch!((Settings s) => s);
+        const settings = context.appDB.getSettings().tryMatch!((Settings s) => s);
         ServiceEnrolmentRequest req;
         req.role = EnrolmentRole.Builder;
         req.issueToken = encodedToken;
-        req.issuer.publicKey = tokenManager.publicKey;
+        req.issuer.publicKey = context.tokenManager.publicKey;
         req.issuer.role = EnrolmentRole.Hub;
         req.issuer.url = settings.instanceURI;
 
@@ -156,14 +153,12 @@ public final class BuildersService : BuildersAPIv1
                 endpoint.status = EndpointStatus.Failed;
                 endpoint.statusText = format!"Negotiation failure: %s"(rx.message);
             }
-            immutable err = appDB.update((scope tx) => endpoint.save(tx));
+            immutable err = context.appDB.update((scope tx) => endpoint.save(tx));
             enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
         });
     }
 
 private:
 
-    Database appDB;
-    TokenManager tokenManager;
-    AccountManager accountManager;
+    SummitContext context;
 }

@@ -15,13 +15,14 @@
 module summit.api.v1.repositories;
 
 public import summit.api.v1.interfaces;
-import vibe.d;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
-import summit.models.collection;
-import summit.models.repository;
 import std.algorithm : filter, map;
 import std.array : array;
+import summit.context;
+import summit.models.collection;
+import summit.models.repository;
+import vibe.d;
 
 /**
  * Implements the CollectionsAPIv1
@@ -31,11 +32,14 @@ public final class RepositoriesService : RepositoriesAPIv1
     @disable this();
 
     /**
-     * Construct new CollectionsService
+     * Construct new RepositoriesService
+     *
+     * Params:
+     *      context = global context
      */
-    this(Database appDB) @safe
+    this(SummitContext context) @safe
     {
-        this.appDB = appDB;
+        this.context = context;
     }
 
     /**
@@ -50,10 +54,10 @@ public final class RepositoriesService : RepositoriesAPIv1
     {
         ListItem[] ret;
         PackageCollection collection;
-        immutable err = appDB.view((in tx) => collection.load!"slug"(tx, _collection));
+        immutable err = context.appDB.view((in tx) => collection.load!"slug"(tx, _collection));
         enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
 
-        appDB.view((in tx) @safe {
+        context.appDB.view((in tx) @safe {
             auto items = tx.list!Repository
                 .filter!((r) => r.collection == collection.id)
                 .map!((i) {
@@ -81,7 +85,7 @@ public final class RepositoriesService : RepositoriesAPIv1
     override void create(string _collection, CreateRepository request) @safe
     {
         PackageCollection collection;
-        immutable colErr = appDB.view((in tx) => collection.load!"slug"(tx, _collection));
+        immutable colErr = context.appDB.view((in tx) => collection.load!"slug"(tx, _collection));
         enforceHTTP(colErr.isNull, HTTPStatus.notFound, colErr.message);
         Repository repo;
         repo.name = request.id;
@@ -89,11 +93,11 @@ public final class RepositoriesService : RepositoriesAPIv1
         repo.description = "not yet loaded";
         repo.summary = request.summary;
         repo.originURI = request.originURI;
-        immutable err = appDB.update((scope tx) => repo.save(tx));
+        immutable err = context.appDB.update((scope tx) => repo.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.forbidden, err.message);
         logInfo(format!"Create at %s: %s"(_collection, request));
     }
 
 private:
-    Database appDB;
+    SummitContext context;
 }

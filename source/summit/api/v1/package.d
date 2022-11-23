@@ -17,15 +17,13 @@ module summit.api.v1;
 
 public import vibe.d;
 public import summit.api.v1.interfaces;
-import moss.db.keyvalue;
 
 import summit.api.v1.builders;
 import summit.api.v1.collections;
 import summit.api.v1.pairing;
 import summit.api.v1.repositories;
 import summit.api.v1.recipes;
-import moss.service.tokens.manager;
-import moss.service.accounts;
+import summit.context;
 
 /**
  * Root implementation to configure all supported interfaces
@@ -36,28 +34,19 @@ public final class RESTService : SummitAPIv1
 
     /**
      * Construct the new RESTService root
-     */
-    this(string rootDir) @safe
-    {
-        this.rootDir = rootDir;
-    }
-
-    /**
-     * Integrate the RESTService into the web application
      *
      * Params:
-     *      appDB = Application database
-     *      router = Root level router
+     *      context = global context
+     *      router = nested router
      */
-    @noRoute void configure(AccountManager accountManager,
-            TokenManager tokenManager, Database appDB, URLRouter router) @safe
+    this(SummitContext context, URLRouter router) @safe
     {
         router.registerRestInterface(this);
-        router.registerRestInterface(new BuildersService(accountManager, tokenManager, appDB));
-        router.registerRestInterface(new CollectionsService(appDB));
-        router.registerRestInterface(new RepositoriesService(appDB));
-        router.registerRestInterface(new RecipesService(appDB));
-        router.registerRestInterface(new PairingService(tokenManager, accountManager, appDB));
+        router.registerRestInterface(new BuildersService(context));
+        router.registerRestInterface(new CollectionsService(context));
+        router.registerRestInterface(new RepositoriesService(context));
+        router.registerRestInterface(new RecipesService(context));
+        router.registerRestInterface(new PairingService(context));
     }
 
     /**
