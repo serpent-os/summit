@@ -23,6 +23,38 @@ public import std.stdint : uint64_t;
 public alias RepositoryID = uint64_t;
 
 /**
+ * Used to signify what a repository is doing, and to identify
+ * candidates
+ */
+public enum RepositoryStatus
+{
+    /**
+     * Never cloned before
+     */
+    Fresh = 0,
+
+    /**
+     * Updating git ref
+     */
+    Updating,
+
+    /**
+     * Cloning for the first time
+     */
+    Cloning,
+
+    /**
+     * Indexing for updates
+     */
+    Indexing,
+
+    /**
+     * Doing nothing (most repos)
+     */
+    Idle,
+}
+
+/**
  * Collection is our encapsulation unit for a repository
  */
 public @Model struct Repository
@@ -61,4 +93,9 @@ public @Model struct Repository
      * Which collection do we belong to?
      */
     PackageCollectionID collection;
+
+    /**
+     * Current status. All start out fresh
+     */
+    RepositoryStatus status = RepositoryStatus.Fresh;
 }
