@@ -17,7 +17,6 @@ module summit.web;
 
 import vibe.d;
 import summit.web.accounts;
-import summit.web.builders;
 import summit.web.collections;
 import summit.context;
 
@@ -41,7 +40,6 @@ public final class SummitWeb
         auto root = registerWebInterface(router, this);
         root.registerWebInterface(new SummitAccountsWeb(context));
         root.registerWebInterface(new CollectionsWeb(context));
-        root.registerWebInterface(new BuildersWeb());
     }
 
     /**
@@ -50,5 +48,14 @@ public final class SummitWeb
     void index() @safe
     {
         render!"index.dt";
+    }
+
+    /**
+     * Render the /builders page
+     */
+    @path("builders") @method(HTTPMethod.GET)
+    void buildersPage() @safe
+    {
+        render!"builders/index.dt";
     }
 }
