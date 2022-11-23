@@ -45,10 +45,7 @@ public final class SummitApplication
         this.context = context;
         this.collectionManager = new CollectionManager(context);
         _router = new URLRouter();
-
-        web = new SummitWeb();
-        web.configure(context.appDB, context.accountManager, context.tokenManager, router);
-
+        web = new SummitWeb(context, router);
         service = new RESTService(context, router);
     }
 

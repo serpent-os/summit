@@ -16,29 +16,13 @@
 module summit.web.builders;
 
 import vibe.d;
-import moss.db.keyvalue;
-import moss.db.keyvalue.orm;
-import moss.service.models.endpoints;
 
 /**
- * Root entry into our web service
+ * Builder iteration
  */
 @path("/builders")
 public final class BuildersWeb
 {
-    /**
-     * Join BuildersWeb into the router
-     *
-     * Params:
-     *      appDB = Application database
-     *      router = Web root for the application
-     */
-    @noRoute void configure(Database appDB, URLRouter router) @safe
-    {
-        this.appDB = appDB;
-        registerWebInterface(router, this);
-    }
-
     /**
      * Builders index
      */
@@ -46,8 +30,4 @@ public final class BuildersWeb
     {
         render!"builders/index.dt";
     }
-
-private:
-
-    Database appDB;
 }

@@ -16,8 +16,7 @@
 module summit.web.accounts;
 
 import vibe.d;
-import moss.service.accounts;
-import moss.service.tokens.manager;
+import summit.context;
 
 /**
  * Basic subclass to support local rendering
@@ -27,11 +26,11 @@ public final class SummitAccountsWeb : AccountsWeb
     @disable this();
 
     /**
-     * Construc new accounts web
+     * Construct new accounts web
      */
-    this(AccountManager accountManager, TokenManager tokenManager) @safe
+    this(SummitContext context) @safe
     {
-        super(accountManager, tokenManager, "summit");
+        super(context.accountManager, context.tokenManager, "summit");
     }
 
     override void renderLogin() @safe

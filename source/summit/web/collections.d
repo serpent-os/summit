@@ -15,12 +15,12 @@
 
 module summit.web.collections;
 
-import vibe.d;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
+import summit.context;
 import summit.models.collection;
 import summit.models.repository;
-import moss.client.metadb;
+import vibe.d;
 
 /**
  * Root entry into our web service
@@ -28,17 +28,17 @@ import moss.client.metadb;
 @path("/~")
 public final class CollectionsWeb
 {
+    @disable this();
+
     /**
-     * Join CollectionsWeb into the router
+     * Construct a new CollectionsWeb
      *
      * Params:
-     *      appDB = Application database
-     *      router = Web root for the application
+     *      context = global context
      */
-    @noRoute void configure(Database appDB, URLRouter router) @safe
+    this(SummitContext context) @safe
     {
-        this.appDB = appDB;
-        registerWebInterface(router, this);
+        this.context = context;
     }
 
     /**
@@ -59,7 +59,7 @@ public final class CollectionsWeb
     void view(string _slug)
     {
         PackageCollection collection;
-        immutable err = appDB.view((in tx) => collection.load!"slug"(tx, _slug));
+        immutable err = context.appDB.view((in tx) => collection.load!"slug"(tx, _slug));
         enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
         render!("collections/view.dt", collection);
     }
@@ -77,7 +77,7 @@ public final class CollectionsWeb
         PackageCollection collection;
         Repository repo;
         /* TODO: Exist outside global constraints */
-        immutable err = appDB.view((in tx) @safe {
+        immutable err = context.appDB.view((in tx) @safe {
             auto eCol = collection.load!"slug"(tx, _slug);
             if (!eCol.isNull)
             {
@@ -98,5 +98,5 @@ public final class CollectionsWeb
 
 private:
 
-    Database appDB;
+    SummitContext context;
 }
