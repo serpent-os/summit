@@ -71,7 +71,11 @@ public final class CollectionsWeb
     @path("/:slug/:repo") @method(HTTPMethod.GET)
     void viewRepo(string _slug, string _repo)
     {
-        throw new HTTPStatusException(HTTPStatus.notImplemented);
+        auto collection = collectionManager.bySlug(_slug);
+        enforceHTTP(collection !is null, HTTPStatus.notFound);
+        auto repository = collection.bySlug(_repo);
+        enforceHTTP(repository !is null, HTTPStatus.notFound);
+        render!("collections/repo.dt", collection, repository);
     }
 
     @path("/:slug/:repo/:recipeID") @method(HTTPMethod.GET)
