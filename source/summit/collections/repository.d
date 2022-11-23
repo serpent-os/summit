@@ -138,7 +138,7 @@ public final class ManagedRepository
     /**
      * Clone repository for the first time
      */
-    void clone() @safe
+    void cloneGit() @safe
     {
         /* We need the *parent* clone directory to exist */
         if (clonePath.exists)
