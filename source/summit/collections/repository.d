@@ -225,6 +225,60 @@ private:
         logDiagnostic(format!"Repository %s HEAD is now '%s'"(_model.name, _model.commitRef));
     }
 
+    /**
+     * Walk the assets in this repository and reindex!
+     */
+    void reindex() @safe
+    {
+        /* Give us somewhere to clone things */
+        if (workPath.exists)
+        {
+            workPath.rmdirRecurse();
+        }
+        workPath.dirName.mkdirRecurse();
+
+        /* Mark for indexing */
+        _model.status = RepositoryStatus.Indexing;
+        immutable err = context.appDB.update((scope tx) => _model.save(tx));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+
+        string[string] env;
+        string[] cmd = [
+            "git", "clone", "--depth=1", "--", format!"file://%s"(clonePath),
+            workPath
+        ];
+        auto ret = spawnProcess(cmd, env, Config.none, NativePath(context.cachePath));
+        auto statusCode = ret.wait();
+
+        if (statusCode != 0)
+        {
+            logError(format!"Failed to checkout clone %s: %s"(_model, statusCode));
+        }
+
+        updateDocumentation();
+
+        /* Restore idle marker */
+        _model.status = RepositoryStatus.Idle;
+        immutable errMark = context.appDB.update((scope tx) => _model.save(tx));
+        enforceHTTP(errMark.isNull, HTTPStatus.internalServerError, errMark.message);
+    }
+
+    /**
+     * Update the associated documentation (README.md)
+     */
+    void updateDocumentation() @safe
+    {
+        immutable documentation = workPath.buildPath("README.md");
+        if (!documentation.exists)
+        {
+            return;
+        }
+        immutable desc = readFileUTF8(NativePath(documentation));
+        _model.description = desc;
+        immutable err = context.appDB.update((scope tx) => _model.save(tx));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+    }
+
     SummitContext context;
     MetaDB _db;
     Repository _model;
