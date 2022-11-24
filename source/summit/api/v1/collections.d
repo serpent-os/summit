@@ -77,7 +77,7 @@ public final class CollectionsService : CollectionsAPIv1
         c.slug = request.slug;
         c.vscURI = request.releaseURI;
         c.summary = request.summary;
-        immutable err = context.appDB.update((scope tx) => c.save(tx));
+        immutable err = collectionManager.addCollection(c);
         enforceHTTP(err.isNull, HTTPStatus.badRequest, err.message);
     }
 
