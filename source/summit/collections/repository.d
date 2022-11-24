@@ -242,9 +242,13 @@ private:
         immutable err = context.appDB.update((scope tx) => _model.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
-        logDiagnostic(format!"Repository %s HEAD is now '%s'"(_model.name, _model.commitRef));
-
-        return oldRef != _model.commitRef;
+        if (oldRef != _model.commitRef)
+        {
+            logDiagnostic(format!"Repository %s HEAD is now at '%s'"(_model.name,
+                    _model.commitRef));
+            return true;
+        }
+        return false;
     }
 
     /**
