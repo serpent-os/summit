@@ -162,12 +162,39 @@ public final class ManagedRepository
         /* Check if we can clone */
         if (statusCode != 0)
         {
-            logError(format!"Failed to update %s: %s"(model, statusCode));
+            logError(format!"Failed to clone %s: %s"(model, statusCode));
             return;
         }
 
         /* Now mark us idle - ready for checkouts, etc. */
         _model.status = RepositoryStatus.Fresh;
+        immutable errMark = context.appDB.update((scope tx) => _model.save(tx));
+        enforceHTTP(errMark.isNull, HTTPStatus.internalServerError, err.message);
+    }
+
+    /** 
+     * Update an existing clone
+     */
+    void updateGit() @safe
+    {
+        enforceHTTP(clonePath.exists, HTTPStatus.internalServerError, "clonePath: Should exist!");
+
+        /* Mark ourselves as updating now */
+        _model.status = RepositoryStatus.Updating;
+        immutable err = context.appDB.update((scope tx) => _model.save(tx));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+
+        string[] cmd = ["git", "remote", "update"];
+        string[string] env;
+        auto ret = spawnProcess(cmd, env, Config.none, NativePath(clonePath));
+        auto statusCode = ret.wait();
+
+        if (statusCode != 0)
+        {
+            logError(format!"Failed to update %s: %s"(model, statusCode));
+        }
+
+        _model.status = RepositoryStatus.Idle;
         immutable errMark = context.appDB.update((scope tx) => _model.save(tx));
         enforceHTTP(errMark.isNull, HTTPStatus.internalServerError, err.message);
     }
