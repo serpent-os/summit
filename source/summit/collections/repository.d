@@ -201,6 +201,30 @@ private:
         enforceHTTP(errMark.isNull, HTTPStatus.internalServerError, err.message);
     }
 
+    /**
+     * Check for any changes
+     */
+    void checkForChanges() @safe
+    {
+        enforceHTTP(clonePath.exists, HTTPStatus.internalServerError, "clonePath: Should exist!");
+
+        string[] cmd = ["git", "rev-parse", "HEAD"];
+        string[string] env;
+        auto ret = execute(cmd, env, Config.none, ulong.max, NativePath(clonePath));
+        if (ret.status != 0)
+        {
+            logError(format!"Failed to check HEAD for %s: %s"(model, ret.status));
+            return;
+        }
+
+        /* Store new commitRef */
+        _model.commitRef = ret.output.strip;
+        immutable err = context.appDB.update((scope tx) => _model.save(tx));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+
+        logDiagnostic(format!"Repository %s HEAD is now '%s'"(_model.name, _model.commitRef));
+    }
+
     SummitContext context;
     MetaDB _db;
     Repository _model;
