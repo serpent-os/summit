@@ -207,7 +207,14 @@ public final class MetaDB
             }
             return tx.removeAll!ProviderMap;
         });
-        return wipe.isNull ? cast(MetaResult) Success() : cast(MetaResult) fail(wipe.message);
+
+        if (!wipe.isNull)
+        {
+            return cast(MetaResult) fail(wipe.message);
+        }
+
+        immutable rebuild = db.update((scope tx) => tx.createModel!(MetaEntry, ProviderMap));
+        return rebuild.isNull ? cast(MetaResult) Success() : cast(MetaResult) fail(rebuild.message);
     }
 
     /**
@@ -266,12 +273,6 @@ public final class MetaDB
         }
 
         removeAll();
-
-        immutable rebuild = db.update((scope tx) => tx.createModel!(MetaEntry, ProviderMap));
-        if (!rebuild.isNull)
-        {
-            return cast(MetaResult) fail(rebuild.message);
-        }
 
         DatabaseResult updater(scope Transaction tx) @trusted
         {
