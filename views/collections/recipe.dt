@@ -13,9 +13,9 @@ block content
                         ol.breadcrumb.breadcrumb-arrows.py-1(aria-label="breadcrumbs")
                             li.breadcrumb-item: a(href="/") Home
                             li.breadcrumb-item: a(href="/~") Collections
-                            li.breadcrumb-item: a(href="/~/#{collection.slug}") #{collection.name}
-                            li.breadcrumb-item: a(href="/~/#{collection.slug}/#{repo.name}") #{repo.name}
-                            li.breadcrumb-item.active: a(href="/~/#{collection.slug}/#{repo.name}/#{recipe.name}") #{recipe.name}
+                            li.breadcrumb-item: a(href="/~/#{collection.model.slug}") #{collection.model.name}
+                            li.breadcrumb-item: a(href="/~/#{collection.model.slug}/#{repository.model.name}") #{repository.model.name}
+                            li.breadcrumb-item.active: a(href="/~/#{collection.model.slug}/#{repository.model.name}/#{recipe.name}") #{recipe.name}
 
 
                         h2.page-title #{recipe.summary}
