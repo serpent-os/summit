@@ -15,8 +15,10 @@
 
 module summit.web.collections;
 
-import summit.context;
+import moss.deps.registry;
+import std.range : empty, front;
 import summit.collections;
+import summit.context;
 import vibe.d;
 
 /**
@@ -89,7 +91,15 @@ public final class CollectionsWeb
     @path("/:slug/:repo/:recipeID") @method(HTTPMethod.GET)
     void viewRecipe(string _slug, string _repo, string _recipeID) @safe
     {
-        throw new HTTPStatusException(HTTPStatus.notImplemented);
+        auto collection = collectionManager.bySlug(_slug);
+        enforceHTTP(collection !is null, HTTPStatus.notFound);
+        auto repository = collection.bySlug(_repo);
+        enforceHTTP(repository !is null, HTTPStatus.notFound);
+
+        auto items = repository.db.byProvider(ProviderType.PackageName, _recipeID);
+        enforceHTTP(!items.empty, HTTPStatus.notFound);
+        auto recipe = repository.db.byID(items.front);
+        render!("collections/recipe.dt", collection, repository, recipe);
     }
 
 private:
