@@ -94,6 +94,47 @@ public final class ManagedCollection
         return _dbPath;
     }
 
+    /**
+     * Add a repository to this collection
+     *
+     * Params:
+     *      model = Input model
+     * Returns: Nullable database error
+     */
+    DatabaseResult addRepository(Repository model) @safe
+    {
+        /* Ensure we bypass DB for quick repo lookup */
+        auto lookup = (model.name in managed);
+        if (lookup !is null)
+        {
+            return DatabaseResult(DatabaseError(DatabaseErrorCode.BucketExists,
+                    "Repository already exists"));
+        }
+
+        /* Reset basic fields */
+        model.id = 0;
+        model.status = RepositoryStatus.Fresh;
+        model.commitRef = "";
+
+        /* Link the collection */
+        model.collection = this._model.id;
+
+        /* Try to store the model */
+        immutable err = context.appDB.update((scope tx) => model.save(tx));
+        if (!err.isNull)
+        {
+            return err;
+        }
+
+        /* Get it managed */
+        auto managedRepository = new ManagedRepository(context, this, model);
+        return managedRepository.connect.match!((Success _) {
+            managed[model.name] = managedRepository;
+            return NoDatabaseError;
+        }, (Failure f) => DatabaseResult(DatabaseError(cast(DatabaseErrorCode) f.specifier,
+                f.message)));
+    }
+
 package:
 
     /**
