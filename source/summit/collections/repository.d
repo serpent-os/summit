@@ -135,6 +135,8 @@ public final class ManagedRepository
         }
     }
 
+private:
+
     /**
      * Clone repository for the first time
      */
@@ -198,8 +200,6 @@ public final class ManagedRepository
         immutable errMark = context.appDB.update((scope tx) => _model.save(tx));
         enforceHTTP(errMark.isNull, HTTPStatus.internalServerError, err.message);
     }
-
-private:
 
     SummitContext context;
     MetaDB _db;
