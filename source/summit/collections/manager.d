@@ -70,9 +70,8 @@ public final class CollectionManager
             return err;
         }
 
-        /* Start interval timer */
-        running = true;
-        () @trusted { curTimer = setTimer(30.seconds, &updateCollections); }();
+        /* Go and update the collections for the first time */
+        runTask({ updateCollections(); });
         return NoDatabaseError;
     }
 
