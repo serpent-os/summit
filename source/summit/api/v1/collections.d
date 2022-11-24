@@ -19,6 +19,7 @@ import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import std.algorithm : map;
 import std.array : array;
+import summit.collections;
 import summit.context;
 import summit.models.collection;
 import vibe.d;
@@ -35,10 +36,12 @@ public final class CollectionsService : CollectionsAPIv1
      *
      * Params:
      *      context = global context
+     *      collectionManager = Collection management
      */
-    this(SummitContext context) @safe
+    this(SummitContext context, CollectionManager collectionManager) @safe
     {
         this.context = context;
+        this.collectionManager = collectionManager;
     }
 
     /**
@@ -48,22 +51,16 @@ public final class CollectionsService : CollectionsAPIv1
      */
     override ListItem[] enumerate() @safe
     {
-        ListItem[] renderable;
-        context.appDB.view((in tx) @safe {
-            auto items = tx.list!PackageCollection
-                .map!((c) {
-                    ListItem ret;
-                    ret.context = ListContext.Collections;
-                    ret.id = to!string(c.id);
-                    ret.title = c.name;
-                    ret.subtitle = c.summary;
-                    ret.slug = format!"/~/%s"(c.slug);
-                    return ret;
-                });
-            renderable = () @trusted { return items.array; }();
-            return NoDatabaseError;
+        auto ret = collectionManager.collections.map!((c) {
+            ListItem ret;
+            ret.context = ListContext.Collections;
+            ret.id = to!string(c.model.id);
+            ret.title = c.model.name;
+            ret.subtitle = c.model.summary;
+            ret.slug = format!"/~/%s"(c.model.slug);
+            return ret;
         });
-        return renderable;
+        return () @trusted { return ret.array; }();
     }
 
     /**
@@ -86,4 +83,5 @@ public final class CollectionsService : CollectionsAPIv1
 
 private:
     SummitContext context;
+    CollectionManager collectionManager;
 }

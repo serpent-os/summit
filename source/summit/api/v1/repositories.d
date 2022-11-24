@@ -19,6 +19,7 @@ import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import std.algorithm : filter, map;
 import std.array : array;
+import summit.collections;
 import summit.context;
 import summit.models.collection;
 import summit.models.repository;
@@ -37,9 +38,10 @@ public final class RepositoriesService : RepositoriesAPIv1
      * Params:
      *      context = global context
      */
-    this(SummitContext context) @safe
+    this(SummitContext context, CollectionManager collectionManager) @safe
     {
         this.context = context;
+        this.collectionManager = collectionManager;
     }
 
     /**
@@ -52,27 +54,19 @@ public final class RepositoriesService : RepositoriesAPIv1
      */
     override ListItem[] enumerate(string _collection) @safe
     {
-        ListItem[] ret;
-        PackageCollection collection;
-        immutable err = context.appDB.view((in tx) => collection.load!"slug"(tx, _collection));
-        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
+        ManagedCollection collection = collectionManager.bySlug(_collection);
+        enforceHTTP(collectionManager !is null, HTTPStatus.notFound);
 
-        context.appDB.view((in tx) @safe {
-            auto items = tx.list!Repository
-                .filter!((r) => r.collection == collection.id)
-                .map!((i) {
-                    ListItem item;
-                    item.id = to!string(i.id);
-                    item.title = i.name;
-                    item.slug = format!"/~/%s/%s"(_collection, i.name);
-                    item.subtitle = i.summary;
-                    item.context = ListContext.Repositories;
-                    return item;
-                });
-            ret = () @trusted { return items.array; }();
-            return NoDatabaseError;
+        auto ret = collection.repositories.map!((r) {
+            ListItem item;
+            item.id = to!string(r.model.id);
+            item.title = r.model.name;
+            item.slug = format!"/~/%s/%s"(_collection, r.model.name);
+            item.subtitle = r.model.summary;
+            item.context = ListContext.Repositories;
+            return item;
         });
-        return ret;
+        return () @trusted { return ret.array; }();
     }
 
     /**
@@ -100,4 +94,5 @@ public final class RepositoriesService : RepositoriesAPIv1
 
 private:
     SummitContext context;
+    CollectionManager collectionManager;
 }
