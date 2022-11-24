@@ -48,7 +48,7 @@ public final class SummitApplication
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
         _router = new URLRouter();
         web = new SummitWeb(context, collectionManager, router);
-        service = new RESTService(context, router);
+        service = new RESTService(context, collectionManager, router);
     }
 
     /**

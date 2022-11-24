@@ -24,6 +24,7 @@ import summit.api.v1.pairing;
 import summit.api.v1.repositories;
 import summit.api.v1.recipes;
 import summit.context;
+import summit.collections;
 
 /**
  * Root implementation to configure all supported interfaces
@@ -37,9 +38,10 @@ public final class RESTService : SummitAPIv1
      *
      * Params:
      *      context = global context
+     *      collectionManager = Collection management
      *      router = nested router
      */
-    this(SummitContext context, URLRouter router) @safe
+    this(SummitContext context, CollectionManager collectionManager, URLRouter router) @safe
     {
         router.registerRestInterface(this);
         router.registerRestInterface(new BuildersService(context));
