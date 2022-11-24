@@ -17,6 +17,7 @@ module summit.collections.collection;
 
 import moss.db.keyvalue;
 import std.conv : to;
+import std.algorithm : filter;
 import std.path : buildPath;
 import summit.collections.repository;
 import summit.context;
@@ -147,7 +148,8 @@ package:
      */
     DatabaseResult connect(in Transaction tx) @safe
     {
-        foreach (repo; tx.list!Repository)
+        foreach (repo; tx.list!Repository
+                .filter!((r) => r.collection == model.id))
         {
             auto r = new ManagedRepository(context, this, repo);
             DatabaseResult err = r.connect.match!((Failure f) => DatabaseResult(
