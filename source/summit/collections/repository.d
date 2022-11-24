@@ -135,10 +135,22 @@ public final class ManagedRepository
      */
     void refresh() @safe
     {
-        if (model.status != RepositoryStatus.Idle)
+        switch (model.status)
         {
-            logDiagnostic(format!"%s: Non idle repository"(model.name));
-            return;
+        case RepositoryStatus.Fresh:
+            cloneGit();
+            break;
+        case RepositoryStatus.Idle:
+            updateGit();
+            break;
+        default:
+            break;
+        }
+
+        /* Anything changed, reindex */
+        if (checkForChanges)
+        {
+            reindex();
         }
     }
 
@@ -211,8 +223,9 @@ private:
     /**
      * Check for any changes
      */
-    void checkForChanges() @safe
+    bool checkForChanges() @safe
     {
+        immutable oldRef = _model.commitRef;
         enforceHTTP(clonePath.exists, HTTPStatus.internalServerError, "clonePath: Should exist!");
 
         string[] cmd = ["git", "rev-parse", "HEAD"];
@@ -221,7 +234,7 @@ private:
         if (ret.status != 0)
         {
             logError(format!"Failed to check HEAD for %s: %s"(model, ret.status));
-            return;
+            return false;
         }
 
         /* Store new commitRef */
@@ -230,6 +243,8 @@ private:
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
         logDiagnostic(format!"Repository %s HEAD is now '%s'"(_model.name, _model.commitRef));
+
+        return oldRef != _model.commitRef;
     }
 
     /**

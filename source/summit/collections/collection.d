@@ -130,6 +130,7 @@ public final class ManagedCollection
         auto managedRepository = new ManagedRepository(context, this, model);
         return managedRepository.connect.match!((Success _) {
             managed[model.name] = managedRepository;
+            runTask({ managedRepository.refresh(); });
             return NoDatabaseError;
         }, (Failure f) => DatabaseResult(DatabaseError(cast(DatabaseErrorCode) f.specifier,
                 f.message)));
