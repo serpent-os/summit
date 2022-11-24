@@ -195,6 +195,22 @@ public final class MetaDB
     }
 
     /**
+     * Remove all entries
+     */
+    MetaResult removeAll() @safe
+    {
+        immutable wipe = db.update((scope tx) @safe {
+            auto e1 = tx.removeAll!MetaEntry;
+            if (!e1.isNull)
+            {
+                return e1;
+            }
+            return tx.removeAll!ProviderMap;
+        });
+        return wipe.isNull ? cast(MetaResult) Success() : cast(MetaResult) fail(wipe.message);
+    }
+
+    /**
      * Connect to the underlying storage
      *
      * Returns: Success or Failure
@@ -249,18 +265,8 @@ public final class MetaDB
             reader.close();
         }
 
-        immutable wipe = db.update((scope tx) @safe {
-            auto e1 = tx.removeAll!MetaEntry;
-            if (!e1.isNull)
-            {
-                return e1;
-            }
-            return tx.removeAll!ProviderMap;
-        });
-        if (!wipe.isNull)
-        {
-            return cast(MetaResult) fail(wipe.message);
-        }
+        removeAll();
+
         immutable rebuild = db.update((scope tx) => tx.createModel!(MetaEntry, ProviderMap));
         if (!rebuild.isNull)
         {
