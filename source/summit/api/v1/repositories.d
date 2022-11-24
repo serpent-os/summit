@@ -78,16 +78,15 @@ public final class RepositoriesService : RepositoriesAPIv1
      */
     override void create(string _collection, CreateRepository request) @safe
     {
-        PackageCollection collection;
-        immutable colErr = context.appDB.view((in tx) => collection.load!"slug"(tx, _collection));
-        enforceHTTP(colErr.isNull, HTTPStatus.notFound, colErr.message);
+        ManagedCollection collection = collectionManager.bySlug(_collection);
+        enforceHTTP(collectionManager !is null, HTTPStatus.notFound);
+
         Repository repo;
         repo.name = request.id;
-        repo.collection = collection.id;
         repo.description = "not yet loaded";
         repo.summary = request.summary;
         repo.originURI = request.originURI;
-        immutable err = context.appDB.update((scope tx) => repo.save(tx));
+        immutable err = collection.addRepository(repo);
         enforceHTTP(err.isNull, HTTPStatus.forbidden, err.message);
         logInfo(format!"Create at %s: %s"(_collection, request));
     }
