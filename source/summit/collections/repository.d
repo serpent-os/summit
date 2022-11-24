@@ -17,13 +17,20 @@ module summit.collections.repository;
 
 import moss.client.metadb;
 import std.conv : to;
-import std.path : buildPath, dirName;
+import std.path : buildPath, dirName, relativePath;
 import summit.collections.collection;
 import summit.context;
 import summit.models.repository;
-import std.file : mkdirRecurse, rmdirRecurse, exists;
+import std.file : mkdirRecurse, rmdirRecurse, exists, SpanMode, dirEntries;
 import vibe.d;
 import vibe.core.process;
+import vibe.core.channel;
+import std.array : array;
+import std.algorithm : map, sort, uniq;
+import moss.core.util : computeSHA256;
+import moss.format.binary.reader;
+import moss.format.binary.payload.meta;
+import moss.format.source.spec;
 
 /**
  * An explicitly managed repository
@@ -256,6 +263,7 @@ private:
         }
 
         updateDocumentation();
+        updatePackages();
 
         /* Restore idle marker */
         _model.status = RepositoryStatus.Idle;
@@ -277,6 +285,181 @@ private:
         _model.description = desc;
         immutable err = context.appDB.update((scope tx) => _model.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+    }
+
+    /**
+     * Lock in coro-friendly fashion around separate thread to update the MetaDB
+     */
+    void updatePackages() @safe
+    {
+        Channel!(bool, 1) notifyChannel = createChannel!(bool, 1);
+        bool unusedRet;
+
+        /* spawn the worker */
+        logDiagnostic("Begin updatePackagesThreaded");
+        runWorkerTask(&updatePackagesThreaded, notifyChannel, dbPath,
+                workPath, model.commitRef, model.originURI);
+
+        /* Await closure from recipient */
+        while (!notifyChannel.empty)
+        {
+            notifyChannel.tryConsumeOne(unusedRet);
+        }
+        logDiagnostic("Returned to updatePackages");
+    }
+
+    /**
+     * Process all of the packages we encounter
+     */
+    static void updatePackagesThreaded(Channel!(bool, 1) notifyChannel,
+            string dbPath, string workPath, string commitRef, string originURI) @safe
+    {
+        /* Let run scope know we're done */
+        scope (exit)
+        {
+            logDiagnostic("Exit updatePackagesThreaded");
+            notifyChannel.put(true);
+            notifyChannel.close();
+        }
+        logDiagnostic("Enter updatePackagesThreaded");
+
+        MetaDB db = new MetaDB(dbPath, true);
+        scope (exit)
+        {
+            db.close();
+        }
+        db.connect.tryMatch!((Success) {});
+
+        auto manifestEntries = () @trusted {
+            return workPath.dirEntries("manifest.*.bin", SpanMode.depth, false)
+                .map!((m) => m.name).array;
+        }();
+
+        db.removeAll();
+
+        foreach (entry; manifestEntries)
+        {
+            installManifest(db, entry, workPath, commitRef, originURI);
+        }
+    }
+
+    /**
+     * Install manifest into the MetaDB
+     */
+    static void installManifest(MetaDB metaDB, string manifestPath,
+            string workPath, string commitRef, string originURI) @trusted
+    {
+        scope rdr = new Reader(File(manifestPath, "rb"));
+        auto payloads = rdr.payloads!MetaPayload;
+        if (payloads.empty)
+        {
+            logWarn(format!"Missing payloads in manifest %s"(manifestPath));
+            return;
+        }
+
+        MetaPayload mp = new MetaPayload();
+        mp.addRecord(RecordType.String, RecordTag.SourceRef, commitRef);
+        mp.addRecord(RecordType.String, RecordTag.SourceURI, originURI);
+        immutable ymlPath = manifestPath.dirName.buildPath("stone.yml");
+        immutable checksum = computeSHA256(manifestPath, true);
+        mp.addRecord(RecordType.String, RecordTag.PackageHash, checksum);
+        mp.addRecord(RecordType.String, RecordTag.SourcePath, ymlPath.relativePath(workPath));
+
+        auto spec = new Spec(File(ymlPath, "r"));
+        spec.parse();
+
+        string sourceID;
+        string architecture;
+        string[] licenses;
+        string summary;
+        Provider[] providers;
+        Dependency[] dependencies;
+        Dependency[] buildDependencies;
+        uint64_t relno = 0;
+        string versionID;
+
+        foreach (payload; payloads)
+        {
+            auto meta = cast(MetaPayload) payload;
+            foreach (record; meta)
+            {
+                switch (record.tag)
+                {
+                case RecordTag.License:
+                    licenses ~= record.get!string;
+                    break;
+                case RecordTag.Depends:
+                    dependencies ~= record.get!Dependency;
+                    break;
+                case RecordTag.Provides:
+                    providers ~= record.get!Provider;
+                    break;
+                case RecordTag.Name:
+                    providers ~= Provider(record.get!string,
+                            ProviderType.PackageName);
+                    break;
+                case RecordTag.Release:
+                    relno = record.get!uint64_t;
+                    break;
+                case RecordTag.Version:
+                    versionID = record.get!string;
+                    break;
+                case RecordTag.SourceID:
+                    sourceID = record.get!string;
+                    break;
+                case RecordTag.BuildDepends:
+                    buildDependencies ~= record.get!Dependency;
+                    break;
+                case RecordTag.Architecture:
+                    architecture = record.get!string;
+                    break;
+                default:
+                    /* Ignore */
+                    break;
+                }
+            }
+        }
+
+        mp.addRecord(RecordType.String, RecordTag.SourceID, sourceID);
+        mp.addRecord(RecordType.String, RecordTag.Architecture, architecture);
+        mp.addRecord(RecordType.String, RecordTag.Name, sourceID);
+        mp.addRecord(RecordType.String, RecordTag.Summary, spec.rootPackage.summary);
+        mp.addRecord(RecordType.String, RecordTag.Description, spec.rootPackage.description);
+        mp.addRecord(RecordType.String, RecordTag.Homepage, spec.source.homepage);
+
+        /* Licenses */
+        licenses.sort();
+        foreach (l; licenses.uniq)
+        {
+            mp.addRecord(RecordType.String, RecordTag.License, l);
+        }
+
+        /* Build deps */
+        buildDependencies.sort();
+        foreach (b; buildDependencies.uniq)
+        {
+            mp.addRecord(RecordType.Dependency, RecordTag.BuildDepends, b);
+        }
+
+        /* Run deps */
+        dependencies.sort();
+        foreach (d; dependencies.uniq)
+        {
+            mp.addRecord(RecordType.Dependency, RecordTag.Depends, d);
+        }
+
+        /* Providers */
+        providers.sort();
+        foreach (p; providers.uniq)
+        {
+            mp.addRecord(RecordType.Provider, RecordTag.Provides, p);
+        }
+
+        /* Relno/version */
+        mp.addRecord(RecordType.String, RecordTag.Version, versionID);
+        mp.addRecord(RecordType.Uint64, RecordTag.Release, relno);
+
+        metaDB.install(mp);
     }
 
     SummitContext context;
