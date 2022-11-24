@@ -18,6 +18,8 @@ module summit.collections.manager;
 import summit.context;
 import summit.models.collection;
 import moss.db.keyvalue;
+import moss.db.keyvalue.orm;
+import moss.db.keyvalue.errors;
 import summit.collections.collection;
 
 import vibe.core.core : setTimer;
@@ -38,6 +40,48 @@ public final class CollectionManager
     this(SummitContext context) @safe
     {
         this.context = context;
+    }
+
+    /**
+     * Attempt to add a new unique collection to the manager
+     *
+     * Params:
+     *      collection = Unique collection model
+     * Returns: Nullable error
+     */
+    DatabaseResult addCollection(PackageCollection collection) @safe
+    {
+        /* Lets bypass db lookup where possible */
+        auto lookup = (collection.slug in managed);
+        if (lookup !is null)
+        {
+            return DatabaseResult(DatabaseError(DatabaseErrorCode.BucketExists,
+                    "That collection already exists"));
+        }
+
+        /* Reset .. */
+        collection.id = 0;
+
+        immutable err = context.appDB.update((scope tx) => collection.save(tx));
+        if (!err.isNull)
+        {
+            return err;
+        }
+
+        /* Stash into managed table */
+        auto managedCollection = new ManagedCollection(context, collection);
+        DatabaseResult helper(in Transaction tx) @safe
+        {
+            immutable err = managedCollection.connect(tx);
+            if (!err.isNull)
+            {
+                return err;
+            }
+            managed[collection.slug] = managedCollection;
+            return NoDatabaseError;
+        }
+
+        return context.appDB.view(&helper);
     }
 
     /**
