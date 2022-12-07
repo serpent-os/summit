@@ -20,6 +20,7 @@ public import summit.api.v1.interfaces;
 
 import summit.api.v1.builders;
 import summit.api.v1.collections;
+import summit.api.v1.endpoints;
 import summit.api.v1.pairing;
 import summit.api.v1.repositories;
 import summit.api.v1.recipes;
@@ -46,6 +47,7 @@ public final class RESTService : SummitAPIv1
         router.registerRestInterface(this);
         router.registerRestInterface(new BuildersService(context));
         router.registerRestInterface(new CollectionsService(context, collectionManager));
+        router.registerRestInterface(new EndpointsService(context));
         router.registerRestInterface(new RepositoriesService(context, collectionManager));
         router.registerRestInterface(new RecipesService(context, collectionManager));
         router.registerRestInterface(new PairingService(context));
