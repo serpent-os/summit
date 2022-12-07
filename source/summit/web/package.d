@@ -60,4 +60,13 @@ public final class SummitWeb
     {
         render!"builders/index.dt";
     }
+
+    /**
+     * Render the /endpoints page
+     */
+    @path("endpoints") @method(HTTPMethod.GET)
+    void endpointsPage() @safe
+    {
+        render!"endpoints/index.dt";
+    }
 }
