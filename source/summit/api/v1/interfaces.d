@@ -30,6 +30,7 @@ public enum ListContext : string
     Groups = "groups",
     Repositories = "repositories",
     Recipes = "recipes",
+    Endpoints = "endpoints",
 }
 
 /**
