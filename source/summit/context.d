@@ -55,7 +55,7 @@ public final class SummitContext
 
         /* Configure the model */
         immutable dbErr = appDB.update((scope tx) => tx.createModel!(PackageCollection,
-                Repository, AvalancheEndpoint, Settings));
+                Repository, AvalancheEndpoint, VesselEndpoint, Settings));
         enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
 
         /* Establish account management */
