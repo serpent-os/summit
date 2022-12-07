@@ -211,6 +211,32 @@ public struct AttachAvalanche
 }
 
 /**
+ * Request to attach vessel instance
+ */
+public struct AttachVessel
+{
+    /**
+     * Unique identifier within summit
+     */
+    string id;
+
+    /**
+     * Where do we find it
+     */
+    string instanceURI;
+
+    /**
+     * Public key for the instance (verification)
+     */
+    string pubkey;
+
+    /**
+     * Useful description for the vessel endpoint
+     */
+    string summary;
+}
+
+/**
  * Root API node
  */
 @path("/api/v1")
@@ -285,4 +311,21 @@ public interface RecipesAPIv1
      */
     @path("enumerate/:collection/:repo") @method(HTTPMethod.GET) Paginator!ListItem enumerate(
             string _collection, string _repo, ulong pageNumber = 0) @safe;
+}
+
+/**
+ * Base API for the Endpoints (Vessel)
+ */
+@path("/api/v1/endpoints")
+public interface EndpointsAPIv1
+{
+    /**
+     * Enumerate endpoint attachments
+     */
+    @path("enumerate") @method(HTTPMethod.GET) ListItem[] enumerate() @safe;
+
+    /**
+     * Create an endpoint attachment
+     */
+    @path("create") @method(HTTPMethod.POST) void create(AttachVessel request) @safe;
 }
