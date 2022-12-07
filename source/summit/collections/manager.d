@@ -15,13 +15,12 @@
 
 module summit.collections.manager;
 
-import summit.context;
-import summit.models.collection;
 import moss.db.keyvalue;
-import moss.db.keyvalue.orm;
 import moss.db.keyvalue.errors;
+import moss.db.keyvalue.orm;
+import moss.service.context;
 import summit.collections.collection;
-
+import summit.models.collection;
 import vibe.core.core : setTimer;
 import vibe.d;
 
@@ -37,7 +36,7 @@ public final class CollectionManager
     /**
      * Construct a new CollectionManager for the given context
      */
-    this(SummitContext context) @safe
+    this(ServiceContext context) @safe
     {
         this.context = context;
     }
@@ -180,7 +179,7 @@ private:
         }
     }
 
-    SummitContext context;
+    ServiceContext context;
     ManagedCollection[string] managed;
     bool running;
     Timer curTimer;

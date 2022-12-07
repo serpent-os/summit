@@ -17,11 +17,11 @@ module summit.api.v1.pairing;
 
 public import moss.service.interfaces;
 
-import vibe.d;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
+import moss.service.context;
 import moss.service.models;
-import summit.context;
+import vibe.d;
 
 /**
  * Implementation of the hub-aspect enrolment API
@@ -35,7 +35,7 @@ public final class PairingService : ServiceEnrolmentAPI
     /** 
      * Construct new pairing API
      */
-    this(SummitContext context) @safe
+    this(ServiceContext context) @safe
     {
         this.context = context;
     }
@@ -94,5 +94,5 @@ public final class PairingService : ServiceEnrolmentAPI
 
 private:
 
-    SummitContext context;
+    ServiceContext context;
 }

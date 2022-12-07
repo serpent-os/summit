@@ -17,7 +17,7 @@ module summit.api.v1.endpoints;
 public import summit.api.v1.interfaces;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
-import summit.context;
+import moss.service.context;
 import vibe.d;
 
 /**
@@ -33,7 +33,7 @@ public final class EndpointsService : EndpointsAPIv1
      * Params:
      *      context = global context
      */
-    this(SummitContext context) @safe
+    this(ServiceContext context) @safe
     {
         this.context = context;
     }
@@ -60,5 +60,5 @@ public final class EndpointsService : EndpointsAPIv1
     }
 
 private:
-    SummitContext context;
+    ServiceContext context;
 }

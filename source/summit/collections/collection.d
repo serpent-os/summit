@@ -20,7 +20,7 @@ import std.conv : to;
 import std.algorithm : filter;
 import std.path : buildPath;
 import summit.collections.repository;
-import summit.context;
+import moss.service.context;
 import summit.models.collection;
 import summit.models.repository;
 import moss.core.errors;
@@ -40,7 +40,7 @@ public final class ManagedCollection
      *      context = global context
      *      model = Database model
      */
-    this(SummitContext context, PackageCollection model) @safe
+    this(ServiceContext context, PackageCollection model) @safe
     {
         this.context = context;
         this._model = model;
@@ -179,7 +179,7 @@ package:
 
 private:
 
-    SummitContext context;
+    ServiceContext context;
     PackageCollection _model;
     ManagedRepository[string] managed;
     string _dbPath;

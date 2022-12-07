@@ -15,8 +15,8 @@
 
 module summit.web.accounts;
 
+import moss.service.context;
 import vibe.d;
-import summit.context;
 
 /**
  * Basic subclass to support local rendering
@@ -28,7 +28,7 @@ import summit.context;
     /**
      * Construct new accounts web
      */
-    this(SummitContext context) @safe
+    this(ServiceContext context) @safe
     {
         super(context.accountManager, context.tokenManager, "summit");
     }

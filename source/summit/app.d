@@ -17,11 +17,11 @@ module summit.app;
 
 import moss.core.errors;
 import moss.service.accounts;
+import moss.service.context;
 import moss.service.models;
 import std.path : buildPath;
 import summit.api;
 import summit.collections;
-import summit.context;
 import summit.models;
 import summit.web;
 import vibe.d;
@@ -40,7 +40,7 @@ public final class SummitApplication
      * Params:
      *      context = application context
      */
-    this(SummitContext context) @safe
+    this(ServiceContext context) @safe
     {
         this.context = context;
         this.collectionManager = new CollectionManager(context);
@@ -70,7 +70,7 @@ public final class SummitApplication
 private:
 
     CollectionManager collectionManager;
-    SummitContext context;
+    ServiceContext context;
     RESTService service;
     URLRouter _router;
     SummitWeb web;

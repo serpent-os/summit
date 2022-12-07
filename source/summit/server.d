@@ -16,14 +16,14 @@
 
 module summit.server;
 
+import moss.service.context;
 import moss.service.sessionstore;
 import std.file : mkdirRecurse;
 import std.path : buildPath;
 import std.string : format;
 import summit.app;
-import summit.context;
-import summit.setup;
 import summit.models;
+import summit.setup;
 import vibe.core.channel;
 import vibe.d;
 
@@ -45,14 +45,12 @@ public final class SummitServer
      * Construct new App 
      *
      * Params:
-     *      rootDir = Root directory
+     *      context = global context
      */
-    this(string rootDir) @safe
+    this(ServiceContext context) @safe
     {
-        logInfo(format!"SummitServer running from %s"(rootDir));
-        this.rootDir = rootDir;
-
-        context = new SummitContext(rootDir);
+        logInfo(format!"SummitServer running from %s"(context.rootDirectory));
+        this.context = context;
 
         /* Set up the server */
         serverSettings = new HTTPServerSettings();
@@ -72,7 +70,7 @@ public final class SummitServer
         fileSettings.serverPathPrefix = "/static";
         //fileSettings.maxAge = 30.days;
         fileSettings.options = HTTPFileServerOption.failIfNotFound;
-        fileHandler = serveStaticFiles(rootDir.buildPath("static/"), fileSettings);
+        fileHandler = serveStaticFiles(context.rootDirectory.buildPath("static/"), fileSettings);
 
         /* Lets go listen */
         listener = listenHTTP(serverSettings, &applicationRouting);
@@ -155,11 +153,10 @@ private:
         setupApp.router.get("/static/*", fileHandler);
     }
 
-    string rootDir;
+    ServiceContext context;
     ApplicationMode appMode = ApplicationMode.Setup;
     SummitApplication webApp;
     SetupApplication setupApp;
-    SummitContext context;
 
     HTTPListener listener;
     HTTPServerSettings serverSettings;

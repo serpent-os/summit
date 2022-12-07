@@ -17,9 +17,9 @@ module summit.api.v1.recipes;
 public import summit.api.v1.interfaces;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
+import moss.service.context;
 import std.algorithm : map, sort;
 import std.array : array;
-import summit.context;
 import summit.collections;
 import vibe.d;
 
@@ -37,7 +37,7 @@ public final class RecipesService : RecipesAPIv1
      *      context = global context
      *      collectionManager = collection manager
      */
-    this(SummitContext context, CollectionManager collectionManager) @safe
+    this(ServiceContext context, CollectionManager collectionManager) @safe
     {
         this.context = context;
         this.collectionManager = collectionManager;
@@ -75,6 +75,6 @@ public final class RecipesService : RecipesAPIv1
     }
 
 private:
-    SummitContext context;
+    ServiceContext context;
     CollectionManager collectionManager;
 }

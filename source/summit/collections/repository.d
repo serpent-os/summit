@@ -16,21 +16,21 @@
 module summit.collections.repository;
 
 import moss.client.metadb;
+import moss.core.util : computeSHA256;
+import moss.format.binary.payload.meta;
+import moss.format.binary.reader;
+import moss.format.source.spec;
+import moss.service.context;
+import std.algorithm : map, sort, uniq;
+import std.array : array;
 import std.conv : to;
+import std.file : dirEntries, exists, mkdirRecurse, rmdirRecurse, SpanMode;
 import std.path : buildPath, dirName, relativePath;
 import summit.collections.collection;
-import summit.context;
 import summit.models.repository;
-import std.file : mkdirRecurse, rmdirRecurse, exists, SpanMode, dirEntries;
-import vibe.d;
-import vibe.core.process;
 import vibe.core.channel;
-import std.array : array;
-import std.algorithm : map, sort, uniq;
-import moss.core.util : computeSHA256;
-import moss.format.binary.reader;
-import moss.format.binary.payload.meta;
-import moss.format.source.spec;
+import vibe.core.process;
+import vibe.d;
 
 /**
  * An explicitly managed repository
@@ -54,7 +54,7 @@ public final class ManagedRepository
      *      parent = Parent collection
      *      model = Database model
      */
-    this(SummitContext context, ManagedCollection parent, Repository model) @safe
+    this(ServiceContext context, ManagedCollection parent, Repository model) @safe
     {
         this.context = context;
 
@@ -481,7 +481,7 @@ private:
         metaDB.install(mp);
     }
 
-    SummitContext context;
+    ServiceContext context;
     MetaDB _db;
     Repository _model;
     string _dbPath;

@@ -17,13 +17,13 @@ module summit.api.v1.builders;
 public import summit.api.v1.interfaces;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
+import moss.service.context;
 import moss.service.interfaces;
 import moss.service.models.bearertoken;
 import moss.service.models.endpoints;
 import moss.service.tokens;
 import std.algorithm : map;
 import std.array : array;
-import summit.context;
 import summit.models.settings;
 import vibe.d;
 
@@ -37,7 +37,7 @@ public final class BuildersService : BuildersAPIv1
     /**
      * Construct new BuildersService
      */
-    this(SummitContext context) @safe
+    this(ServiceContext context) @safe
     {
         this.context = context;
     }
@@ -160,5 +160,5 @@ public final class BuildersService : BuildersAPIv1
 
 private:
 
-    SummitContext context;
+    ServiceContext context;
 }

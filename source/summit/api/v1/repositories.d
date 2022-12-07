@@ -17,10 +17,10 @@ module summit.api.v1.repositories;
 public import summit.api.v1.interfaces;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
+import moss.service.context;
 import std.algorithm : filter, map;
 import std.array : array;
 import summit.collections;
-import summit.context;
 import summit.models.collection;
 import summit.models.repository;
 import vibe.d;
@@ -38,7 +38,7 @@ public final class RepositoriesService : RepositoriesAPIv1
      * Params:
      *      context = global context
      */
-    this(SummitContext context, CollectionManager collectionManager) @safe
+    this(ServiceContext context, CollectionManager collectionManager) @safe
     {
         this.context = context;
         this.collectionManager = collectionManager;
@@ -92,6 +92,6 @@ public final class RepositoriesService : RepositoriesAPIv1
     }
 
 private:
-    SummitContext context;
+    ServiceContext context;
     CollectionManager collectionManager;
 }

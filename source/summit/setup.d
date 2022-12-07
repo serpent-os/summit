@@ -15,11 +15,11 @@
 
 module summit.setup;
 
-import vibe.d;
-import vibe.core.channel;
-import vibe.web.validation;
-import summit.context;
+import moss.service.context;
 import summit.models;
+import vibe.core.channel;
+import vibe.d;
+import vibe.web.validation;
 
 /**
  * SetupApplication is only constructed when we actually
@@ -32,7 +32,7 @@ public final class SetupApplication
     /**
      * Construct a new SetupApplication
      */
-    this(SummitContext context, Channel!(bool, 1) notifier) @safe
+    this(ServiceContext context, Channel!(bool, 1) notifier) @safe
     {
         this.context = context;
         this.notifier = notifier;
@@ -115,5 +115,5 @@ private:
 
     URLRouter _router;
     Channel!(bool, 1) notifier;
-    SummitContext context;
+    ServiceContext context;
 }

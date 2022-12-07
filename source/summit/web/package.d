@@ -15,11 +15,11 @@
 
 module summit.web;
 
-import vibe.d;
+import moss.service.context;
+import summit.collections;
 import summit.web.accounts;
 import summit.web.collections;
-import summit.context;
-import summit.collections;
+import vibe.d;
 
 /**
  * Root entry into our web service
@@ -37,7 +37,7 @@ public final class SummitWeb
      *      collectionManager = collection management
      *      router = nested routes
      */
-    this(SummitContext context, CollectionManager collectionManager, URLRouter router) @safe
+    this(ServiceContext context, CollectionManager collectionManager, URLRouter router) @safe
     {
         auto root = router.registerWebInterface(this);
         root.registerWebInterface(cast(AccountsWeb) new SummitAccountsWeb(context));

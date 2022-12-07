@@ -16,9 +16,9 @@
 module summit.web.collections;
 
 import moss.deps.registry;
+import moss.service.context;
 import std.range : empty, front;
 import summit.collections;
-import summit.context;
 import vibe.d;
 
 /**
@@ -35,7 +35,7 @@ public final class CollectionsWeb
      * Params:
      *      context = global context
      */
-    this(SummitContext context, CollectionManager collectionManager) @safe
+    this(ServiceContext context, CollectionManager collectionManager) @safe
     {
         this.context = context;
         this.collectionManager = collectionManager;
@@ -104,6 +104,6 @@ public final class CollectionsWeb
 
 private:
 
-    SummitContext context;
+    ServiceContext context;
     CollectionManager collectionManager;
 }

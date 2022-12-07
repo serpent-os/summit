@@ -15,11 +15,14 @@
 
 module main;
 
-import vibe.d;
-import summit.server;
-import std.path : absolutePath, asNormalizedPath;
-import std.conv : to;
 import libsodium : sodium_init;
+import moss.service.context;
+import moss.service.models;
+import std.conv : to;
+import std.path : absolutePath, asNormalizedPath;
+import summit.models;
+import summit.server;
+import vibe.d;
 
 /**
  * Main entry for summit
@@ -37,7 +40,14 @@ int main(string[] args) @safe
     immutable rootDir = ".".absolutePath.asNormalizedPath.to!string;
     setLogLevel(LogLevel.trace);
 
-    auto server = new SummitServer(rootDir);
+    auto context = new ServiceContext(rootDir);
+
+    /* Configure the model */
+    immutable dbErr = context.appDB.update((scope tx) => tx.createModel!(PackageCollection,
+            Repository, AvalancheEndpoint, VesselEndpoint, Settings));
+    enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
+
+    auto server = new SummitServer(context);
     scope (exit)
     {
         server.close();

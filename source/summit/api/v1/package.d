@@ -18,13 +18,13 @@ module summit.api.v1;
 public import vibe.d;
 public import summit.api.v1.interfaces;
 
+import moss.service.context;
 import summit.api.v1.builders;
 import summit.api.v1.collections;
 import summit.api.v1.endpoints;
 import summit.api.v1.pairing;
-import summit.api.v1.repositories;
 import summit.api.v1.recipes;
-import summit.context;
+import summit.api.v1.repositories;
 import summit.collections;
 
 /**
@@ -42,7 +42,7 @@ public final class RESTService : SummitAPIv1
      *      collectionManager = Collection management
      *      router = nested router
      */
-    this(SummitContext context, CollectionManager collectionManager, URLRouter router) @safe
+    this(ServiceContext context, CollectionManager collectionManager, URLRouter router) @safe
     {
         router.registerRestInterface(this);
         router.registerRestInterface(new BuildersService(context));
