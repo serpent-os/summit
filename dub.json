@@ -5,7 +5,7 @@
 	"stringImportPaths": [
 		"views"
 	],
-	"copyright": "Copyright © 2022, Serpent OS Developers",
+	"copyright": "Copyright © 2023, Serpent OS Developers",
 	"dependencies": {
 		"vibe-d": ">=0.9.5",
 		"vibe-d:tls": ">=0.9.5",
