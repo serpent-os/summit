@@ -4,7 +4,7 @@ nav.navbar.navbar-expand-lg.navbar-light
             form
                 div.input-icon
                     span.input-icon-addon: svg(width="24px", height="24px", stroke-width="2"): use(xlink:href="/static/tabler/tabler-sprite-nostroke.svg#tabler-search")    
-                    input.form-control(type="text", placeholder="Search…", aria-label="Search the dashboard")    
+                    input.form-control(type="text", placeholder="Search…", disabled="true", aria-label="Search the dashboard")    
 
         div.d-flex
             a.px-4.nav-link#themeSwitcher(href="#")
