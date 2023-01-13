@@ -17,6 +17,7 @@ module summit.models.project;
 
 import moss.db.keyvalue.orm;
 public import std.stdint : uint64_t;
+public import summit.models.profile : ProfileID;
 
 /**
  * Unique assignment to survive renames, etc.
@@ -47,4 +48,9 @@ public @Model struct Project
      * Brief description of the project
      */
     string summary;
+
+    /**
+     * Build profiles we'll attempt to use
+     */
+    ProfileID[] profiles;
 }

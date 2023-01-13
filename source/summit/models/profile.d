@@ -17,6 +17,7 @@ module summit.models.profile;
 
 import moss.db.keyvalue.orm;
 public import std.stdint : uint64_t;
+public import summit.models.project : ProjectID;
 public import summit.models.remote : RemoteID;
 
 /**
@@ -48,6 +49,11 @@ public @Model struct Profile
      * Where can we expect to see this published?
      */
     string volatileIndexURI;
+
+    /**
+     * What project does this belong to?
+     */
+    ProjectID projectID;
 
     /**
      * What remotes are attached to this profile?
