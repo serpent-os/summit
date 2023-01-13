@@ -15,12 +15,14 @@
 
 module summit.projects.profile;
 
-import vibe.d;
+import moss.client.metadb;
+import moss.core.errors;
 import moss.service.context;
+import std.file : mkdirRecurse;
+import std.path : buildPath;
 import summit.models;
 import summit.projects.project;
-import std.path : buildPath;
-import std.file : mkdirRecurse;
+import vibe.d;
 
 /**
  * Provides runtime encapsulation and management of build profiles.
@@ -52,6 +54,9 @@ public final class ManagedProfile
         /* Always ensure directories exist */
         cachePath.mkdirRecurse();
         dbPath.mkdirRecurse();
+
+        /* Create a new MetaDB for the index. Initially empty. */
+        indexDB = new MetaDB(dbPath, true);
     }
 
     /**
@@ -86,6 +91,16 @@ public final class ManagedProfile
         return _cachePath;
     }
 
+    /**
+     * Connect the underlying storage
+     *
+     * Returns: matchable error
+     */
+    auto connect() @safe
+    {
+        return indexDB.connect();
+    }
+
 private:
 
     Profile _model;
@@ -93,4 +108,5 @@ private:
     ManagedProject _project;
     string _dbPath;
     string _cachePath;
+    MetaDB indexDB;
 }

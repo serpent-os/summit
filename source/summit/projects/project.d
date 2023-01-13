@@ -183,10 +183,12 @@ public final class ManagedProject
         immutable err = context.appDB.update((scope tx) => model.save(tx));
 
         /* Now manage it */
-        /* TODO: Connect it for underlying remotes */
         auto managed = new ManagedProfile(context, this, model);
-        managedProfiles[model.name] = managed;
-        return NoDatabaseError;
+        return managed.connect.match!((Success _) {
+            managedProfiles[model.name] = managed;
+            return NoDatabaseError;
+        }, (Failure f) => DatabaseResult(DatabaseError(cast(DatabaseErrorCode) f.specifier,
+                f.message)));
     }
 
 package:
@@ -221,6 +223,13 @@ package:
                 .filter!((p) => p.projectID == model.id))
         {
             auto r = new ManagedProfile(context, this, profile);
+            DatabaseResult err = r.connect.match!((Failure f) => DatabaseResult(
+                    DatabaseError(cast(DatabaseErrorCode) f.specifier, f.message)),
+                    (Success s) => NoDatabaseError);
+            if (!err.isNull)
+            {
+                return err;
+            }
             managedProfiles[profile.name] = r;
         }
         return NoDatabaseError;
