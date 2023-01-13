@@ -19,12 +19,13 @@ import moss.client.metadb;
 import moss.core.errors;
 import moss.service.context;
 import std.file : mkdirRecurse;
+import std.parallelism : task;
 import std.path : buildPath;
 import summit.models;
 import summit.projects.project;
+import vibe.core.channel;
 import vibe.d;
 import vibe.inet.urltransfer;
-import vibe.core.channel;
 
 /**
  * Provides runtime encapsulation and management of build profiles.
@@ -94,6 +95,14 @@ public final class ManagedProfile
     }
 
     /**
+     * Returns: Access to underlying DB
+     */
+    pure @property auto db() @safe @nogc nothrow
+    {
+        return indexDB;
+    }
+
+    /**
      * Connect the underlying storage
      *
      * Returns: matchable error
@@ -117,7 +126,11 @@ public final class ManagedProfile
         Channel!(bool, 1) notifier = createChannel!(bool, 1);
         bool unusedRet;
         logInfo("Dispatch to refreshIndices");
-        runWorkerTask(&refreshIndices, indexPath, _dbPath, notifier);
+        auto dbAddress = () @trusted {
+            return cast(void*) &indexDB;
+        }();
+        auto testerTask = task!refreshIndices(indexPath, dbAddress, notifier);
+        testerTask.executeInNewThread();
         while (!notifier.empty)
         {
             notifier.tryConsumeOne(unusedRet);
@@ -128,21 +141,20 @@ public final class ManagedProfile
 
 private:
 
-    static void refreshIndices(string indexPath, string dbPath, Channel!(bool, 1) notifier) @safe
+    static void refreshIndices(string indexPath, void *dbAddress, Channel!(bool, 1) notifier) @safe
     {
-        MetaDB mdb;
+        MetaDB mdb = () @trusted {
+            return *(cast(MetaDB*) dbAddress);
+        }();
         scope (exit)
         {
             logInfo("Exiting refreshIndices");
-            mdb.close();
             notifier.put(true);
             notifier.close();
         }
         logInfo("Entering refreshIndices");
 
         /* Connect to the DB now */
-        mdb = new MetaDB(dbPath, true);
-        mdb.connect.tryMatch!((Success _) {});
         mdb.loadFromIndex(indexPath);
     }
 
