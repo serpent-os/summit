@@ -23,6 +23,7 @@ import std.path : buildPath;
 import summit.models;
 import summit.projects.project;
 import vibe.d;
+import vibe.inet.urltransfer;
 
 /**
  * Provides runtime encapsulation and management of build profiles.
@@ -99,6 +100,18 @@ public final class ManagedProfile
     auto connect() @safe
     {
         return indexDB.connect();
+    }
+
+    /**
+     * Non-blocking in terms of fibers, indexing performed on a thread at the point of reloading the index.
+     */
+    void refresh() @safe
+    {
+        immutable indexPath = cachePath.buildPath("index");
+        logInfo(format!"[profile: %s] Downloading index file %s"(_model.name,
+                _model.volatileIndexURI));
+        _model.volatileIndexURI.download(indexPath);
+        indexDB.loadFromIndex(indexPath);
     }
 
 private:

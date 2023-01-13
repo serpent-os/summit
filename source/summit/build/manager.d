@@ -39,9 +39,29 @@ public final class BuildManager
     {
         this.context = context;
         this.projectManager = projectManager;
+
+        /* All indices must be present on startup. */
+        ensureIndicesPresent();
     }
 
 private:
+
+    /**
+     * Ensure all indices for each buildable is present
+     *
+     * This is blocking in a fiber sense, the system continues.
+     */
+    void ensureIndicesPresent() @safe
+    {
+        foreach (project; projectManager.projects)
+        {
+            auto profiles = project.profiles;
+            foreach (profile; profiles)
+            {
+                profile.refresh();
+            }
+        }
+    }
 
     ServiceContext context;
     ProjectManager projectManager;
