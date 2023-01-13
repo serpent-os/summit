@@ -21,12 +21,13 @@ import moss.service.context;
 import moss.service.models;
 import std.path : buildPath;
 import summit.api;
-import summit.projects;
+import summit.build;
 import summit.models;
+import summit.projects;
 import summit.web;
+import vibe.core.file : readFileUTF8;
 import vibe.d;
 import vibe.data.json;
-import vibe.core.file : readFileUTF8;
 
 /**
  * SummitApplication provides the main dashboard application
@@ -46,6 +47,7 @@ public final class SummitApplication
     {
         this.context = context;
         this.projectManager = new ProjectManager(context);
+        this.buildManager = new BuildManager(context, projectManager);
         immutable err = projectManager.connect();
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
         _router = new URLRouter();
@@ -168,6 +170,7 @@ private:
     }
 
     ProjectManager projectManager;
+    BuildManager buildManager;
     ServiceContext context;
     RESTService service;
     URLRouter _router;
