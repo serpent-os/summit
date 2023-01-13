@@ -46,9 +46,9 @@ public final class SummitApplication
     {
         this.context = context;
         this.projectManager = new ProjectManager(context);
-        this.buildManager = new BuildManager(context, projectManager);
         immutable err = projectManager.connect();
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+        this.buildManager = new BuildManager(context, projectManager);
         _router = new URLRouter();
         web = new SummitWeb(context, projectManager, router);
         service = new RESTService(context, projectManager, router);
