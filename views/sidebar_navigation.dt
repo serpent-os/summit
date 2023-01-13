@@ -2,8 +2,8 @@
 - static struct SidebarNavItem { string path; string name; string icon; }
 - static immutable sidebarItems = [
 -   SidebarNavItem("/", "Overview", "tabler-home"),
--   SidebarNavItem("/tasks", "Tasks", "tabler-list-check"),
 -   SidebarNavItem("/~", "Projects", "tabler-archive"),
+-   SidebarNavItem("/tasks", "Tasks", "tabler-list-check"),
 -   SidebarNavItem("/builders", "Builders", "tabler-bulldozer"),
 -   SidebarNavItem("/endpoints", "Endpoints", "tabler-trolley"),
 -   SidebarNavItem("/users", "Users", "tabler-users"),
