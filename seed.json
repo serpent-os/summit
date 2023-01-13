@@ -2,14 +2,12 @@
     "projects":
     [
         {
-            /** Primary project for official development */
             "name": "Official Serpent OS recipes",
             "slug": "serpent-os",
             "description": "Recipes from the Serpent OS git repositories",
             "profiles":
             [
                 {
-                    /** Index and build via primary x86_64 repository */
                     "name": "serpent-x86_64",
                     "arch": "x86_64",
                     "indexURI": "https://dev.serpentos.com/volatile/x86_64/stone.index",
@@ -48,18 +46,16 @@
                     "name": "plasma",
                     "summary": "Plasma recipes",
                     "uri": "https://github.com/snekpit/plasma.git"
-                },
+                }
             ]
         },
         {
-            /** Community efforts */
             "name": "Community recipes",
             "slug": "community",
             "description": "Community maintained package recipes",
             "repos":
             [
                 {
-                    /** Playground prior to formal repo inclusion */
                     "name": "venom",
                     "summary": "Testing recipes",
                     "uri": "https://github.com/snekpit/venom.git"
