@@ -19,8 +19,10 @@ import moss.db.keyvalue;
 import std.conv : to;
 import std.algorithm : filter;
 import std.path : buildPath;
+import summit.projects.profile;
 import summit.projects.repository;
 import moss.service.context;
+import summit.models.profile;
 import summit.models.project;
 import summit.models.repository;
 import moss.core.errors;
@@ -64,6 +66,14 @@ public final class ManagedProject
         return managedRepos.values;
     }
 
+    /**
+     * Returns: This project's managed profiles
+     */
+    pure @property auto profiles() @safe nothrow
+    {
+        return managedProfiles.values;
+    }
+
     /** 
      * Returns: Repository within this project
      *
@@ -74,6 +84,18 @@ public final class ManagedProject
     {
         auto repo = (slug in managedRepos);
         return repo ? *repo : null;
+    }
+
+    /**
+     * Returns: Profile within this project
+     *
+     * Params:
+     *      slug = Unique identifier
+     */
+    pure @property auto profile(in string slug) @safe nothrow
+    {
+        auto profile = (slug in managedProfiles);
+        return profile ? *profile : null;
     }
 
     /**
@@ -127,7 +149,7 @@ public final class ManagedProject
             return err;
         }
 
-        /* Get it managedRepos */
+        /* Get it managed */
         auto managedRepository = new ManagedRepository(context, this, model);
         return managedRepository.connect.match!((Success _) {
             managedRepos[model.name] = managedRepository;
@@ -135,6 +157,36 @@ public final class ManagedProject
             return NoDatabaseError;
         }, (Failure f) => DatabaseResult(DatabaseError(cast(DatabaseErrorCode) f.specifier,
                 f.message)));
+    }
+
+    /**
+     * Add a profile to this project
+     *
+     *      model = Input model
+     * Returns: Nullable database error
+     */
+    DatabaseResult addProfile(Profile model) @safe
+    {
+        /* Do we have it */
+        auto lookup = (model.name in managedProfiles);
+        if (lookup !is null)
+        {
+            return DatabaseResult(DatabaseError(DatabaseErrorCode.BucketExists,
+                    "Profile already exists"));
+        }
+
+        /* Again, the basics */
+        model.id = 0;
+        model.projectID = this._model.id;
+
+        /* Stash it */
+        immutable err = context.appDB.update((scope tx) => model.save(tx));
+
+        /* Now manage it */
+        /* TODO: Connect it for underlying remotes */
+        auto managed = new ManagedProfile(context, this, model);
+        managedProfiles[model.name] = managed;
+        return NoDatabaseError;
     }
 
 package:
@@ -148,6 +200,7 @@ package:
      */
     DatabaseResult connect(in Transaction tx) @safe
     {
+        /* Load the repos */
         foreach (repo; tx.list!Repository
                 .filter!((r) => r.project == model.id))
         {
@@ -161,6 +214,14 @@ package:
             }
             managedRepos[repo.name] = r;
 
+        }
+
+        /* Now load the profiles.. */
+        foreach (profile; tx.list!Profile
+                .filter!((p) => p.projectID == model.id))
+        {
+            auto r = new ManagedProfile(context, this, profile);
+            managedProfiles[profile.name] = r;
         }
         return NoDatabaseError;
     }
@@ -182,5 +243,6 @@ private:
     ServiceContext context;
     Project _model;
     ManagedRepository[string] managedRepos;
+    ManagedProfile[string] managedProfiles;
     string _dbPath;
 }
