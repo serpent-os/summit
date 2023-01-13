@@ -18,6 +18,9 @@ module summit.build.manager;
 import vibe.d;
 import moss.service.context;
 import summit.projects;
+import std.algorithm : filter;
+import moss.deps.dependency;
+import std.range : front, empty;
 
 /**
  * The BuildManager is responsible for ensuring the correct serial
@@ -42,6 +45,7 @@ public final class BuildManager
 
         /* All indices must be present on startup. */
         ensureIndicesPresent();
+        checkForMissing();
     }
 
 private:
@@ -59,6 +63,50 @@ private:
             foreach (profile; profiles)
             {
                 profile.refresh();
+            }
+        }
+    }
+
+    void checkForMissing() @safe
+    {
+        /* For all projects */
+
+        foreach (project; projectManager.projects)
+        {
+            /* For all repositories within each project */
+            foreach (repo; project.repositories)
+            {
+                /* And for each build target.. */
+                foreach (profile; project.profiles)
+                {
+                    /* For each buildable item in that repository */
+                    foreach (entry; repo.db.list)
+                    {
+                        foreach (name; entry.providers.filter!(
+                                (p) => p.type == ProviderType.PackageName))
+                        {
+                            auto corresponding = profile.db.byProvider(ProviderType.PackageName,
+                                    name.target);
+                            if (corresponding.empty)
+                            {
+                                logInfo("Missing from builds: %s/%s/%s %s-%s",
+                                        project.model.slug, repo.model.name, entry.name,
+                                        entry.versionIdentifier, entry.sourceRelease);
+                                break;
+                            }
+                            auto binaryEntry = profile.db.byID(corresponding.front);
+                            if (binaryEntry.sourceRelease < entry.sourceRelease)
+                            {
+                                logInfo("Out of date package %s/%s/%s (recipe: %s-%s, published: %s-%s)",
+                                        project.model.slug, repo.model.name, entry.name,
+                                        entry.versionIdentifier,
+                                        entry.sourceRelease, binaryEntry.versionIdentifier,
+                                        binaryEntry.sourceRelease);
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
