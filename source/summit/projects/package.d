@@ -18,4 +18,5 @@ module summit.projects;
 public import summit.projects.profile;
 public import summit.projects.project;
 public import summit.projects.manager;
+public import summit.projects.remote;
 public import summit.projects.repository;
