@@ -126,10 +126,7 @@ public final class ManagedProfile
         Channel!(bool, 1) notifier = createChannel!(bool, 1);
         bool unusedRet;
         logInfo("Dispatch to refreshIndices");
-        auto dbAddress = () @trusted {
-            return cast(void*) &indexDB;
-        }();
-        auto testerTask = task!refreshIndices(indexPath, dbAddress, notifier);
+        auto testerTask = task!refreshIndices(indexPath, indexDB, notifier);
         testerTask.executeInNewThread();
         while (!notifier.empty)
         {
@@ -141,11 +138,8 @@ public final class ManagedProfile
 
 private:
 
-    static void refreshIndices(string indexPath, void *dbAddress, Channel!(bool, 1) notifier) @safe
+    static void refreshIndices(string indexPath, MetaDB mdb, Channel!(bool, 1) notifier) @safe
     {
-        MetaDB mdb = () @trusted {
-            return *(cast(MetaDB*) dbAddress);
-        }();
         scope (exit)
         {
             logInfo("Exiting refreshIndices");
