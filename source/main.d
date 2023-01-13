@@ -43,8 +43,8 @@ int main(string[] args) @safe
     auto context = new ServiceContext(rootDir);
 
     /* Configure the model */
-    immutable dbErr = context.appDB.update((scope tx) => tx.createModel!(Project,
-            Profile, Repository, BuildTask, AvalancheEndpoint, VesselEndpoint, Settings));
+    immutable dbErr = context.appDB.update((scope tx) => tx.createModel!(Project, Profile,
+            Remote, Repository, BuildTask, AvalancheEndpoint, VesselEndpoint, Settings));
     enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
 
     auto server = new SummitServer(context);
