@@ -20,6 +20,7 @@ import moss.service.context;
 import summit.models;
 import summit.projects.project;
 import std.path : buildPath;
+import std.file : mkdirRecurse;
 
 /**
  * Provides runtime encapsulation and management of build profiles.
@@ -47,6 +48,10 @@ public final class ManagedProfile
         this._project = project;
         this._dbPath = context.dbPath.buildPath("profiles", to!string(model.id));
         this._cachePath = context.cachePath.buildPath("profiles", to!string(model.id));
+
+        /* Always ensure directories exist */
+        cachePath.mkdirRecurse();
+        dbPath.mkdirRecurse();
     }
 
     /**
