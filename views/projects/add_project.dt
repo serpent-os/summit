@@ -2,7 +2,7 @@ div#creationDialog.modal.fade.modal-blur.hide(tabindex="-1")
     div.modal-dialog.modal-dialog-centered(role="document")
         div.modal-content.shadow
             div.modal-header
-                h5.modal-title Add a collection
+                h5.modal-title Add a project
                 button.btn-close(type="button", data-bs-dismiss="modal", aria-label="close")
             div.modal-body
                 form#creationForm.form.summit-form(method="POST", action="/")
@@ -26,4 +26,4 @@ div#creationDialog.modal.fade.modal-blur.hide(tabindex="-1")
                                 input#summary.form-control(name="summary", type="text", placeholder="Short description", required, minlength="3")
             div.modal-footer
                 button.summit-cancel.btn(data-bs-dismiss="modal") Cancel
-                button.summit-submit.btn.btn-primary.ms-auto Add collection #[span.summit-spinner.animated-dots.d-none]
+                button.summit-submit.btn.btn-primary.ms-auto Add project #[span.summit-spinner.animated-dots.d-none]

@@ -20,7 +20,7 @@ import moss.db.keyvalue.orm;
 import moss.service.context;
 import std.algorithm : map, sort;
 import std.array : array;
-import summit.collections;
+import summit.projects;
 import vibe.d;
 
 /**
@@ -35,29 +35,29 @@ public final class RecipesService : RecipesAPIv1
      *
      * Params:
      *      context = global context
-     *      collectionManager = collection manager
+     *      projectManager = project manager
      */
-    this(ServiceContext context, CollectionManager collectionManager) @safe
+    this(ServiceContext context, ProjectManager projectManager) @safe
     {
         this.context = context;
-        this.collectionManager = collectionManager;
+        this.projectManager = projectManager;
     }
 
     /**
      * Enumerate all of the recipes
      *
      * Params:
-     *      _collection: Collection slug
+     *      _project: Project slug
      *      _repo: Repo slug
      *
      * Returns: ListItem[] of known repos
      */
-    override Paginator!ListItem enumerate(string _collection, string _repo, ulong pageNumber = 0) @safe
+    override Paginator!ListItem enumerate(string _project, string _repo, ulong pageNumber = 0) @safe
     {
         ListItem[] ret;
-        auto collection = collectionManager.bySlug(_collection);
-        enforceHTTP(collection !is null, HTTPStatus.notFound, "Collection not found");
-        auto repo = collection.bySlug(_repo);
+        auto project = projectManager.bySlug(_project);
+        enforceHTTP(project !is null, HTTPStatus.notFound, "Project not found");
+        auto repo = project.bySlug(_repo);
         enforceHTTP(repo !is null, HTTPStatus.notFound, "Repository not found");
 
         auto items = repo.db.list.map!((i) {
@@ -65,7 +65,7 @@ public final class RecipesService : RecipesAPIv1
             item.id = i.pkgID;
             item.context = ListContext.Recipes;
             item.title = format!"%s - %s-%s"(i.sourceID, i.versionIdentifier, i.sourceRelease);
-            item.slug = format!"/~/%s/%s/%s"(_collection, _repo, i.sourceID);
+            item.slug = format!"/~/%s/%s/%s"(_project, _repo, i.sourceID);
             item.subtitle = i.summary;
             return item;
         });
@@ -76,5 +76,5 @@ public final class RecipesService : RecipesAPIv1
 
 private:
     ServiceContext context;
-    CollectionManager collectionManager;
+    ProjectManager projectManager;
 }

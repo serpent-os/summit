@@ -5,14 +5,14 @@
  */
 
 /**
- * summit.api.v1.collections
+ * summit.api.v1.projects
  *
- * V1 Summit Collections API
+ * V1 Summit Projects API
  *
  * Authors: Copyright © 2020-2023 Serpent OS Developers
  * License: Zlib
  */
-module summit.api.v1.collections;
+module summit.api.v1.projects;
 
 public import summit.api.v1.interfaces;
 import moss.db.keyvalue;
@@ -20,40 +20,40 @@ import moss.db.keyvalue.orm;
 import moss.service.context;
 import std.algorithm : map;
 import std.array : array;
-import summit.collections;
-import summit.models.collection;
+import summit.projects;
+import summit.models.project;
 import vibe.d;
 
 /**
- * Implements the CollectionsAPIv1
+ * Implements the ProjectsAPIv1
  */
-public final class CollectionsService : CollectionsAPIv1
+public final class ProjectsService : ProjectsAPIv1
 {
     @disable this();
 
     /**
-     * Construct new CollectionsService
+     * Construct new ProjectsService
      *
      * Params:
      *      context = global context
-     *      collectionManager = Collection management
+     *      projectManager = Project management
      */
-    this(ServiceContext context, CollectionManager collectionManager) @safe
+    this(ServiceContext context, ProjectManager projectManager) @safe
     {
         this.context = context;
-        this.collectionManager = collectionManager;
+        this.projectManager = projectManager;
     }
 
     /**
-     * Enumerate all of the collections
+     * Enumerate all of the projects
      *
-     * Returns: ListItem[] of known collections
+     * Returns: ListItem[] of known projects
      */
     override ListItem[] enumerate() @safe
     {
-        auto ret = collectionManager.collections.map!((c) {
+        auto ret = projectManager.projects.map!((c) {
             ListItem ret;
-            ret.context = ListContext.Collections;
+            ret.context = ListContext.Projects;
             ret.id = to!string(c.model.id);
             ret.title = c.model.name;
             ret.subtitle = c.model.summary;
@@ -64,23 +64,23 @@ public final class CollectionsService : CollectionsAPIv1
     }
 
     /**
-     * Create a new collection
+     * Create a new project
      *
      * Params:
      *      request = Creation request
      */
-    override void create(CreateCollection request) @safe
+    override void create(CreateProject request) @safe
     {
-        logInfo(format!"Constructing new collection: %s"(request));
-        auto c = PackageCollection();
+        logInfo(format!"Constructing new project: %s"(request));
+        auto c = Project();
         c.name = request.name;
         c.slug = request.slug;
         c.summary = request.summary;
-        immutable err = collectionManager.addCollection(c);
+        immutable err = projectManager.addProject(c);
         enforceHTTP(err.isNull, HTTPStatus.badRequest, err.message);
     }
 
 private:
     ServiceContext context;
-    CollectionManager collectionManager;
+    ProjectManager projectManager;
 }

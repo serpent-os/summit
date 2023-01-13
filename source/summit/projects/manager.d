@@ -13,28 +13,28 @@
  * License: Zlib
  */
 
-module summit.collections.manager;
+module summit.projects.manager;
 
 import moss.db.keyvalue;
 import moss.db.keyvalue.errors;
 import moss.db.keyvalue.orm;
 import moss.service.context;
-import summit.collections.collection;
-import summit.models.collection;
+import summit.projects.project;
+import summit.models.project;
 import vibe.core.core : setTimer;
 import vibe.d;
 
 /**
- * The CollectionManager helps us to control the correlation between
- * the database model of collections and *usable* objects from within
+ * The ProjectManager helps us to control the correlation between
+ * the database model of projects and *usable* objects from within
  * the context of the main thread.
  */
-public final class CollectionManager
+public final class ProjectManager
 {
     @disable this();
 
     /**
-     * Construct a new CollectionManager for the given context
+     * Construct a new ProjectManager for the given context
      */
     this(ServiceContext context) @safe
     {
@@ -42,41 +42,41 @@ public final class CollectionManager
     }
 
     /**
-     * Attempt to add a new unique collection to the manager
+     * Attempt to add a new unique project to the manager
      *
      * Params:
-     *      collection = Unique collection model
+     *      project = Unique project model
      * Returns: Nullable error
      */
-    DatabaseResult addCollection(PackageCollection collection) @safe
+    DatabaseResult addProject(Project project) @safe
     {
         /* Lets bypass db lookup where possible */
-        auto lookup = (collection.slug in managed);
+        auto lookup = (project.slug in managed);
         if (lookup !is null)
         {
             return DatabaseResult(DatabaseError(DatabaseErrorCode.BucketExists,
-                    "That collection already exists"));
+                    "That project already exists"));
         }
 
         /* Reset .. */
-        collection.id = 0;
+        project.id = 0;
 
-        immutable err = context.appDB.update((scope tx) => collection.save(tx));
+        immutable err = context.appDB.update((scope tx) => project.save(tx));
         if (!err.isNull)
         {
             return err;
         }
 
         /* Stash into managed table */
-        auto managedCollection = new ManagedCollection(context, collection);
+        auto managedProject = new ManagedProject(context, project);
         DatabaseResult helper(in Transaction tx) @safe
         {
-            immutable err = managedCollection.connect(tx);
+            immutable err = managedProject.connect(tx);
             if (!err.isNull)
             {
                 return err;
             }
-            managed[collection.slug] = managedCollection;
+            managed[project.slug] = managedProject;
             return NoDatabaseError;
         }
 
@@ -93,9 +93,9 @@ public final class CollectionManager
     {
         DatabaseResult colLoader(in Transaction tx) @safe
         {
-            foreach (model; tx.list!PackageCollection)
+            foreach (model; tx.list!Project)
             {
-                auto c = new ManagedCollection(context, model);
+                auto c = new ManagedProject(context, model);
                 immutable err = c.connect(tx);
                 if (!err.isNull)
                 {
@@ -113,8 +113,8 @@ public final class CollectionManager
             return err;
         }
 
-        /* Go and update the collections for the first time */
-        runTask({ updateCollections(); });
+        /* Go and update the projects for the first time */
+        runTask({ updateProjects(); });
         return NoDatabaseError;
     }
 
@@ -133,15 +133,15 @@ public final class CollectionManager
     }
 
     /**
-     * Returns: all managed collections
+     * Returns: all managed projects
      */
-    pure auto @property collections() @safe nothrow
+    pure auto @property projects() @safe nothrow
     {
         return managed.values;
     }
 
     /**
-     * Returns: a collection by slug
+     * Returns: a project by slug
      *
      * Params:
      *      slug = Slug identifier
@@ -155,23 +155,21 @@ public final class CollectionManager
 private:
 
     /**
-     * Iterate all collections and request they update themselves, and obviously, their repos
+     * Iterate all projects and request they update themselves, and obviously, their repos
      */
-    void updateCollections() @safe
+    void updateProjects() @safe
     {
         auto now = Clock.currTime();
-        logInfo(format!"Updating collections at %s"(now));
+        logInfo(format!"Updating projects at %s"(now));
         scope (exit)
         {
             runTask({
                 /* Reinstall the timer */
-                () @trusted {
-                    curTimer = setTimer(30.seconds, &updateCollections);
-                }();
+                () @trusted { curTimer = setTimer(30.seconds, &updateProjects); }();
             });
         }
 
-        /* Update each collection */
+        /* Update each project */
         foreach (slug, col; managed)
         {
             logDiagnostic(format!"Requesting update check for %s"(slug));
@@ -180,7 +178,7 @@ private:
     }
 
     ServiceContext context;
-    ManagedCollection[string] managed;
+    ManagedProject[string] managed;
     bool running;
     Timer curTimer;
 }

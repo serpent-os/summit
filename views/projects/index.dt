@@ -1,7 +1,7 @@
 extends base
 
 block title
-    title Summit - #{collection.model.name}
+    title Projects 
 
 block content
     div.container
@@ -12,24 +12,23 @@ block content
                     div.col
                         ol.breadcrumb.breadcrumb-arrows.py-1(aria-label="breadcrumbs")
                             li.breadcrumb-item: a(href="/") Home
-                            li.breadcrumb-item: a(href="/~") Collections
-                            li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{collection.model.slug}") #{collection.model.name}
-
-                        h2.page-title #{collection.model.summary}
+                            li.breadcrumb-item.active(aria-current="page"): a(href="/~") Projects
+                        h2.page-title Projects
                     div.col-auto
                         div.btn-list
                             button.btn-azure.btn.d-none.d-md-inline-flex(data-bs-toggle="modal", data-bs-target="#creationDialog")
                                 svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-plus")
-                                | Add a repository
+                                | Add a project
 
         div.row.py-3
-
             div.py-1
-                div.card
-                    div.list-group.list-group-flush#summitList.row(summit:context="repositories", summit:mode="add", summit:parent=collection.model.slug)
+
+                div#summitList.row(summit:context="projects", summit:mode="enumerate")
 
 block dialogs
-    include collections/add_repo
+
+    include projects/add_project
 
 block scripts
+
     script(src="/static/summit.js", defer, async)

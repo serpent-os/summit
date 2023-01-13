@@ -5,15 +5,15 @@
  */
 
 /**
- * summit.models.collection
+ * summit.models.project
  *
- * Model for collection storage
+ * Model for project storage
  *
  * Authors: Copyright © 2020-2023 Serpent OS Developers
  * License: Zlib
  */
 
-module summit.models.collection;
+module summit.models.project;
 
 import moss.db.keyvalue.orm;
 public import std.stdint : uint64_t;
@@ -21,20 +21,20 @@ public import std.stdint : uint64_t;
 /**
  * Unique assignment to survive renames, etc.
  */
-public alias PackageCollectionID = uint64_t;
+public alias ProjectID = uint64_t;
 
 /**
- * Collection is our encapsulation unit for a repository
+ * Project is our encapsulation unit for a bunch of repos
  */
-public @Model struct PackageCollection
+public @Model struct Project
 {
     /**
-     * Unique id for the collection
+     * Unique id for the project
      */
-    @PrimaryKey @AutoIncrement PackageCollectionID id;
+    @PrimaryKey @AutoIncrement ProjectID id;
 
     /**
-     * Display name for the collection
+     * Display name for the project
      */
     string name;
 
@@ -44,7 +44,7 @@ public @Model struct PackageCollection
     @Indexed string slug;
 
     /**
-     * Brief description of the collection
+     * Brief description of the project
      */
     string summary;
 }

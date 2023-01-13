@@ -3,7 +3,7 @@
 - static immutable sidebarItems = [
 -   SidebarNavItem("/", "Overview", "tabler-home"),
 -   SidebarNavItem("/tasks", "Tasks", "tabler-list-check"),
--   SidebarNavItem("/~", "Collections", "tabler-archive"),
+-   SidebarNavItem("/~", "Projects", "tabler-archive"),
 -   SidebarNavItem("/builders", "Builders", "tabler-bulldozer"),
 -   SidebarNavItem("/endpoints", "Endpoints", "tabler-trolley"),
 -   SidebarNavItem("/users", "Users", "tabler-users"),

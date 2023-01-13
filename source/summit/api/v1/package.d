@@ -20,12 +20,12 @@ public import summit.api.v1.interfaces;
 
 import moss.service.context;
 import summit.api.v1.builders;
-import summit.api.v1.collections;
+import summit.api.v1.projects;
 import summit.api.v1.endpoints;
 import summit.api.v1.pairing;
 import summit.api.v1.recipes;
 import summit.api.v1.repositories;
-import summit.collections;
+import summit.projects;
 
 /**
  * Root implementation to configure all supported interfaces
@@ -39,17 +39,17 @@ public final class RESTService : SummitAPIv1
      *
      * Params:
      *      context = global context
-     *      collectionManager = Collection management
+     *      projectManager = Project management
      *      router = nested router
      */
-    this(ServiceContext context, CollectionManager collectionManager, URLRouter router) @safe
+    this(ServiceContext context, ProjectManager projectManager, URLRouter router) @safe
     {
         router.registerRestInterface(this);
         router.registerRestInterface(new BuildersService(context));
-        router.registerRestInterface(new CollectionsService(context, collectionManager));
+        router.registerRestInterface(new ProjectsService(context, projectManager));
         router.registerRestInterface(new EndpointsService(context));
-        router.registerRestInterface(new RepositoriesService(context, collectionManager));
-        router.registerRestInterface(new RecipesService(context, collectionManager));
+        router.registerRestInterface(new RepositoriesService(context, projectManager));
+        router.registerRestInterface(new RecipesService(context, projectManager));
         router.registerRestInterface(new PairingService(context));
     }
 

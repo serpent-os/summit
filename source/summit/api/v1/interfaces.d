@@ -25,7 +25,7 @@ import std.range : take, drop;
 public enum ListContext : string
 {
     Builders = "builders",
-    Collections = "collections",
+    Projects = "projects",
     Users = "users",
     Groups = "groups",
     Repositories = "repositories",
@@ -128,9 +128,9 @@ public struct ListItem
 }
 
 /**
- * Request used to create a new collection
+ * Request used to create a new project
  */
-public struct CreateCollection
+public struct CreateProject
 {
     /**
      * Identity slug
@@ -261,20 +261,20 @@ public interface BuildersAPIv1
 }
 
 /**
- * Base API for the Collections
+ * Base API for the Projects
  */
-@path("/api/v1/collections")
-public interface CollectionsAPIv1
+@path("/api/v1/projects")
+public interface ProjectsAPIv1
 {
     /**
-     * Enumerate all items within the collection API
+     * Enumerate all items within the project API
      */
     @path("enumerate") @method(HTTPMethod.GET) ListItem[] enumerate() @safe;
 
     /**
-     * Create a new collection with the given release URI
+     * Create a new project with the given release URI
      */
-    @path("create") @method(HTTPMethod.POST) void create(CreateCollection request) @safe;
+    @path("create") @method(HTTPMethod.POST) void create(CreateProject request) @safe;
 }
 
 /**
@@ -284,14 +284,14 @@ public interface CollectionsAPIv1
 public interface RepositoriesAPIv1
 {
     /**
-     * Enumerate all items within the given collection
+     * Enumerate all items within the given project
      */
-    @path("enumerate/:collection") @method(HTTPMethod.GET) ListItem[] enumerate(string _collection) @safe;
+    @path("enumerate/:project") @method(HTTPMethod.GET) ListItem[] enumerate(string _project) @safe;
 
     /**
-     * Create new repo within the given collection
+     * Create new repo within the given project
      */
-    @path("create/:collection") @method(HTTPMethod.POST) void create(string _collection,
+    @path("create/:project") @method(HTTPMethod.POST) void create(string _project,
             CreateRepository request) @safe;
 }
 
@@ -304,8 +304,8 @@ public interface RecipesAPIv1
     /**
      * Enumerate all items within the given repository
      */
-    @path("enumerate/:collection/:repo") @method(HTTPMethod.GET) Paginator!ListItem enumerate(
-            string _collection, string _repo, ulong pageNumber = 0) @safe;
+    @path("enumerate/:project/:repo") @method(HTTPMethod.GET) Paginator!ListItem enumerate(
+            string _project, string _repo, ulong pageNumber = 0) @safe;
 }
 
 /**

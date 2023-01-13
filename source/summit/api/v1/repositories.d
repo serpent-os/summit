@@ -20,13 +20,13 @@ import moss.db.keyvalue.orm;
 import moss.service.context;
 import std.algorithm : filter, map;
 import std.array : array;
-import summit.collections;
-import summit.models.collection;
+import summit.projects;
+import summit.models.project;
 import summit.models.repository;
 import vibe.d;
 
 /**
- * Implements the CollectionsAPIv1
+ * Implements the ProjectsAPIv1
  */
 public final class RepositoriesService : RepositoriesAPIv1
 {
@@ -38,30 +38,30 @@ public final class RepositoriesService : RepositoriesAPIv1
      * Params:
      *      context = global context
      */
-    this(ServiceContext context, CollectionManager collectionManager) @safe
+    this(ServiceContext context, ProjectManager projectManager) @safe
     {
         this.context = context;
-        this.collectionManager = collectionManager;
+        this.projectManager = projectManager;
     }
 
     /**
      * Enumerate all of the repos
      *
      * Params:
-     *      _collection: Collection slug
+     *      _project: Project slug
      *
      * Returns: ListItem[] of known repos
      */
-    override ListItem[] enumerate(string _collection) @safe
+    override ListItem[] enumerate(string _project) @safe
     {
-        ManagedCollection collection = collectionManager.bySlug(_collection);
-        enforceHTTP(collectionManager !is null, HTTPStatus.notFound);
+        ManagedProject project = projectManager.bySlug(_project);
+        enforceHTTP(projectManager !is null, HTTPStatus.notFound);
 
-        auto ret = collection.repositories.map!((r) {
+        auto ret = project.repositories.map!((r) {
             ListItem item;
             item.id = to!string(r.model.id);
             item.title = r.model.name;
-            item.slug = format!"/~/%s/%s"(_collection, r.model.name);
+            item.slug = format!"/~/%s/%s"(_project, r.model.name);
             item.subtitle = r.model.summary;
             item.context = ListContext.Repositories;
             return item;
@@ -70,28 +70,28 @@ public final class RepositoriesService : RepositoriesAPIv1
     }
 
     /**
-     * Create new repo within collection
+     * Create new repo within project
      *
      * Params:
-     *      _collection: Collection slug
+     *      _project: Project slug
      *      request: JSON Request
      */
-    override void create(string _collection, CreateRepository request) @safe
+    override void create(string _project, CreateRepository request) @safe
     {
-        ManagedCollection collection = collectionManager.bySlug(_collection);
-        enforceHTTP(collectionManager !is null, HTTPStatus.notFound);
+        ManagedProject project = projectManager.bySlug(_project);
+        enforceHTTP(projectManager !is null, HTTPStatus.notFound);
 
         Repository repo;
         repo.name = request.id;
         repo.description = "not yet loaded";
         repo.summary = request.summary;
         repo.originURI = request.originURI;
-        immutable err = collection.addRepository(repo);
+        immutable err = project.addRepository(repo);
         enforceHTTP(err.isNull, HTTPStatus.forbidden, err.message);
-        logInfo(format!"Create at %s: %s"(_collection, request));
+        logInfo(format!"Create at %s: %s"(_project, request));
     }
 
 private:
     ServiceContext context;
-    CollectionManager collectionManager;
+    ProjectManager projectManager;
 }

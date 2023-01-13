@@ -5,105 +5,105 @@
  */
 
 /**
- * summit.web.collections
+ * summit.web.projects
  *
- * Collections Web API
+ * Projects Web API
  *
  * Authors: Copyright © 2020-2023 Serpent OS Developers
  * License: Zlib
  */
 
-module summit.web.collections;
+module summit.web.projects;
 
 import moss.deps.registry;
 import moss.service.context;
 import std.range : empty, front;
-import summit.collections;
+import summit.projects;
 import vibe.d;
 
 /**
  * Root entry into our web service
  */
 @path("/~")
-public final class CollectionsWeb
+public final class ProjectsWeb
 {
     @disable this();
 
     /**
-     * Construct a new CollectionsWeb
+     * Construct a new ProjectsWeb
      *
      * Params:
      *      context = global context
      */
-    this(ServiceContext context, CollectionManager collectionManager) @safe
+    this(ServiceContext context, ProjectManager projectManager) @safe
     {
         this.context = context;
-        this.collectionManager = collectionManager;
+        this.projectManager = projectManager;
     }
 
     /**
-     * Collections index
+     * Projects index
      */
     void index() @safe
     {
-        render!"collections/index.dt";
+        render!"projects/index.dt";
     }
 
     /**
-     * View an individual collection
+     * View an individual project
      *
      * Params:
-     *      _slug = Specific slug ID (i.e. collection short name)
+     *      _slug = Specific slug ID (i.e. project short name)
      */
     @path("/:slug") @method(HTTPMethod.GET)
     void view(string _slug)
     {
-        auto collection = collectionManager.bySlug(_slug);
-        enforceHTTP(collection !is null, HTTPStatus.notFound);
-        render!("collections/view.dt", collection);
+        auto project = projectManager.bySlug(_slug);
+        enforceHTTP(project !is null, HTTPStatus.notFound);
+        render!("projects/view.dt", project);
     }
 
     /**
-     * View a repo within a collection
+     * View a repo within a project
      *
      * Params:
-     *      _slug = Collection ID
+     *      _slug = Project ID
      *      _repo = Repo ID
      */
     @path("/:slug/:repo") @method(HTTPMethod.GET)
     void viewRepo(string _slug, string _repo)
     {
-        auto collection = collectionManager.bySlug(_slug);
-        enforceHTTP(collection !is null, HTTPStatus.notFound);
-        auto repository = collection.bySlug(_repo);
+        auto project = projectManager.bySlug(_slug);
+        enforceHTTP(project !is null, HTTPStatus.notFound);
+        auto repository = project.bySlug(_repo);
         enforceHTTP(repository !is null, HTTPStatus.notFound);
-        render!("collections/repo.dt", collection, repository);
+        render!("projects/repo.dt", project, repository);
     }
 
     /** 
-     * View a recipe within a specific collection's repository
+     * View a recipe within a specific project's repository
      *
      * Params:
-     *      _slug = Collection ID
+     *      _slug = Project ID
      *      _repo = Repository ID
      *      _recipeID = Recipe ID
      */
     @path("/:slug/:repo/:recipeID") @method(HTTPMethod.GET)
     void viewRecipe(string _slug, string _repo, string _recipeID) @safe
     {
-        auto collection = collectionManager.bySlug(_slug);
-        enforceHTTP(collection !is null, HTTPStatus.notFound);
-        auto repository = collection.bySlug(_repo);
+        auto project = projectManager.bySlug(_slug);
+        enforceHTTP(project !is null, HTTPStatus.notFound);
+        auto repository = project.bySlug(_repo);
         enforceHTTP(repository !is null, HTTPStatus.notFound);
 
         auto items = repository.db.byProvider(ProviderType.PackageName, _recipeID);
         enforceHTTP(!items.empty, HTTPStatus.notFound);
         auto recipe = repository.db.byID(items.front);
-        render!("collections/recipe.dt", collection, repository, recipe);
+        render!("projects/recipe.dt", project, repository, recipe);
     }
 
 private:
 
     ServiceContext context;
-    CollectionManager collectionManager;
+    ProjectManager projectManager;
 }

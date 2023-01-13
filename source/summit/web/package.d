@@ -16,9 +16,9 @@
 module summit.web;
 
 import moss.service.context;
-import summit.collections;
+import summit.projects;
 import summit.web.accounts;
-import summit.web.collections;
+import summit.web.projects;
 import vibe.d;
 
 /**
@@ -34,14 +34,14 @@ public final class SummitWeb
      *
      * Params:
      *      context = global context
-     *      collectionManager = collection management
+     *      projectManager = project management
      *      router = nested routes
      */
-    this(ServiceContext context, CollectionManager collectionManager, URLRouter router) @safe
+    this(ServiceContext context, ProjectManager projectManager, URLRouter router) @safe
     {
         auto root = router.registerWebInterface(this);
         root.registerWebInterface(cast(AccountsWeb) new SummitAccountsWeb(context));
-        root.registerWebInterface(new CollectionsWeb(context, collectionManager));
+        root.registerWebInterface(new ProjectsWeb(context, projectManager));
     }
 
     /**

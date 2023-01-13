@@ -55,7 +55,7 @@ const EndpointColors = Object.freeze({
  const SummitContext = Object.freeze(
     {
         Builders: 'builders',
-        Collections: 'collections',
+        Projects: 'projects',
         Repositories: 'repositories',
         Groups: 'groups',
         Users: 'users',
@@ -92,7 +92,7 @@ const SummitWidgets = Object.freeze(
 const Endpoint = Object.freeze(
     {
         'builders': '/api/v1/builders',
-        'collections': '/api/v1/collections',
+        'projects': '/api/v1/projects',
         'repositories': '/api/v1/repos',
         'groups': '/api/v1/groups',
         'users': '/api/v1/users',
@@ -284,7 +284,7 @@ function refreshList(context, mode, pageNumber=0)
 
 /**
  * Render an individual element
- * @param {String} context Rendering context (Collections, etc.)
+ * @param {String} context Rendering context (Projects, etc.)
  * @param {String} element The element to render
  * @returns new innerHTML for the summit list
  */
@@ -294,8 +294,8 @@ function renderElement(context, element, idx)
 
     switch (context)
     {
-        // Specialist Collection rendering
-        case SummitContext.Collections:
+        // Specialist Project rendering
+        case SummitContext.Projects:
             return `
 <div class="mb-3 col-6 col-md-6 col-lg-6">
     <div class="card">
@@ -343,7 +343,7 @@ function renderElement(context, element, idx)
 
 /**
  * Render the list when successful
- * @param {string} context Summit Context (i.e. collections)
+ * @param {string} context Summit Context (i.e. projects)
  * @param {string} mode Summit mode (i.e. enumerate)
  * @param {JSON} obj Summit object response (ListItem)
  */

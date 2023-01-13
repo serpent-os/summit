@@ -43,7 +43,7 @@ int main(string[] args) @safe
     auto context = new ServiceContext(rootDir);
 
     /* Configure the model */
-    immutable dbErr = context.appDB.update((scope tx) => tx.createModel!(PackageCollection,
+    immutable dbErr = context.appDB.update((scope tx) => tx.createModel!(Project,
             Repository, BuildTask, AvalancheEndpoint, VesselEndpoint, Settings));
     enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
 

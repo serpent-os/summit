@@ -12,10 +12,10 @@ block content
                     div.col
                         ol.breadcrumb.breadcrumb-arrows.py-1(aria-label="breadcrumbs")
                             li.breadcrumb-item: a(href="/") Home
-                            li.breadcrumb-item: a(href="/~") Collections
-                            li.breadcrumb-item: a(href="/~/#{collection.model.slug}") #{collection.model.name}
-                            li.breadcrumb-item: a(href="/~/#{collection.model.slug}/#{repository.model.name}") #{repository.model.name}
-                            li.breadcrumb-item.active: a(href="/~/#{collection.model.slug}/#{repository.model.name}/#{recipe.name}") #{recipe.name}
+                            li.breadcrumb-item: a(href="/~") Projects
+                            li.breadcrumb-item: a(href="/~/#{project.model.slug}") #{project.model.name}
+                            li.breadcrumb-item: a(href="/~/#{project.model.slug}/#{repository.model.name}") #{repository.model.name}
+                            li.breadcrumb-item.active: a(href="/~/#{project.model.slug}/#{repository.model.name}/#{recipe.name}") #{recipe.name}
 
 
                         h2.page-title #{recipe.summary}

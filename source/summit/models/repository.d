@@ -7,7 +7,7 @@
 /**
  * summit.models.repository
  *
- * Model for collection storage
+ * Model for project storage
  *
  * Authors: Copyright © 2020-2023 Serpent OS Developers
  * License: Zlib
@@ -17,7 +17,7 @@ module summit.models.repository;
 
 import moss.db.keyvalue.orm;
 
-public import summit.models.collection : PackageCollectionID;
+public import summit.models.project : ProjectID;
 public import std.stdint : uint64_t;
 
 public alias RepositoryID = uint64_t;
@@ -55,7 +55,7 @@ public enum RepositoryStatus
 }
 
 /**
- * Collection is our encapsulation unit for a repository
+ * Project is our encapsulation unit for a repository
  */
 public @Model struct Repository
 {
@@ -90,9 +90,9 @@ public @Model struct Repository
     string originURI;
 
     /**
-     * Which collection do we belong to?
+     * Which project do we belong to?
      */
-    PackageCollectionID collection;
+    ProjectID project;
 
     /**
      * Current status. All start out fresh

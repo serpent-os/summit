@@ -5,16 +5,16 @@
  */
 
 /**
- * summit.collections
+ * summit.projects
  *
- * Collection management
+ * Project management
  *
  * Authors: Copyright © 2020-2023 Serpent OS Developers
  * License: Zlib
  */
 
-module summit.collections;
+module summit.projects;
 
-public import summit.collections.collection;
-public import summit.collections.manager;
-public import summit.collections.repository;
+public import summit.projects.project;
+public import summit.projects.manager;
+public import summit.projects.repository;

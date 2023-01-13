@@ -21,7 +21,7 @@ import moss.service.context;
 import moss.service.models;
 import std.path : buildPath;
 import summit.api;
-import summit.collections;
+import summit.projects;
 import summit.models;
 import summit.web;
 import vibe.d;
@@ -43,12 +43,12 @@ public final class SummitApplication
     this(ServiceContext context) @safe
     {
         this.context = context;
-        this.collectionManager = new CollectionManager(context);
-        immutable err = collectionManager.connect();
+        this.projectManager = new ProjectManager(context);
+        immutable err = projectManager.connect();
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
         _router = new URLRouter();
-        web = new SummitWeb(context, collectionManager, router);
-        service = new RESTService(context, collectionManager, router);
+        web = new SummitWeb(context, projectManager, router);
+        service = new RESTService(context, projectManager, router);
     }
 
     /**
@@ -64,12 +64,12 @@ public final class SummitApplication
      */
     void close() @safe
     {
-        collectionManager.close();
+        projectManager.close();
     }
 
 private:
 
-    CollectionManager collectionManager;
+    ProjectManager projectManager;
     ServiceContext context;
     RESTService service;
     URLRouter _router;

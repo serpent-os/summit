@@ -5,7 +5,7 @@
  */
 
 /**
- * summit.collections.repository
+ * summit.projects.repository
  *
  * Repository management
  *
@@ -13,7 +13,7 @@
  * License: Zlib
  */
 
-module summit.collections.repository;
+module summit.projects.repository;
 
 import moss.client.metadb;
 import moss.core.util : computeSHA256;
@@ -26,7 +26,7 @@ import std.array : array;
 import std.conv : to;
 import std.file : dirEntries, exists, mkdirRecurse, rmdirRecurse, SpanMode;
 import std.path : buildPath, dirName, relativePath;
-import summit.collections.collection;
+import summit.projects.project;
 import summit.models.repository;
 import vibe.core.channel;
 import vibe.core.process;
@@ -35,9 +35,9 @@ import vibe.d;
 /**
  * An explicitly managed repository
  *
- * Note in the design for Summit we opted for monorepos and minimal collections.
+ * Note in the design for Summit we opted for monorepos and minimal projects.
  * We don't intend to support thousands of parallel DB connections, and the community
- * collection handles all the "personal use" cases quite nicely.
+ * project handles all the "personal use" cases quite nicely.
  *
  * Thus the decision to rely on MetaDB/LMDB is ok at this minimalist scale.
  *
@@ -51,10 +51,10 @@ public final class ManagedRepository
      *
      * Params:
      *      context = global context
-     *      parent = Parent collection
+     *      parent = Parent project
      *      model = Database model
      */
-    this(ServiceContext context, ManagedCollection parent, Repository model) @safe
+    this(ServiceContext context, ManagedProject parent, Repository model) @safe
     {
         this.context = context;
 

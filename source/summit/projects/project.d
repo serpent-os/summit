@@ -7,57 +7,57 @@
 /**
  * summit.context
  *
- * Collection management
+ * Project management
  *
  * Authors: Copyright © 2020-2023 Serpent OS Developers
  * License: Zlib
  */
 
-module summit.collections.collection;
+module summit.projects.project;
 
 import moss.db.keyvalue;
 import std.conv : to;
 import std.algorithm : filter;
 import std.path : buildPath;
-import summit.collections.repository;
+import summit.projects.repository;
 import moss.service.context;
-import summit.models.collection;
+import summit.models.project;
 import summit.models.repository;
 import moss.core.errors;
 import vibe.d : runTask;
 
 /**
- * A collection explicitly managed by Summit
+ * A project explicitly managed by Summit
  */
-public final class ManagedCollection
+public final class ManagedProject
 {
     @disable this();
 
     /** 
-     * Construct a new ManagedCollection
+     * Construct a new ManagedProject
      *
      * Params:
      *      context = global context
      *      model = Database model
      */
-    this(ServiceContext context, PackageCollection model) @safe
+    this(ServiceContext context, Project model) @safe
     {
         this.context = context;
         this._model = model;
         /* The ID field never changes */
-        this._dbPath = context.dbPath.buildPath("collections", to!string(model.id));
+        this._dbPath = context.dbPath.buildPath("projects", to!string(model.id));
     }
 
     /**
      * Returns: Underlying DB model
      */
-    pure @property PackageCollection model() @safe @nogc nothrow
+    pure @property Project model() @safe @nogc nothrow
     {
         return _model;
     }
 
     /**
-     * Returns: This collection's managed repositories
+     * Returns: This project's managed repositories
      */
     pure @property auto repositories() @safe nothrow
     {
@@ -65,7 +65,7 @@ public final class ManagedCollection
     }
 
     /** 
-     * Returns: Repository within this collection
+     * Returns: Repository within this project
      *
      * Params:
      *      slug = Unique identifier
@@ -88,7 +88,7 @@ public final class ManagedCollection
     }
 
     /**
-     * Returns: dbPath specific to this collection
+     * Returns: dbPath specific to this project
      */
     pure @property string dbPath() @safe @nogc nothrow const
     {
@@ -96,7 +96,7 @@ public final class ManagedCollection
     }
 
     /**
-     * Add a repository to this collection
+     * Add a repository to this project
      *
      * Params:
      *      model = Input model
@@ -117,8 +117,8 @@ public final class ManagedCollection
         model.status = RepositoryStatus.Fresh;
         model.commitRef = "";
 
-        /* Link the collection */
-        model.collection = this._model.id;
+        /* Link the project */
+        model.project = this._model.id;
 
         /* Try to store the model */
         immutable err = context.appDB.update((scope tx) => model.save(tx));
@@ -140,7 +140,7 @@ public final class ManagedCollection
 package:
 
     /**
-     * Connect via the given transaction to initialise this collection
+     * Connect via the given transaction to initialise this project
      *
      * Params:
      *      tx = read-only transaction
@@ -149,7 +149,7 @@ package:
     DatabaseResult connect(in Transaction tx) @safe
     {
         foreach (repo; tx.list!Repository
-                .filter!((r) => r.collection == model.id))
+                .filter!((r) => r.project == model.id))
         {
             auto r = new ManagedRepository(context, this, repo);
             DatabaseResult err = r.connect.match!((Failure f) => DatabaseResult(
@@ -180,7 +180,7 @@ package:
 private:
 
     ServiceContext context;
-    PackageCollection _model;
+    Project _model;
     ManagedRepository[string] managed;
     string _dbPath;
 }

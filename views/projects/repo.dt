@@ -1,7 +1,7 @@
 extends base
 
 block title
-    title Summit - #{collection.model.name} / #{repository.model.name}
+    title Summit - #{project.model.name} / #{repository.model.name}
 
 block content
     div.container
@@ -12,9 +12,9 @@ block content
                     div.col
                         ol.breadcrumb.breadcrumb-arrows.py-1(aria-label="breadcrumbs")
                             li.breadcrumb-item: a(href="/") Home
-                            li.breadcrumb-item: a(href="/~") Collections
-                            li.breadcrumb-item(aria-current="page"): a(href="/~/#{collection.model.slug}") #{collection.model.name}
-                            li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{collection.model.slug}/#{repository.model.name}") #{repository.model.name}
+                            li.breadcrumb-item: a(href="/~") Projects
+                            li.breadcrumb-item(aria-current="page"): a(href="/~/#{project.model.slug}") #{project.model.name}
+                            li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{project.model.slug}/#{repository.model.name}") #{repository.model.name}
 
                         h2.page-title #{repository.model.summary}
                     div.col-auto
@@ -29,7 +29,7 @@ block content
                             use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-package")
                         h5.mx-2.card-title Package recipes
                     div.card-body.p-0
-                        div#summitList.list-group.list-group-flush(summit:context="recipes", summit:mode="enumerate", summit:parent="#{collection.model.slug}/#{repository.model.name}")
+                        div#summitList.list-group.list-group-flush(summit:context="recipes", summit:mode="enumerate", summit:parent="#{project.model.slug}/#{repository.model.name}")
                         div#summitPaginator
             div.col-lg-6.col-6.col-sm-3
                 div.card
