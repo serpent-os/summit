@@ -40,6 +40,11 @@ public @Model struct Profile
     string name;
 
     /**
+     * Architecture string
+     */
+    string arch;
+
+    /**
      * Where can we expect to see this published?
      */
     string volatileIndexURI;
