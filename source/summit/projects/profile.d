@@ -24,6 +24,7 @@ import summit.models;
 import summit.projects.project;
 import vibe.d;
 import vibe.inet.urltransfer;
+import vibe.core.channel;
 
 /**
  * Provides runtime encapsulation and management of build profiles.
@@ -107,14 +108,43 @@ public final class ManagedProfile
      */
     void refresh() @safe
     {
-        immutable indexPath = cachePath.buildPath("index");
+        string indexPath = cachePath.buildPath("index");
         logInfo(format!"[profile: %s] Downloading index file %s"(_model.name,
                 _model.volatileIndexURI));
         _model.volatileIndexURI.download(indexPath);
-        indexDB.loadFromIndex(indexPath);
+
+        /* Add async behaviour */
+        Channel!(bool, 1) notifier = createChannel!(bool, 1);
+        bool unusedRet;
+        logInfo("Dispatch to refreshIndices");
+        runWorkerTask(&refreshIndices, indexPath, _dbPath, notifier);
+        while (!notifier.empty)
+        {
+            notifier.tryConsumeOne(unusedRet);
+        }
+
+        logInfo("Returned to refresh");
     }
 
 private:
+
+    static void refreshIndices(string indexPath, string dbPath, Channel!(bool, 1) notifier) @safe
+    {
+        MetaDB mdb;
+        scope (exit)
+        {
+            logInfo("Exiting refreshIndices");
+            mdb.close();
+            notifier.put(true);
+            notifier.close();
+        }
+        logInfo("Entering refreshIndices");
+
+        /* Connect to the DB now */
+        mdb = new MetaDB(dbPath, true);
+        mdb.connect.tryMatch!((Success _) {});
+        mdb.loadFromIndex(indexPath);
+    }
 
     Profile _model;
     ServiceContext context;
