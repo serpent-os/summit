@@ -44,7 +44,7 @@ int main(string[] args) @safe
 
     /* Configure the model */
     immutable dbErr = context.appDB.update((scope tx) => tx.createModel!(Project,
-            Repository, BuildTask, AvalancheEndpoint, VesselEndpoint, Settings));
+            Profile, Repository, BuildTask, AvalancheEndpoint, VesselEndpoint, Settings));
     enforceHTTP(dbErr.isNull, HTTPStatus.internalServerError, dbErr.message);
 
     auto server = new SummitServer(context);
