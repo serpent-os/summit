@@ -54,9 +54,4 @@ public @Model struct Profile
      * What project does this belong to?
      */
     ProjectID projectID;
-
-    /**
-     * What remotes are attached to this profile?
-     */
-    RemoteID[] remotes;
 }
