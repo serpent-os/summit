@@ -111,7 +111,7 @@ private:
 
     void loadFixtures() @safe
     {
-        immutable fixturePath = context.rootDirectory.buildPath("seed.jsonc");
+        immutable fixturePath = context.rootDirectory.buildPath("seed.json");
         auto fixture = fixturePath.readFileUTF8;
         auto fixtureRoot = parseJson(fixture);
         Fixture config = deserialize!(JsonSerializer, Fixture)(fixtureRoot);
