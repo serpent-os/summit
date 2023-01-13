@@ -25,6 +25,8 @@ import summit.projects;
 import summit.models;
 import summit.web;
 import vibe.d;
+import vibe.data.json;
+import vibe.core.file : readFileUTF8;
 
 /**
  * SummitApplication provides the main dashboard application
@@ -49,6 +51,8 @@ public final class SummitApplication
         _router = new URLRouter();
         web = new SummitWeb(context, projectManager, router);
         service = new RESTService(context, projectManager, router);
+
+        loadFixtures();
     }
 
     /**
@@ -68,6 +72,82 @@ public final class SummitApplication
     }
 
 private:
+
+    static struct FixtureRepo
+    {
+        string name;
+        string summary;
+        string uri;
+    }
+
+    static struct FixtureRemote
+    {
+        string name;
+        uint priority;
+        string uri;
+    }
+
+    static struct FixtureProfile
+    {
+        string name;
+        string arch;
+        string indexURI;
+        FixtureRemote[] remotes;
+    }
+
+    static struct FixtureProject
+    {
+        string name;
+        string slug;
+        string description;
+        @optional FixtureProfile[] profiles;
+        @optional FixtureRepo[] repos;
+    }
+
+    static struct Fixture
+    {
+        FixtureProject[] projects;
+    }
+
+    void loadFixtures() @safe
+    {
+        immutable fixturePath = context.rootDirectory.buildPath("seed.jsonc");
+        auto fixture = fixturePath.readFileUTF8;
+        auto fixtureRoot = parseJson(fixture);
+        Fixture config = deserialize!(JsonSerializer, Fixture)(fixtureRoot);
+
+        foreach (proj; config.projects)
+        {
+            auto project = projectManager.bySlug(proj.slug);
+            /* Construct missing data for this project */
+            if (project is null)
+            {
+                Project pj;
+                pj.name = proj.name;
+                pj.slug = proj.slug;
+                pj.summary = proj.description;
+                immutable err = projectManager.addProject(pj);
+                enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+                project = projectManager.bySlug(proj.slug);
+            }
+
+            /* Ensure the repos are added */
+            foreach (repo; proj.repos)
+            {
+                auto l = project.bySlug(repo.name);
+                if (l !is null)
+                {
+                    continue;
+                }
+                Repository r;
+                r.name = repo.name;
+                r.summary = repo.summary;
+                r.originURI = repo.uri;
+                immutable err = project.addRepository(r);
+                enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+            }
+        }
+    }
 
     ProjectManager projectManager;
     ServiceContext context;
