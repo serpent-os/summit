@@ -146,6 +146,24 @@ private:
                 immutable err = project.addRepository(r);
                 enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
             }
+
+            /* Load the profiles */
+            foreach (profile; proj.profiles)
+            {
+                auto l = project.profile(profile.name);
+                if (l !is null)
+                {
+                    continue;
+                }
+
+                /* Construct it.. */
+                Profile p;
+                p.name = profile.name;
+                p.arch = profile.arch;
+                p.volatileIndexURI = profile.indexURI;
+                immutable err = project.addProfile(p);
+                enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+            }
         }
     }
 
