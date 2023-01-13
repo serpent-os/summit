@@ -146,11 +146,6 @@ public struct CreateCollection
      * Short one liner description
      */
     string summary;
-
-    /**
-     * Release management URI
-     */
-    string releaseURI;
 }
 
 /**

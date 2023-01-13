@@ -47,9 +47,4 @@ public @Model struct PackageCollection
      * Brief description of the collection
      */
     string summary;
-
-    /** 
-     * Release tracking
-     */
-    string vscURI;
 }

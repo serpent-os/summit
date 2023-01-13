@@ -75,7 +75,6 @@ public final class CollectionsService : CollectionsAPIv1
         auto c = PackageCollection();
         c.name = request.name;
         c.slug = request.slug;
-        c.vscURI = request.releaseURI;
         c.summary = request.summary;
         immutable err = collectionManager.addCollection(c);
         enforceHTTP(err.isNull, HTTPStatus.badRequest, err.message);
