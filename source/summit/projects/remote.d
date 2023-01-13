@@ -24,7 +24,7 @@ import summit.projects.profile;
  * Provides runtime encapsulation and management of remote repository
  * index files.
  */
-public final class ManagdRemote
+public final class ManagedRemote
 {
     @disable this();
 
