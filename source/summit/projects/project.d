@@ -61,7 +61,7 @@ public final class ManagedProject
      */
     pure @property auto repositories() @safe nothrow
     {
-        return managed.values;
+        return managedRepos.values;
     }
 
     /** 
@@ -72,7 +72,7 @@ public final class ManagedProject
      */
     pure @property auto bySlug(in string slug) @safe nothrow
     {
-        auto repo = (slug in managed);
+        auto repo = (slug in managedRepos);
         return repo ? *repo : null;
     }
 
@@ -81,7 +81,7 @@ public final class ManagedProject
      */
     void close() @safe
     {
-        foreach (k, r; managed)
+        foreach (k, r; managedRepos)
         {
             r.close();
         }
@@ -105,7 +105,7 @@ public final class ManagedProject
     DatabaseResult addRepository(Repository model) @safe
     {
         /* Ensure we bypass DB for quick repo lookup */
-        auto lookup = (model.name in managed);
+        auto lookup = (model.name in managedRepos);
         if (lookup !is null)
         {
             return DatabaseResult(DatabaseError(DatabaseErrorCode.BucketExists,
@@ -127,10 +127,10 @@ public final class ManagedProject
             return err;
         }
 
-        /* Get it managed */
+        /* Get it managedRepos */
         auto managedRepository = new ManagedRepository(context, this, model);
         return managedRepository.connect.match!((Success _) {
-            managed[model.name] = managedRepository;
+            managedRepos[model.name] = managedRepository;
             runTask({ managedRepository.refresh(); });
             return NoDatabaseError;
         }, (Failure f) => DatabaseResult(DatabaseError(cast(DatabaseErrorCode) f.specifier,
@@ -159,7 +159,7 @@ package:
             {
                 return err;
             }
-            managed[repo.name] = r;
+            managedRepos[repo.name] = r;
 
         }
         return NoDatabaseError;
@@ -171,7 +171,7 @@ package:
      */
     void refresh() @safe
     {
-        foreach (slug, repo; managed)
+        foreach (slug, repo; managedRepos)
         {
             runTask({ repo.refresh(); });
         }
@@ -181,6 +181,6 @@ private:
 
     ServiceContext context;
     Project _model;
-    ManagedRepository[string] managed;
+    ManagedRepository[string] managedRepos;
     string _dbPath;
 }
