@@ -30,6 +30,7 @@ import summit.projects.project;
 import summit.models.repository;
 import vibe.core.channel;
 import vibe.core.process;
+import std.parallelism : task;
 import vibe.d;
 
 /**
@@ -316,8 +317,9 @@ private:
 
         /* spawn the worker */
         logDiagnostic("Begin updatePackagesThreaded");
-        runWorkerTask(&updatePackagesThreaded, notifyChannel, dbPath,
-                workPath, model.commitRef, model.originURI);
+        auto t = task!updatePackagesThreaded(notifyChannel, _db, workPath,
+                model.commitRef, model.originURI);
+        t.executeInNewThread();
 
         /* Await closure from recipient */
         while (!notifyChannel.empty)
@@ -331,7 +333,7 @@ private:
      * Process all of the packages we encounter
      */
     static void updatePackagesThreaded(Channel!(bool, 1) notifyChannel,
-            string dbPath, string workPath, string commitRef, string originURI) @safe
+            MetaDB db, string workPath, string commitRef, string originURI) @safe
     {
         /* Let run scope know we're done */
         scope (exit)
@@ -341,13 +343,6 @@ private:
             notifyChannel.close();
         }
         logDiagnostic("Enter updatePackagesThreaded");
-
-        MetaDB db = new MetaDB(dbPath, true);
-        scope (exit)
-        {
-            db.close();
-        }
-        db.connect.tryMatch!((Success) {});
 
         auto manifestEntries = () @trusted {
             return workPath.dirEntries("manifest.*.bin", SpanMode.depth, false)
