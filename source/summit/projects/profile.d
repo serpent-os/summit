@@ -19,6 +19,7 @@ import vibe.d;
 import moss.service.context;
 import summit.models;
 import summit.projects.project;
+import std.path : buildPath;
 
 /**
  * Provides runtime encapsulation and management of build profiles.
@@ -44,6 +45,8 @@ public final class ManagedProfile
         this.context = context;
         this._model = model;
         this._project = project;
+        this._dbPath = context.dbPath.buildPath("profiles", to!string(model.id));
+        this._cachePath = context.cachePath.buildPath("profiles", to!string(model.id));
     }
 
     /**
@@ -62,9 +65,27 @@ public final class ManagedProfile
         return _project;
     }
 
+    /**
+     * Returns: Our profile specific db path
+     */
+    pure @property string dbPath() @safe @nogc nothrow const
+    {
+        return _dbPath;
+    }
+
+    /**
+     * Returns: Our profile specific cache path
+     */
+    pure @property string cachePath() @safe @nogc nothrow const
+    {
+        return _cachePath;
+    }
+
 private:
 
     Profile _model;
     ServiceContext context;
     ManagedProject _project;
+    string _dbPath;
+    string _cachePath;
 }
