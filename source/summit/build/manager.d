@@ -17,6 +17,11 @@ module summit.build.manager;
 
 import vibe.d;
 import moss.service.context;
+import moss.client.metadb;
+import summit.models.buildtask;
+import summit.models.profile;
+import summit.models.project;
+import summit.models.repository;
 import summit.projects;
 import std.algorithm : filter;
 import moss.deps.dependency;
@@ -70,15 +75,18 @@ private:
     void checkForMissing() @safe
     {
         /* For all projects */
-
         foreach (project; projectManager.projects)
         {
+            auto projModel = project.model;
+
             /* For all repositories within each project */
             foreach (repo; project.repositories)
             {
+                auto repoModel = repo.model;
                 /* And for each build target.. */
                 foreach (profile; project.profiles)
                 {
+                    auto profModel = profile.profile;
                     /* For each buildable item in that repository */
                     foreach (entry; repo.db.list)
                     {
@@ -89,19 +97,21 @@ private:
                                     name.target);
                             if (corresponding.empty)
                             {
-                                logInfo("Missing from builds: %s/%s/%s %s-%s",
-                                        project.model.slug, repo.model.name, entry.name,
-                                        entry.versionIdentifier, entry.sourceRelease);
+                                logDiagnostic("Missing from builds: %s/%s/%s %s-%s",
+                                        project.model.slug, repo.model.name,
+                                        entry.name, entry.versionIdentifier, entry.sourceRelease);
+                                enqueueBuildTask(projModel, repoModel, entry, profModel);
                                 break;
                             }
                             auto binaryEntry = profile.db.byID(corresponding.front);
                             if (binaryEntry.sourceRelease < entry.sourceRelease)
                             {
-                                logInfo("Out of date package %s/%s/%s (recipe: %s-%s, published: %s-%s)",
+                                logDiagnostic("Out of date package %s/%s/%s (recipe: %s-%s, published: %s-%s)",
                                         project.model.slug, repo.model.name, entry.name,
                                         entry.versionIdentifier,
                                         entry.sourceRelease, binaryEntry.versionIdentifier,
                                         binaryEntry.sourceRelease);
+                                enqueueBuildTask(projModel, repoModel, entry, profModel);
                                 break;
                             }
                         }
@@ -109,6 +119,38 @@ private:
                 }
             }
         }
+    }
+
+    /**
+     * Enqueue a build task.
+     *
+     * Right now we just re-add all tasks, without evaluating existing tasks or
+     * performing any depsolving/updates. We're fleshing this iteratively.
+     * 
+     * Params:
+     *      project = Parent project
+     *      repository = Parent repository
+     *      sourceEntry = Source package being updated
+     *      profile = Build profile
+     */
+    void enqueueBuildTask(Project project, Repository repository,
+            MetaEntry sourceEntry, Profile profile) @safe
+    {
+        BuildTask model;
+        model.id = 0;
+        model.status = BuildTaskStatus.New;
+        model.slug = format!"~/%s/%s/%s"(project.slug, repository.name, sourceEntry.name);
+        model.profileID = profile.id;
+        model.repoID = repository.id;
+        model.commitRef = repository.commitRef;
+        model.sourcePath = sourceEntry.sourcePath;
+        model.description = format!"%s-%s-%s-%s"(sourceEntry.sourceID,
+                sourceEntry.versionIdentifier, sourceEntry.sourceRelease, profile.arch);
+        model.tsStarted = Clock.currTime(UTC()).toUnixTime();
+
+        immutable err = context.appDB.update((scope tx) => model.save(tx));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+        logInfo(format!"New buildTask: %s"(model));
     }
 
     ServiceContext context;
