@@ -10,8 +10,12 @@
 		"vibe-d": ">=0.9.5",
 		"vibe-d:tls": ">=0.9.5",
 		"openssl": "~>3.1",
-		"moss-core": ">=0.0.1",
-		"moss-db": ">=0.0.4",
+		"moss-core": {
+			"path": "../moss-core"
+		},
+		"moss-db": {
+			"path": "../moss-db"
+		},
 		"moss-deps": {
 			"path": "../moss-deps"
 		},
