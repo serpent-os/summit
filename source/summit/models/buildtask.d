@@ -17,6 +17,7 @@ module summit.models.buildtask;
 
 import moss.db.keyvalue.orm;
 public import std.stdint : uint8_t, uint64_t;
+import summit.models.profile : ProfileID;
 import summit.models.repository : RepositoryID;
 
 /**
@@ -81,14 +82,29 @@ public @Model struct BuildTask
     RepositoryID repoID;
 
     /**
-     * Identity for the thing being built (ie. pkgID)
+     * What we building with here?
      */
-    string buildable;
+    ProfileID profileID;
+
+    /**
+     * Identity for the thing being built
+     */
+    string slug;
 
     /**
      * Representable string in the UI
      */
     string description;
+
+    /**
+     * The repository commit ref at the time of scheduling
+     */
+    string commitRef;
+
+    /**
+     * Source path in the repo
+     */
+    string sourcePath;
 
     /**
      * Current status.
