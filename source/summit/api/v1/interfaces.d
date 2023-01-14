@@ -31,6 +31,7 @@ public enum ListContext : string
     Repositories = "repositories",
     Recipes = "recipes",
     Endpoints = "endpoints",
+    Tasks = "tasks",
 }
 
 /**
@@ -323,4 +324,16 @@ public interface EndpointsAPIv1
      * Create an endpoint attachment
      */
     @path("create") @method(HTTPMethod.POST) void create(AttachVessel request) @safe;
+}
+
+/**
+ * Base API for the Tasks service
+ */
+@path("/api/v1/tasks")
+public interface TasksAPIV1
+{
+    /**
+     * Enumerate all tasks
+     */
+    @path("enumerate") @method(HTTPMethod.GET) Paginator!ListItem enumerate(ulong pageNumber = 0) @safe;
 }
