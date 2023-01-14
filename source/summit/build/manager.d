@@ -151,7 +151,7 @@ private:
         model.repoID = repository.id;
         model.commitRef = repository.commitRef;
         model.sourcePath = sourceEntry.sourcePath;
-        model.buildID = format!"%s-%s-%s-%s"(sourceEntry.sourceID,
+        model.buildID = format!"%s / %s / %s-%s-%s-%s"(project.slug, repository.name, sourceEntry.sourceID,
                 sourceEntry.versionIdentifier, sourceEntry.sourceRelease, profile.arch);
         model.tsStarted = Clock.currTime(UTC()).toUnixTime();
 
