@@ -69,4 +69,13 @@ public final class SummitWeb
     {
         render!"endpoints/index.dt";
     }
+
+    /**
+     * Render the /tasks page
+     */
+    @path("tasks") @method(HTTPMethod.GET)
+    void tasksPage() @safe
+    {
+        render!"tasks/index.dt";
+    }
 }

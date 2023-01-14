@@ -326,6 +326,19 @@ function renderElement(context, element, idx)
                 </div>
             </div>
 `;
+        case SummitContext.Tasks:
+            return `
+<div class="list-group-item list-group-hoverable">
+    <div class="row align-items-center">
+        <div class="col-auto">
+            <span class="avatar ${color}">${element.id}</span>
+        </div>
+        <div class="col text-truncate">
+            <a href="${element.slug}" class="text-reset d-block">${element.title}</a>
+            <div class="d-block text-muted">${element.subtitle}</div>
+        </div>
+    </div>
+</div>`;
         // Default rendering
         default:
             return `

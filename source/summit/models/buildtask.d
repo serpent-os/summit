@@ -92,6 +92,11 @@ public @Model struct BuildTask
     string slug;
 
     /**
+     * Buildable ID for display use
+     */
+    string buildID;
+
+    /**
      * Representable string in the UI
      */
     string description;

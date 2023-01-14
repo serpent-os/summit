@@ -100,7 +100,9 @@ private:
                                 logDiagnostic("Missing from builds: %s/%s/%s %s-%s",
                                         project.model.slug, repo.model.name,
                                         entry.name, entry.versionIdentifier, entry.sourceRelease);
-                                enqueueBuildTask(projModel, repoModel, entry, profModel);
+                                enqueueBuildTask(projModel, repoModel, entry, profModel,
+                                        format!"Initial build of %s (%s-%s)"(entry.sourceID,
+                                            entry.versionIdentifier, entry.sourceRelease));
                                 break;
                             }
                             auto binaryEntry = profile.db.byID(corresponding.front);
@@ -111,7 +113,11 @@ private:
                                         entry.versionIdentifier,
                                         entry.sourceRelease, binaryEntry.versionIdentifier,
                                         binaryEntry.sourceRelease);
-                                enqueueBuildTask(projModel, repoModel, entry, profModel);
+                                enqueueBuildTask(projModel, repoModel, entry, profModel,
+                                        format!"Update %s from %s-%s to %s-%s"(entry.sourceID,
+                                            binaryEntry.versionIdentifier,
+                                            binaryEntry.sourceRelease,
+                                            entry.versionIdentifier, entry.sourceRelease));
                                 break;
                             }
                         }
@@ -134,17 +140,18 @@ private:
      *      profile = Build profile
      */
     void enqueueBuildTask(Project project, Repository repository,
-            MetaEntry sourceEntry, Profile profile) @safe
+            MetaEntry sourceEntry, Profile profile, string description) @safe
     {
         BuildTask model;
         model.id = 0;
         model.status = BuildTaskStatus.New;
         model.slug = format!"~/%s/%s/%s"(project.slug, repository.name, sourceEntry.name);
         model.profileID = profile.id;
+        model.description = description;
         model.repoID = repository.id;
         model.commitRef = repository.commitRef;
         model.sourcePath = sourceEntry.sourcePath;
-        model.description = format!"%s-%s-%s-%s"(sourceEntry.sourceID,
+        model.buildID = format!"%s-%s-%s-%s"(sourceEntry.sourceID,
                 sourceEntry.versionIdentifier, sourceEntry.sourceRelease, profile.arch);
         model.tsStarted = Clock.currTime(UTC()).toUnixTime();
 
