@@ -61,6 +61,7 @@ const EndpointColors = Object.freeze({
         Users: 'users',
         Recipes: 'recipes',
         Endpoints: 'endpoints',
+        Tasks: 'tasks',
     }
 );
 
@@ -98,6 +99,7 @@ const Endpoint = Object.freeze(
         'users': '/api/v1/users',
         'recipes': '/api/v1/recipes',
         'endpoints': '/api/v1/endpoints',
+        'tasks': '/api/v1/tasks',
     }
 );
 
