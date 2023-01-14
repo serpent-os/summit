@@ -18,6 +18,8 @@ module summit.build.sourceplugin;
 import moss.deps.registry;
 import moss.client.metadb;
 
+@trusted:
+
 /**
  * Provides an interface between our source repository definitions
  * and the moss-deps transaction APIs
@@ -42,7 +44,8 @@ public final class SourcePlugin : RegistryPlugin
 
     override ItemInfo info(in string pkgID) const
     {
-        return ItemInfo.init;
+        auto mdb = cast(MetaDB) db;
+        return mdb.info(pkgID);
     }
 
     override NullableRegistryItem queryID(in string pkgID)
@@ -52,12 +55,14 @@ public final class SourcePlugin : RegistryPlugin
 
     override const(Dependency)[] dependencies(in string pkgID) const
     {
-        return null;
+        auto mdb = cast(MetaDB) db;
+        return mdb.byID(pkgID).buildDependencies;
     }
 
     override const(Provider)[] providers(in string pkgID) const
     {
-        return null;
+        auto mdb = cast(MetaDB) db;
+        return mdb.byID(pkgID).providers;
     }
 
     override const(RegistryItem)[] list(in ItemFlags flags) const
