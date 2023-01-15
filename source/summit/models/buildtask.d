@@ -94,7 +94,7 @@ public @Model struct BuildTask
     /**
      * Buildable ID for display use
      */
-    string buildID;
+    @Indexed string buildID;
 
     /**
      * Representable string in the UI

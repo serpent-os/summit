@@ -143,6 +143,19 @@ private:
             MetaEntry sourceEntry, Profile profile, string description) @safe
     {
         BuildTask model;
+        BuildTask existingJob;
+        model.buildID = format!"%s / %s / %s-%s-%s_%s-%s"(project.slug, repository.name, sourceEntry.sourceID,
+                sourceEntry.versionIdentifier, sourceEntry.sourceRelease,
+                sourceEntry.buildRelease, profile.arch);
+
+        /* Don't queue the same job again */
+        immutable lookupErr = context.appDB.view((in tx) => existingJob.load!"buildID"(tx,
+                model.buildID));
+        if (lookupErr.isNull)
+        {
+            return;
+        }
+
         model.id = 0;
         model.status = BuildTaskStatus.New;
         model.slug = format!"~/%s/%s/%s"(project.slug, repository.name, sourceEntry.name);
@@ -151,8 +164,6 @@ private:
         model.repoID = repository.id;
         model.commitRef = repository.commitRef;
         model.sourcePath = sourceEntry.sourcePath;
-        model.buildID = format!"%s / %s / %s-%s-%s-%s"(project.slug, repository.name, sourceEntry.sourceID,
-                sourceEntry.versionIdentifier, sourceEntry.sourceRelease, profile.arch);
         model.tsStarted = Clock.currTime(UTC()).toUnixTime();
         model.tsUpdated = model.tsStarted;
 
