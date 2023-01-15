@@ -23,7 +23,7 @@ import summit.models.profile;
 import summit.models.project;
 import summit.models.repository;
 import summit.projects;
-import std.algorithm : filter;
+import std.algorithm : filter, each;
 import moss.deps.dependency;
 import std.range : front, empty;
 
@@ -51,6 +51,7 @@ public final class BuildManager
         /* All indices must be present on startup. */
         ensureIndicesPresent();
         checkForMissing();
+        loadTasks();
     }
 
 private:
@@ -170,6 +171,33 @@ private:
         immutable err = context.appDB.update((scope tx) => model.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
         logInfo(format!"New buildTask: %s"(model));
+        enlivenTask(model);
+    }
+
+    /**
+     * Load all tasks from the DB that need work on startup
+     * This may take some time when processing all tasks.
+     */
+    void loadTasks() @safe
+    {
+        immutable err = context.appDB.view((scope tx) @safe {
+            auto workable = tx.list!BuildTask
+                .filter!((t) => t.status != BuildTaskStatus.Failed
+                    && t.status != BuildTaskStatus.Completed);
+            workable.each!((w) => enlivenTask(w));
+            return NoDatabaseError;
+        });
+    }
+
+    /**
+     * Bring the DB task into the live queue for processing
+     *
+     * Params:
+     *      task = Stale task for renewal
+     */
+    void enlivenTask(BuildTask task) @safe
+    {
+        logDiagnostic(format!"enliven: %s"(task.buildID));
     }
 
     ServiceContext context;
