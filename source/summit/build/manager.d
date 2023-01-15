@@ -154,6 +154,7 @@ private:
         model.buildID = format!"%s / %s / %s-%s-%s-%s"(project.slug, repository.name, sourceEntry.sourceID,
                 sourceEntry.versionIdentifier, sourceEntry.sourceRelease, profile.arch);
         model.tsStarted = Clock.currTime(UTC()).toUnixTime();
+        model.tsUpdated = model.tsStarted;
 
         immutable err = context.appDB.update((scope tx) => model.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
