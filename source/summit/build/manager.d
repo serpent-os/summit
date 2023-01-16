@@ -15,17 +15,20 @@
 
 module summit.build.manager;
 
-import vibe.d;
-import moss.service.context;
 import moss.client.metadb;
+import moss.deps.dependency;
+import moss.deps.digraph;
+import moss.deps.registry;
+import moss.service.context;
+import std.algorithm : canFind, each, filter, map;
+import std.range : chain, empty, front;
+import summit.build.sourceplugin;
 import summit.models.buildtask;
 import summit.models.profile;
 import summit.models.project;
 import summit.models.repository;
 import summit.projects;
-import std.algorithm : filter, each;
-import moss.deps.dependency;
-import std.range : front, empty;
+import vibe.d;
 
 /**
  * The BuildManager is responsible for ensuring the correct serial
@@ -50,8 +53,10 @@ public final class BuildManager
 
         /* All indices must be present on startup. */
         ensureIndicesPresent();
-        checkForMissing();
         loadTasks();
+        checkForMissing();
+        recomputeQueue();
+        logInfo(format!"Current build queue ordering: %s"(orderedQueue));
     }
 
 private:
@@ -160,9 +165,11 @@ private:
         model.id = 0;
         model.status = BuildTaskStatus.New;
         model.slug = format!"~/%s/%s/%s"(project.slug, repository.name, sourceEntry.name);
+        model.projectID = project.id;
         model.profileID = profile.id;
         model.description = description;
         model.repoID = repository.id;
+        model.pkgID = sourceEntry.pkgID;
         model.commitRef = repository.commitRef;
         model.sourcePath = sourceEntry.sourcePath;
         model.tsStarted = Clock.currTime(UTC()).toUnixTime();
@@ -180,6 +187,9 @@ private:
      */
     void loadTasks() @safe
     {
+        /* empty the mapping */
+        queue = null;
+
         immutable err = context.appDB.view((scope tx) @safe {
             auto workable = tx.list!BuildTask
                 .filter!((t) => t.status != BuildTaskStatus.Failed
@@ -198,8 +208,89 @@ private:
     void enlivenTask(BuildTask task) @safe
     {
         logDiagnostic(format!"enliven: %s"(task.buildID));
+        queue[task.id] = task;
+    }
+
+    /**
+     * From the current job pool, determine resolveable
+     * dependencies between all of the jobs and sort by
+     * that ordering.
+     *
+     * 
+     */
+    void recomputeQueue() @safe
+    {
+        auto dag = new DirectedAcyclicalGraph!BuildTaskID;
+        auto mappedEntries = queue.values.map!((i) => lookupTask(i));
+
+        /* Insert all vertices first */
+        mappedEntries.each!((m) => dag.addVertex(m.task.id));
+        foreach (currentItem; mappedEntries)
+        {
+            auto commonQueue = mappedEntries.filter!((q) => q.task.id != currentItem.task.id)
+                .filter!((q) => currentItem.remotes.canFind!((a) => a == q.indexURI));
+
+            foreach (dep; currentItem.entry.buildDependencies.chain(currentItem.entry.dependencies))
+            {
+                auto metDeps = commonQueue.filter!((d) => d.entry.providers.canFind!(
+                        (p) => p.target == dep.target && dep.type == p.type));
+                metDeps.each!((e) => dag.addEdge(currentItem.task.id, e.task.id));
+            }
+        }
+
+        orderedQueue = null;
+        dag.breakCycles();
+        dag.topologicalSort((d) { orderedQueue ~= d; });
+    }
+
+    /**
+     * Grab the proper SOURCE entry for the task from its DB
+     */
+    JobMapper lookupTask(BuildTask task) @safe
+    {
+        Project project;
+        Profile profile;
+        Repository repo;
+
+        /* Grab all models */
+        immutable err = context.appDB.view((in tx) @safe {
+            auto e = project.load(tx, task.projectID);
+            if (!e.isNull)
+            {
+                return e;
+            }
+            auto e2 = profile.load(tx, task.profileID);
+            if (!e2.isNull)
+            {
+                return e2;
+            }
+            return repo.load(tx, task.repoID);
+        });
+
+        if (!err.isNull)
+        {
+            logDiagnostic(format!"Unable to load task %s: %s"(task.buildID, err.message));
+            return JobMapper.init;
+        }
+        /* TODO: Install the remotes PROPERLY */
+        auto mProject = projectManager.bySlug(project.slug);
+        auto entry = mRepo.db.byID(task.pkgID);
+        return JobMapper(entry, task, [profile.volatileIndexURI], profile.volatileIndexURI);
     }
 
     ServiceContext context;
     ProjectManager projectManager;
+    BuildTask[BuildTaskID] queue;
+    BuildTaskID[] orderedQueue;
+}
+
+/**
+ * Encapsulation of a job environment
+ */
+private struct JobMapper
+{
+    MetaEntry entry;
+    BuildTask task;
+    string[] remotes;
+    string indexURI;
 }

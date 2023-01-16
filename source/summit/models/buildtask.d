@@ -17,6 +17,7 @@ module summit.models.buildtask;
 
 import moss.db.keyvalue.orm;
 public import std.stdint : uint8_t, uint64_t;
+import summit.models.project : ProjectID;
 import summit.models.profile : ProfileID;
 import summit.models.repository : RepositoryID;
 
@@ -77,6 +78,11 @@ public @Model struct BuildTask
     @PrimaryKey @AutoIncrement BuildTaskID id;
 
     /**
+     * Project ID?
+     */
+    ProjectID projectID;
+
+    /**
      * What repository owns the recipe?
      */
     RepositoryID repoID;
@@ -90,6 +96,11 @@ public @Model struct BuildTask
      * Identity for the thing being built
      */
     string slug;
+
+    /**
+     * Unique pkgID in source manifest
+     */
+    string pkgID;
 
     /**
      * Buildable ID for display use
