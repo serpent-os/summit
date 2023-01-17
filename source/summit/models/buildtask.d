@@ -32,19 +32,9 @@ public alias BuildTaskID = uint64_t;
 public enum BuildTaskStatus : uint8_t
 {
     /**
-     * Freshly created task, unchecked
+     * Freshly created task
      */
     New = 0,
-
-    /**
-     * Depending on other tasks completing.
-     */
-    Pending,
-
-    /**
-     * Ready for inclusion
-     */
-    Ready,
 
     /**
      * Failed execution or evaluation
