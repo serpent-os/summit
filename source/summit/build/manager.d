@@ -28,6 +28,8 @@ import summit.models.project;
 import summit.models.repository;
 import summit.projects;
 import vibe.d;
+import core.internal.gc.impl.conservative.gc;
+import etc.c.curl;
 
 /**
  * The BuildManager is responsible for ensuring the correct serial
@@ -64,6 +66,44 @@ public final class BuildManager
     auto availableJobs() @safe
     {
         return orderedQueue.filter!((j) => j.numDeps == 0);
+    }
+
+    /**
+     * Update the status and timestamps for the given task
+     *
+     * Params:
+     *      taskID = Unique task identifier
+     *      status = New task status
+     */
+    void updateTask(BuildTaskID taskID, BuildTaskStatus status) @safe
+    {
+        immutable err = context.appDB.update((scope tx) @safe {
+            /* Ensure task exists */
+            BuildTask task;
+            auto err = task.load(tx, taskID);
+            if (!err.isNull)
+            {
+                return err;
+            }
+
+            /* Update tsUpdated and maybe tsEnded */
+            switch (status)
+            {
+            case BuildTaskStatus.Completed:
+            case BuildTaskStatus.Failed:
+                task.tsUpdated = Clock.currTime(UTC()).toUnixTime();
+                task.tsEnded = task.tsUpdated;
+                break;
+            default:
+                task.tsUpdated = Clock.currTime(UTC()).toUnixTime();
+                break;
+            }
+
+            /* Save the model. */
+            auto e = task.save(tx);
+            return e;
+        });
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
     }
 
 private:
