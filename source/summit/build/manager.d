@@ -216,7 +216,10 @@ private:
      * dependencies between all of the jobs and sort by
      * that ordering.
      *
-     * 
+     * Note that upon execution we understand our previous jobs
+     * to have run to completion and the binary indices to be
+     * up to date, allowing an in-depth deps analysis to happen
+     * to ensure the job is possible.
      */
     void recomputeQueue() @safe
     {
