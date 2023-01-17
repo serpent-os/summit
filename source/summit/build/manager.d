@@ -28,8 +28,6 @@ import summit.models.project;
 import summit.models.repository;
 import summit.projects;
 import vibe.d;
-import core.internal.gc.impl.conservative.gc;
-import etc.c.curl;
 
 /**
  * The BuildManager is responsible for ensuring the correct serial
