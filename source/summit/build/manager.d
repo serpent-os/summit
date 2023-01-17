@@ -22,7 +22,6 @@ import moss.deps.registry;
 import moss.service.context;
 import std.algorithm : canFind, each, filter, map;
 import std.range : chain, empty, front;
-import summit.build.sourceplugin;
 import summit.models.buildtask;
 import summit.models.profile;
 import summit.models.project;
@@ -86,55 +85,78 @@ private:
         }
     }
 
+    /**
+     * Walk through all of the projects, fire off a check
+     * for missing builds globally.
+     */
     void checkForMissing() @safe
     {
         /* For all projects */
         foreach (project; projectManager.projects)
         {
-            auto projModel = project.model;
+            checkMissingWithinProject(project);
+        }
+    }
 
-            /* For all repositories within each project */
-            foreach (repo; project.repositories)
+    /**
+     * Check all missing jobs in repos in the project
+     *
+     * Params:
+     *      project = Project that we believe has changed
+     */
+    void checkMissingWithinProject(ManagedProject project) @safe
+    {
+        /* For all repositories within each project */
+        foreach (repo; project.repositories)
+        {
+            checkMissingWithinRepo(project, repo);
+        }
+    }
+
+    /**
+     * Find missing builds from within the given repo on all profiles
+     *
+     * Params:
+     *      project = Parent project
+     *      repo = Repository that appears to have changed
+     */
+    void checkMissingWithinRepo(ManagedProject project, ManagedRepository repo) @safe
+    {
+        auto repoModel = repo.model;
+        auto projModel = project.model;
+
+        /* And for each build target.. */
+        foreach (profile; project.profiles)
+        {
+            auto profModel = profile.profile;
+            /* For each buildable item in that repository */
+            foreach (entry; repo.db.list)
             {
-                auto repoModel = repo.model;
-                /* And for each build target.. */
-                foreach (profile; project.profiles)
+                foreach (name; entry.providers.filter!((p) => p.type == ProviderType.PackageName))
                 {
-                    auto profModel = profile.profile;
-                    /* For each buildable item in that repository */
-                    foreach (entry; repo.db.list)
+                    auto corresponding = profile.db.byProvider(ProviderType.PackageName,
+                            name.target);
+                    if (corresponding.empty)
                     {
-                        foreach (name; entry.providers.filter!(
-                                (p) => p.type == ProviderType.PackageName))
-                        {
-                            auto corresponding = profile.db.byProvider(ProviderType.PackageName,
-                                    name.target);
-                            if (corresponding.empty)
-                            {
-                                logDiagnostic("Missing from builds: %s/%s/%s %s-%s",
-                                        project.model.slug, repo.model.name,
-                                        entry.name, entry.versionIdentifier, entry.sourceRelease);
-                                enqueueBuildTask(projModel, repoModel, entry, profModel,
-                                        format!"Initial build of %s (%s-%s)"(entry.sourceID,
-                                            entry.versionIdentifier, entry.sourceRelease));
-                                break;
-                            }
-                            auto binaryEntry = profile.db.byID(corresponding.front);
-                            if (binaryEntry.sourceRelease < entry.sourceRelease)
-                            {
-                                logDiagnostic("Out of date package %s/%s/%s (recipe: %s-%s, published: %s-%s)",
-                                        project.model.slug, repo.model.name, entry.name,
-                                        entry.versionIdentifier,
-                                        entry.sourceRelease, binaryEntry.versionIdentifier,
-                                        binaryEntry.sourceRelease);
-                                enqueueBuildTask(projModel, repoModel, entry, profModel,
-                                        format!"Update %s from %s-%s to %s-%s"(entry.sourceID,
-                                            binaryEntry.versionIdentifier,
-                                            binaryEntry.sourceRelease,
-                                            entry.versionIdentifier, entry.sourceRelease));
-                                break;
-                            }
-                        }
+                        logDiagnostic("Missing from builds: %s/%s/%s %s-%s", project.model.slug, repo.model.name,
+                                entry.name, entry.versionIdentifier, entry.sourceRelease);
+                        enqueueBuildTask(projModel, repoModel, entry, profModel,
+                                format!"Initial build of %s (%s-%s)"(entry.sourceID,
+                                    entry.versionIdentifier, entry.sourceRelease));
+                        break;
+                    }
+                    auto binaryEntry = profile.db.byID(corresponding.front);
+                    if (binaryEntry.sourceRelease < entry.sourceRelease)
+                    {
+                        logDiagnostic("Out of date package %s/%s/%s (recipe: %s-%s, published: %s-%s)",
+                                project.model.slug, repo.model.name, entry.name,
+                                entry.versionIdentifier, entry.sourceRelease,
+                                binaryEntry.versionIdentifier, binaryEntry.sourceRelease);
+                        enqueueBuildTask(projModel, repoModel, entry, profModel,
+                                format!"Update %s from %s-%s to %s-%s"(entry.sourceID,
+                                    binaryEntry.versionIdentifier, binaryEntry.sourceRelease,
+                                    entry.versionIdentifier, entry.sourceRelease));
+                        break;
                     }
                 }
             }
