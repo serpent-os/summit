@@ -174,6 +174,7 @@ private:
      *      repository = Parent repository
      *      sourceEntry = Source package being updated
      *      profile = Build profile
+     *      description = Description of the event for UI listing purposes
      */
     void enqueueBuildTask(Project project, Repository repository,
             MetaEntry sourceEntry, Profile profile, string description) @safe
@@ -282,7 +283,10 @@ private:
     }
 
     /**
-     * Grab the proper SOURCE entry for the task from its DB
+     * Map a build task into all usable information for queue computation
+     *
+     * Params:
+     *      task = BuildTask to lookup
      */
     JobMapper lookupTask(BuildTask task) @safe
     {
