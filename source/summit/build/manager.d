@@ -224,28 +224,31 @@ private:
     void recomputeQueue() @safe
     {
         auto dag = new DirectedAcyclicalGraph!BuildTaskID;
-        auto mappedEntries = queue.values.map!((i) => lookupTask(i));
+        JobMapper[BuildTaskID] mappedEntries;
+        queue.values.each!((t) => mappedEntries[t.id] = lookupTask(t));
 
         /* Insert all vertices first */
-        mappedEntries.each!((m) => dag.addVertex(m.task.id));
-        foreach (currentItem; mappedEntries)
+        mappedEntries.values.each!((m) => dag.addVertex(m.task.id));
+        foreach (_, ref currentItem; mappedEntries)
         {
             /* Find commonality: All items whose publication index matches our input "remotes" */
-            auto commonQueue = mappedEntries.filter!((q) => q.task.id != currentItem.task.id)
+            auto commonQueue = mappedEntries.values
+                .filter!((q) => q.task.id != currentItem.task.id)
                 .filter!((q) => currentItem.remotes.canFind!((a) => a == q.indexURI));
 
             /* For all of our deps, find a provider in the commonQueue to link these foreign items */
-            foreach (dep; currentItem.entry.buildDependencies.chain(currentItem.entry.dependencies))
+            foreach (dep; currentItem.entry.buildDependencies)
             {
                 auto metDeps = commonQueue.filter!((d) => d.entry.providers.canFind!(
                         (p) => p.target == dep.target && dep.type == p.type));
                 metDeps.each!((e) => dag.addEdge(currentItem.task.id, e.task.id));
             }
+            currentItem.numDeps = dag.countEdges(currentItem.task.id);
         }
 
         orderedQueue = null;
         dag.breakCycles();
-        dag.topologicalSort((d) { orderedQueue ~= d; });
+        dag.topologicalSort((d) { orderedQueue ~= mappedEntries[d]; });
     }
 
     /**
@@ -287,16 +290,37 @@ private:
     ServiceContext context;
     ProjectManager projectManager;
     BuildTask[BuildTaskID] queue;
-    BuildTaskID[] orderedQueue;
+    JobMapper[] orderedQueue;
 }
 
 /**
- * Encapsulation of a job environment
+ * Encapsulation of a job environment - used solely for calculating the build order.
+ * Much of the information is thrown away after calculation
  */
 private struct JobMapper
 {
+    /**
+     * Source entry for this job
+     */
     MetaEntry entry;
+
+    /**
+     * Real build task
+     */
     BuildTask task;
+
+    /**
+     * All configured remotes
+     */
     string[] remotes;
+
+    /**
+     * The publication index URI
+     */
     string indexURI;
+
+    /**
+     * Number of dependencies required
+     */
+    ulong numDeps;
 }
