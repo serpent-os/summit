@@ -109,15 +109,24 @@ public final class SummitServer
      */
     void applicationRouting(scope HTTPServerRequest request, scope HTTPServerResponse response) @safe
     {
+        URLRouter designatedRouter = null;
+
         final switch (appMode)
         {
         case ApplicationMode.Standard:
-            webApp.router.handleRequest(request, response);
+            designatedRouter = webApp.router;
             break;
         case ApplicationMode.Setup:
-            setupApp.router.handleRequest(request, response);
+            designatedRouter = setupApp.router;
             break;
         }
+
+        if (designatedRouter is null)
+        {
+            logError("No available router to serve requests yet");
+            return;
+        }
+        designatedRouter.handleRequest(request, response);
     }
 
 private:
