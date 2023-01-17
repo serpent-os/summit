@@ -230,9 +230,11 @@ private:
         mappedEntries.each!((m) => dag.addVertex(m.task.id));
         foreach (currentItem; mappedEntries)
         {
+            /* Find commonality: All items whose publication index matches our input "remotes" */
             auto commonQueue = mappedEntries.filter!((q) => q.task.id != currentItem.task.id)
                 .filter!((q) => currentItem.remotes.canFind!((a) => a == q.indexURI));
 
+            /* For all of our deps, find a provider in the commonQueue to link these foreign items */
             foreach (dep; currentItem.entry.buildDependencies.chain(currentItem.entry.dependencies))
             {
                 auto metDeps = commonQueue.filter!((d) => d.entry.providers.canFind!(
