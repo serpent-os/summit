@@ -237,7 +237,7 @@ private:
                 .filter!((q) => currentItem.remotes.canFind!((a) => a == q.indexURI));
 
             /* For all of our deps, find a provider in the commonQueue to link these foreign items */
-            foreach (dep; currentItem.entry.buildDependencies)
+            foreach (dep; currentItem.entry.buildDependencies.chain(currentItem.entry.dependencies))
             {
                 auto metDeps = commonQueue.filter!((d) => d.entry.providers.canFind!(
                         (p) => p.target == dep.target && dep.type == p.type));
