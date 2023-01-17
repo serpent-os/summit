@@ -59,6 +59,14 @@ public final class BuildManager
         logInfo(format!"Current build queue ordering: %s"(orderedQueue));
     }
 
+    /** 
+     * Returns: All enqueued jobs with numDeps == 0 and in build order.
+     */
+    auto availableJobs() @safe
+    {
+        return orderedQueue.filter!((j) => j.numDeps == 0);
+    }
+
 private:
 
     /**
