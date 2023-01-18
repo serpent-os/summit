@@ -67,9 +67,17 @@ public final class BuildQueue
     /** 
      * Returns: All enqueued jobs with numDeps == 0 and in build order.
      */
-    auto availableJobs() @safe @nogc const
+    auto availableJobs() @safe @nogc const nothrow
     {
         return orderedQueue.filter!((j) => j.numDeps == 0);
+    }
+
+    /**
+     * Returns: All enqueued jobs
+     */
+    auto enqueuedJobs() @safe @nogc const nothrow
+    {
+        return orderedQueue;
     }
 
     /**
