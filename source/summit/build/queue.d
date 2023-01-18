@@ -5,7 +5,7 @@
  */
 
 /**
- * summit.build.manager
+ * summit.build.queue
  *
  * Core build manager + lifecycle management
  *
@@ -13,7 +13,7 @@
  * License: Zlib
  */
 
-module summit.build.manager;
+module summit.build.queue;
 
 public import summit.models.buildtask;
 import moss.client.metadb;
@@ -31,16 +31,22 @@ import vibe.d;
 import std.algorithm : any;
 
 /**
- * The BuildManager is responsible for ensuring the correct serial
- * update approach for project profiles, and determining anything
- * that might be a valid build candidate.
+ * The BuildQueue contains the logic required to form queues of
+ * build jobs with interdependencies. Essentially it provides
+ * first-pass capabilities, determining the relationship between
+ * multiple items in a queue and yielding only those jobs with
+ * no other dependencies in the queue.
+ *
+ * Despite the somewhat serial nature, multiple builders can be
+ * allocated jobs and build them in parallel, allowing quicker
+ * and more reliable repository inclusion.
  */
-public final class BuildManager
+public final class BuildQueue
 {
     @disable this();
 
     /**
-     * Construct a new BuildManager instance
+     * Construct a new BuildQueue instance
      *
      * Params:
      *      context = global service context

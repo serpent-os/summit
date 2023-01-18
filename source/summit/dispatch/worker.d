@@ -8,7 +8,7 @@
  * summit.dispatch.worker
  *
  * Core program flow for Summit. Centralisation for the
- * BuildManager, ProjectManager, etc.
+ * BuildQueue, ProjectManager, etc.
  *
  * Authors: Copyright © 2020-2023 Serpent OS Developers
  * License: Zlib
@@ -41,13 +41,13 @@ public final class DispatchWorker
      *
      * Params:
      *   context = global service context
-     *   buildManager =  global build manager
+     *   buildQueue =  global build manager
      *   projectManager = global project management
      */
-    this(ServiceContext context, BuildManager buildManager, ProjectManager projectManager) @safe
+    this(ServiceContext context, BuildQueue buildQueue, ProjectManager projectManager) @safe
     {
         this.context = context;
-        this.buildManager = buildManager;
+        this.buildQueue = buildQueue;
         this.projectManager = projectManager;
 
         controlChannel = createChannel!(DispatchEvent, 1_000);
@@ -118,7 +118,7 @@ private:
         foreach (repo; changedRepositories)
         {
             logDiagnostic(format!"Checking %s for builds"(repo.model));
-            buildManager.checkMissingWithinRepo(repo.project, repo);
+            buildQueue.checkMissingWithinRepo(repo.project, repo);
         }
 
         DispatchEvent builder = AllocateBuildsEvent();
@@ -145,8 +145,8 @@ private:
      */
     void handleBuildAllocations(AllocateBuildsEvent event) @safe
     {
-        buildManager.recomputeQueue();
-        auto availableJobs = buildManager.availableJobs;
+        buildQueue.recomputeQueue();
+        auto availableJobs = buildQueue.availableJobs;
         if (availableJobs.empty)
         {
             logDiagnostic("No builds available for allocation right now");
@@ -154,7 +154,7 @@ private:
         }
 
         /* Attempt to schedule via available builders */
-        foreach (job; buildManager.availableJobs)
+        foreach (job; buildQueue.availableJobs)
         {
             logInfo(format!"Scheduling build of job %s"(job.task.buildID));
         }
@@ -162,7 +162,7 @@ private:
 
     DispatchChannel controlChannel;
     ServiceContext context;
-    BuildManager buildManager;
+    BuildQueue buildQueue;
     ProjectManager projectManager;
     Timer systemTimer;
 }

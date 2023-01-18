@@ -49,8 +49,8 @@ public final class SummitApplication
         this.projectManager = new ProjectManager(context);
         immutable err = projectManager.connect();
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
-        this.buildManager = new BuildManager(context, projectManager);
-        worker = new DispatchWorker(context, buildManager, projectManager);
+        this.buildQueue = new BuildQueue(context, projectManager);
+        worker = new DispatchWorker(context, buildQueue, projectManager);
 
         _router = new URLRouter();
         web = new SummitWeb(context, projectManager, router);
@@ -82,7 +82,7 @@ public final class SummitApplication
 private:
 
     ProjectManager projectManager;
-    BuildManager buildManager;
+    BuildQueue buildQueue;
     DispatchWorker worker;
     ServiceContext context;
     RESTService service;

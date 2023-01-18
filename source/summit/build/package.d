@@ -15,4 +15,4 @@
 
 module summit.build;
 
-public import summit.build.manager;
+public import summit.build.queue;
