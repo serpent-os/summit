@@ -187,6 +187,7 @@ public final class ManagedProject
         auto managed = new ManagedProfile(context, this, model);
         return managed.connect.match!((Success _) {
             managedProfiles[model.name] = managed;
+            runTask({ managed.refresh(); });
             return NoDatabaseError;
         }, (Failure f) => DatabaseResult(DatabaseError(cast(DatabaseErrorCode) f.specifier,
                 f.message)));
