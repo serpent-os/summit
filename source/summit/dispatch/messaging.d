@@ -27,9 +27,14 @@ import vibe.d;
 public struct TimerInterruptEvent
 {
     /** 
-     * Frequency of updates
+     * Duration between updates
      */
     Duration interval;
+
+    /** 
+     * When true, reschedule the event
+     */
+    bool recurring;
 }
 
 /**
@@ -38,7 +43,7 @@ public struct TimerInterruptEvent
 public union DispatchEventTypes
 {
     /** 
-     * An interrupt event happened at a controlled frequency
+     * Event scheduled to happen at this time
      */
     TimerInterruptEvent timer;
 }

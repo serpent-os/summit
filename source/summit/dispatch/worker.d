@@ -59,6 +59,10 @@ public final class DispatchWorker
     void start() @safe
     {
         runTask(&dispatchLoop);
+
+        /* Immediately create a timer event */
+        DispatchEvent time = TimerInterruptEvent(30.seconds, true);
+        controlChannel.put(time);
     }
 
     /** 
@@ -82,10 +86,30 @@ private:
         /* Listen forever until the channels closed */
         while (controlChannel.tryConsumeOne(event))
         {
+            logDiagnostic(format!"dispatchLoop: event [%s]"(event.kind));
 
+            final switch (event.kind)
+            {
+            case DispatchEvent.Kind.timer:
+                handleTimer(cast(TimerInterruptEvent) event);
+                break;
+            }
         }
 
         logInfo("dispatchLoop: Ended");
+    }
+
+    void handleTimer(TimerInterruptEvent event) @safe
+    {
+        /* Reinstall the timer? */
+        if (event.recurring)
+        {
+            () @trusted {
+                setTimer(event.interval, () {
+                    controlChannel.put(DispatchEvent(event));
+                });
+            }();
+        }
     }
 
     DispatchChannel controlChannel;
