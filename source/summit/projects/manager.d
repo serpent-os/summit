@@ -21,7 +21,6 @@ import moss.db.keyvalue.orm;
 import moss.service.context;
 import summit.projects.project;
 import summit.models.project;
-import vibe.core.core : setTimer;
 import vibe.d;
 
 /**
@@ -113,8 +112,6 @@ public final class ProjectManager
             return err;
         }
 
-        /* Go and update the projects for the first time */
-        runTask({ updateProjects(); });
         return NoDatabaseError;
     }
 
@@ -123,9 +120,6 @@ public final class ProjectManager
      */
     void close() @safe
     {
-        running = false;
-        curTimer.stop();
-
         foreach (k, c; managed)
         {
             c.close();
@@ -161,13 +155,6 @@ private:
     {
         auto now = Clock.currTime();
         logInfo(format!"Updating projects at %s"(now));
-        scope (exit)
-        {
-            runTask({
-                /* Reinstall the timer */
-                () @trusted { curTimer = setTimer(30.seconds, &updateProjects); }();
-            });
-        }
 
         /* Update each project */
         foreach (slug, col; managed)
@@ -179,6 +166,4 @@ private:
 
     ServiceContext context;
     ManagedProject[string] managed;
-    bool running;
-    Timer curTimer;
 }
