@@ -333,6 +333,8 @@ private:
     /**
      * Map a build task into all usable information for queue computation
      *
+     * Returns: Internal type for queue computation
+     *
      * Params:
      *      task = BuildTask to lookup
      */
