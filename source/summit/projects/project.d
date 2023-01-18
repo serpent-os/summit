@@ -257,7 +257,7 @@ package:
                     updated ~= repo;
                 }
                 ++awaitingReturn;
-                if (awaitingReturn + 1 == managedRepos.length)
+                if (awaitingReturn == managedRepos.length)
                 {
                     reportChannel.close();
                 }
