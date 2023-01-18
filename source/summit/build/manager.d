@@ -15,6 +15,7 @@
 
 module summit.build.manager;
 
+public import summit.models.buildtask;
 import moss.client.metadb;
 import moss.deps.dependency;
 import moss.deps.digraph;
@@ -22,7 +23,6 @@ import moss.deps.registry;
 import moss.service.context;
 import std.algorithm : canFind, each, filter, map;
 import std.range : chain, empty, front;
-import summit.models.buildtask;
 import summit.models.profile;
 import summit.models.project;
 import summit.models.repository;
