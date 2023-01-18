@@ -69,7 +69,7 @@ public final class BuildQueue
      */
     auto availableJobs() @safe @nogc const nothrow
     {
-        return orderedQueue.filter!((j) => j.numDeps == 0);
+        return orderedQueue.filter!((j) => j.deps.empty);
     }
 
     /**
@@ -238,7 +238,7 @@ public final class BuildQueue
                         (p) => p.target == dep.target && dep.type == p.type));
                 metDeps.each!((e) => dag.addEdge(currentItem.task.id, e.task.id));
             }
-            currentItem.numDeps = dag.countEdges(currentItem.task.id);
+            currentItem.deps = dag.edges(currentItem.task.id);
         }
 
         orderedQueue = null;
@@ -418,7 +418,7 @@ private struct JobMapper
     string indexURI;
 
     /**
-     * Number of dependencies required
+     * Tasks we depend on
      */
-    ulong numDeps;
+    BuildTaskID[] deps;
 }
