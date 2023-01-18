@@ -146,8 +146,6 @@ public final class ProjectManager
         return result ? *result : null;
     }
 
-private:
-
     /**
      * Iterate all projects and request they update themselves, and obviously, their repos
      */
@@ -164,6 +162,7 @@ private:
         }
     }
 
+private:
     ServiceContext context;
     ManagedProject[string] managed;
 }

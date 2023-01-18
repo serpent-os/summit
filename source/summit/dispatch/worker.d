@@ -102,8 +102,16 @@ private:
         logInfo("dispatchLoop: Ended");
     }
 
+    /**
+     * Handle our core timer - update projects at controlled event
+     *
+     * Params:
+     *   event = Timed event (30 seconds)
+     */
     void handleTimer(TimerInterruptEvent event) @safe
     {
+        projectManager.updateProjects();
+
         /* Reinstall the timer? */
         if (event.recurring)
         {
