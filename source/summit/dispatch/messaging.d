@@ -37,6 +37,14 @@ public struct TimerInterruptEvent
     bool recurring;
 }
 
+/** 
+ * The dispatch loop should hand out any available builds.
+ */
+public struct AllocateBuildsEvent
+{
+
+}
+
 /**
  * Define the types supported by our algebraic event type
  */
@@ -46,6 +54,11 @@ public union DispatchEventTypes
      * Event scheduled to happen at this time
      */
     TimerInterruptEvent timer;
+
+    /** 
+     * Time to allocate some builds
+     */
+    AllocateBuildsEvent allocateBuilds;
 }
 
 /** 

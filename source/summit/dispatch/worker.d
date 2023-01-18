@@ -60,7 +60,7 @@ public final class DispatchWorker
     {
         runTask(&dispatchLoop);
 
-        /* Immediately create a timer event */
+        /* Immediately create a timer event to update the projects */
         DispatchEvent time = TimerInterruptEvent(30.seconds, true);
         controlChannel.put(time);
     }
@@ -91,6 +91,9 @@ private:
 
             final switch (event.kind)
             {
+            case DispatchEvent.Kind.allocateBuilds:
+                handleBuildAllocations(cast(AllocateBuildsEvent) event);
+                break;
             case DispatchEvent.Kind.timer:
                 handleTimer(cast(TimerInterruptEvent) event);
                 break;
@@ -110,7 +113,11 @@ private:
      */
     void handleTimer(TimerInterruptEvent event) @safe
     {
+        /* TODO: For all changed projects, notify the build manager */
         projectManager.updateProjects();
+
+        DispatchEvent builder = AllocateBuildsEvent();
+        controlChannel.put(builder);
 
         /* Reinstall the timer? */
         if (event.recurring)
@@ -120,6 +127,30 @@ private:
                     controlChannel.put(DispatchEvent(event));
                 });
             }();
+        }
+    }
+
+    /** 
+     * We need to check for any free build slots and pass them off,
+     * if possible, to an available builder.
+     * We only use the "live" jobs, i.e. 0 numDeps.
+     *
+     * Params:
+     *   event = Build allocation event
+     */
+    void handleBuildAllocations(AllocateBuildsEvent event) @safe
+    {
+        auto availableJobs = buildManager.availableJobs;
+        if (availableJobs.empty)
+        {
+            logDiagnostic("No builds available for allocation right now");
+            return;
+        }
+
+        /* Attempt to schedule via available builders */
+        foreach (job; buildManager.availableJobs)
+        {
+            logInfo(format!"Scheduling build of job %s"(job.task.buildID));
         }
     }
 
