@@ -71,6 +71,7 @@ public final class DispatchWorker
     void stop() @safe
     {
         controlChannel.close();
+        systemTimer.stop();
     }
 
 private:
@@ -107,7 +108,7 @@ private:
         if (event.recurring)
         {
             () @trusted {
-                setTimer(event.interval, () {
+                systemTimer = setTimer(event.interval, () {
                     controlChannel.put(DispatchEvent(event));
                 });
             }();
@@ -118,4 +119,5 @@ private:
     ServiceContext context;
     BuildManager buildManager;
     ProjectManager projectManager;
+    Timer systemTimer;
 }
