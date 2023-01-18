@@ -27,6 +27,7 @@ import summit.models;
 import summit.projects;
 import summit.web;
 import vibe.d;
+import summit.dispatch;
 
 /**
  * SummitApplication provides the main dashboard application
@@ -49,11 +50,16 @@ public final class SummitApplication
         immutable err = projectManager.connect();
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
         this.buildManager = new BuildManager(context, projectManager);
+        worker = new DispatchWorker(context, buildManager, projectManager);
+
         _router = new URLRouter();
         web = new SummitWeb(context, projectManager, router);
         service = new RESTService(context, projectManager, router);
 
         loadFixtures(context, projectManager);
+
+        /* Now get the dispatch worker going */
+        worker.start();
     }
 
     /**
@@ -70,12 +76,14 @@ public final class SummitApplication
     void close() @safe
     {
         projectManager.close();
+        worker.stop();
     }
 
 private:
 
     ProjectManager projectManager;
     BuildManager buildManager;
+    DispatchWorker worker;
     ServiceContext context;
     RESTService service;
     URLRouter _router;
