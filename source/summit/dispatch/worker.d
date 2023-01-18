@@ -86,7 +86,7 @@ private:
         /* Listen forever until the channels closed */
         while (controlChannel.tryConsumeOne(event))
         {
-            logDiagnostic(format!"dispatchLoop: event [%s]"(event.kind));
+            logDiagnostic(format!"dispatchLoop: event [%s] started"(event.kind));
 
             final switch (event.kind)
             {
@@ -94,6 +94,8 @@ private:
                 handleTimer(cast(TimerInterruptEvent) event);
                 break;
             }
+
+            logDiagnostic(format!"dispatchLoop: event [%s] finished"(event.kind));
         }
 
         logInfo("dispatchLoop: Ended");
