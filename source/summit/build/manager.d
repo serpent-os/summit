@@ -28,6 +28,7 @@ import summit.models.project;
 import summit.models.repository;
 import summit.projects;
 import vibe.d;
+import std.algorithm : any;
 
 /**
  * The BuildManager is responsible for ensuring the correct serial
@@ -55,7 +56,6 @@ public final class BuildManager
         loadTasks();
         checkForMissing();
         recomputeQueue();
-        logInfo(format!"Current build queue ordering: %s"(orderedQueue));
     }
 
     /** 
@@ -96,12 +96,22 @@ public final class BuildManager
                 task.tsUpdated = Clock.currTime(UTC()).toUnixTime();
                 break;
             }
+            task.status = status;
 
             /* Save the model. */
             auto e = task.save(tx);
             return e;
         });
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+
+        /* If its completed or failed, remove from the execution queue now */
+        if (any!((a) => a == status)([
+                BuildTaskStatus.Failed, BuildTaskStatus.Completed
+            ]))
+        {
+            queue.remove(taskID);
+            recomputeQueue();
+        }
     }
 
     /**
@@ -263,7 +273,7 @@ private:
                 sourceEntry.versionIdentifier, sourceEntry.sourceRelease,
                 sourceEntry.buildRelease, profile.arch);
 
-        /* Don't queue the same job again */
+        /* Don't queue the same job again - it may have failed. */
         immutable lookupErr = context.appDB.view((in tx) => existingJob.load!"buildID"(tx,
                 model.buildID));
         if (lookupErr.isNull)
@@ -316,7 +326,7 @@ private:
      */
     void enlivenTask(BuildTask task) @safe
     {
-        logDiagnostic(format!"enliven: %s"(task.buildID));
+        logDiagnostic(format!"enliven: %s [%s]"(task.buildID, task.status));
         queue[task.id] = task;
     }
 
