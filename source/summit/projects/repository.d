@@ -58,6 +58,7 @@ public final class ManagedRepository
     this(ServiceContext context, ManagedProject parent, Repository model) @safe
     {
         this.context = context;
+        this.parent = parent;
 
         this._model = model;
         /* ID field never changes */
@@ -68,6 +69,14 @@ public final class ManagedRepository
 
         /* We need read/write pls */
         this._db = new MetaDB(dbPath, true);
+    }
+
+    /**
+     * Returns: Parent project
+     */
+    pure @property ManagedProject project() @safe @nogc nothrow
+    {
+        return parent;
     }
 
     /**
@@ -133,8 +142,10 @@ public final class ManagedRepository
 
     /**
      * Refresh this repository
+     *
+     * Returns: true if the repository changed
      */
-    void refresh() @safe
+    bool refresh() @safe
     {
         switch (model.status)
         {
@@ -148,11 +159,13 @@ public final class ManagedRepository
             break;
         }
 
-        /* Anything changed, reindex */
-        if (checkForChanges)
+        /* Let caller know if something changed, reindex if needed */
+        auto anythingChanged = checkForChanges();
+        if (anythingChanged)
         {
             reindex();
         }
+        return anythingChanged;
     }
 
 private:
@@ -476,6 +489,7 @@ private:
         metaDB.install(mp);
     }
 
+    ManagedProject parent;
     ServiceContext context;
     MetaDB _db;
     Repository _model;

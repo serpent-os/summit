@@ -22,6 +22,8 @@ import moss.service.context;
 import summit.projects.project;
 import summit.models.project;
 import vibe.d;
+import std.range : chain;
+import std.algorithm : joiner, map;
 
 /**
  * The ProjectManager helps us to control the correlation between
@@ -149,17 +151,12 @@ public final class ProjectManager
     /**
      * Iterate all projects and request they update themselves, and obviously, their repos
      */
-    void updateProjects() @safe
+    auto updateProjects() @safe
     {
         auto now = Clock.currTime();
         logInfo(format!"Updating projects at %s"(now));
 
-        /* Update each project */
-        foreach (slug, col; managed)
-        {
-            logDiagnostic(format!"Requesting update check for %s"(slug));
-            col.refresh();
-        }
+        return joiner(managed.values.map!((o) => o.refresh()));
     }
 
 private:

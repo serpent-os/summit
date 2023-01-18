@@ -104,25 +104,6 @@ public final class BuildManager
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
     }
 
-private:
-
-    /**
-     * Ensure all indices for each buildable is present
-     *
-     * This is blocking in a fiber sense, the system continues.
-     */
-    void ensureIndicesPresent() @safe
-    {
-        foreach (project; projectManager.projects)
-        {
-            auto profiles = project.profiles;
-            foreach (profile; profiles)
-            {
-                profile.refresh();
-            }
-        }
-    }
-
     /**
      * Walk through all of the projects, fire off a check
      * for missing builds globally.
@@ -197,6 +178,65 @@ private:
                         break;
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * From the current job pool, determine resolveable
+     * dependencies between all of the jobs and sort by
+     * that ordering.
+     *
+     * Note that upon execution we understand our previous jobs
+     * to have run to completion and the binary indices to be
+     * up to date, allowing an in-depth deps analysis to happen
+     * to ensure the job is possible.
+     */
+    void recomputeQueue() @safe
+    {
+        auto dag = new DirectedAcyclicalGraph!BuildTaskID;
+        JobMapper[BuildTaskID] mappedEntries;
+        queue.values.each!((t) => mappedEntries[t.id] = lookupTask(t));
+
+        /* Insert all vertices first */
+        mappedEntries.values.each!((m) => dag.addVertex(m.task.id));
+        foreach (_, ref currentItem; mappedEntries)
+        {
+            /* Find commonality: All items whose publication index matches our input "remotes" */
+            auto commonQueue = mappedEntries.values
+                .filter!((q) => q.task.id != currentItem.task.id)
+                .filter!((q) => currentItem.remotes.canFind!((a) => a == q.indexURI));
+
+            /* For all of our deps, find a provider in the commonQueue to link these foreign items */
+            foreach (dep; currentItem.entry.buildDependencies.chain(currentItem.entry.dependencies))
+            {
+                auto metDeps = commonQueue.filter!((d) => d.entry.providers.canFind!(
+                        (p) => p.target == dep.target && dep.type == p.type));
+                metDeps.each!((e) => dag.addEdge(currentItem.task.id, e.task.id));
+            }
+            currentItem.numDeps = dag.countEdges(currentItem.task.id);
+        }
+
+        orderedQueue = null;
+        dag.breakCycles();
+        dag.topologicalSort((d) { orderedQueue ~= mappedEntries[d]; });
+    }
+
+private:
+
+    /**
+     * Ensure all indices for each buildable is present
+     *
+     * This is blocking in a fiber sense, the system continues.
+     */
+    void ensureIndicesPresent() @safe
+    {
+        foreach (project; projectManager.projects)
+        {
+            auto profiles = project.profiles;
+            foreach (profile; profiles)
+            {
+                profile.refresh();
             }
         }
     }
@@ -278,46 +318,6 @@ private:
     {
         logDiagnostic(format!"enliven: %s"(task.buildID));
         queue[task.id] = task;
-    }
-
-    /**
-     * From the current job pool, determine resolveable
-     * dependencies between all of the jobs and sort by
-     * that ordering.
-     *
-     * Note that upon execution we understand our previous jobs
-     * to have run to completion and the binary indices to be
-     * up to date, allowing an in-depth deps analysis to happen
-     * to ensure the job is possible.
-     */
-    void recomputeQueue() @safe
-    {
-        auto dag = new DirectedAcyclicalGraph!BuildTaskID;
-        JobMapper[BuildTaskID] mappedEntries;
-        queue.values.each!((t) => mappedEntries[t.id] = lookupTask(t));
-
-        /* Insert all vertices first */
-        mappedEntries.values.each!((m) => dag.addVertex(m.task.id));
-        foreach (_, ref currentItem; mappedEntries)
-        {
-            /* Find commonality: All items whose publication index matches our input "remotes" */
-            auto commonQueue = mappedEntries.values
-                .filter!((q) => q.task.id != currentItem.task.id)
-                .filter!((q) => currentItem.remotes.canFind!((a) => a == q.indexURI));
-
-            /* For all of our deps, find a provider in the commonQueue to link these foreign items */
-            foreach (dep; currentItem.entry.buildDependencies.chain(currentItem.entry.dependencies))
-            {
-                auto metDeps = commonQueue.filter!((d) => d.entry.providers.canFind!(
-                        (p) => p.target == dep.target && dep.type == p.type));
-                metDeps.each!((e) => dag.addEdge(currentItem.task.id, e.task.id));
-            }
-            currentItem.numDeps = dag.countEdges(currentItem.task.id);
-        }
-
-        orderedQueue = null;
-        dag.breakCycles();
-        dag.topologicalSort((d) { orderedQueue ~= mappedEntries[d]; });
     }
 
     /**

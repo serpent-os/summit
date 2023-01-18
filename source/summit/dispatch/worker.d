@@ -114,7 +114,12 @@ private:
     void handleTimer(TimerInterruptEvent event) @safe
     {
         /* TODO: For all changed projects, notify the build manager */
-        projectManager.updateProjects();
+        auto changedRepositories = projectManager.updateProjects();
+        foreach (repo; changedRepositories)
+        {
+            logDiagnostic(format!"Checking %s for builds"(repo.model));
+            buildManager.checkMissingWithinRepo(repo.project, repo);
+        }
 
         DispatchEvent builder = AllocateBuildsEvent();
         controlChannel.put(builder);
@@ -140,6 +145,7 @@ private:
      */
     void handleBuildAllocations(AllocateBuildsEvent event) @safe
     {
+        buildManager.recomputeQueue();
         auto availableJobs = buildManager.availableJobs;
         if (availableJobs.empty)
         {

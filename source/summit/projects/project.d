@@ -27,6 +27,7 @@ import summit.models.project;
 import summit.models.repository;
 import moss.core.errors;
 import vibe.d : runTask;
+import vibe.core.channel;
 
 /**
  * A project explicitly managed by Summit
@@ -236,15 +237,39 @@ package:
     }
 
     /**
-     * Attempt to update all repositories
-     * At this point, go wide.
+     * Refresh all of the repositories
+     *
+     * Returns: a slice of repositories that updated
      */
-    void refresh() @safe
+    auto refresh() @safe
     {
+        auto reportChannel = createChannel!(bool, 1);
+        ulong awaitingReturn = 0;
+        bool unusedRet;
+        ManagedRepository[] updated;
+
+        /* Iterate and close on last refresh, tracking updated status */
         foreach (slug, repo; managedRepos)
         {
-            runTask({ repo.refresh(); });
+            runTask({
+                if (repo.refresh())
+                {
+                    updated ~= repo;
+                }
+                ++awaitingReturn;
+                if (awaitingReturn + 1 == managedRepos.length)
+                {
+                    reportChannel.close();
+                }
+            });
         }
+
+        while (!reportChannel.empty)
+        {
+            reportChannel.tryConsumeOne(unusedRet);
+        }
+
+        return updated;
     }
 
 private:
