@@ -17,6 +17,10 @@
 module summit.dispatch.worker;
 
 import moss.service.context;
+import moss.service.models;
+import std.algorithm : filter;
+import std.array : array;
+import std.range : StoppingPolicy, zip;
 import summit.build;
 import summit.dispatch.messaging;
 import summit.projects;
@@ -153,11 +157,36 @@ private:
             return;
         }
 
+        /* TODO: Sort available builders + jobs by weight, filter inappropriate builders (architecture) */
         /* Attempt to schedule via available builders */
-        foreach (job; buildQueue.availableJobs)
+        auto workerMapping = zip(StoppingPolicy.shortest, availableBuilders, availableJobs);
+        if (workerMapping.empty)
         {
-            logInfo(format!"Scheduling build of job %s"(job.task.buildID));
+            logDiagnostic("No builder available right now");
+            return;
         }
+
+        foreach (builder, job; workerMapping)
+        {
+            logDiagnostic(format!"Builder %s will now build %s"(builder.id, job.entry.sourceID));
+        }
+    }
+
+    /**
+     * Grab a list of the builders immediately available
+     */
+    auto availableBuilders() @safe
+    {
+        AvalancheEndpoint[] endpoints;
+
+        context.appDB.view((in tx) @safe {
+            auto results = tx.list!AvalancheEndpoint
+                .filter!((e) => e.status == EndpointStatus.Operational
+                    && e.workStatus == WorkStatus.Idle);
+            endpoints = () @trusted { return results.array; }();
+            return NoDatabaseError;
+        });
+        return endpoints;
     }
 
     DispatchChannel controlChannel;
