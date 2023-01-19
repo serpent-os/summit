@@ -395,7 +395,7 @@ private:
  * Encapsulation of a job environment - used solely for calculating the build order.
  * Much of the information is thrown away after calculation
  */
-private struct JobMapper
+public struct JobMapper
 {
     /**
      * Source entry for this job
