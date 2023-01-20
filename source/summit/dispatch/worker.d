@@ -17,12 +17,14 @@
 module summit.dispatch.worker;
 
 import moss.service.context;
+import moss.service.interfaces.avalanche;
 import moss.service.models;
 import std.algorithm : filter;
 import std.array : array;
 import std.range : StoppingPolicy, zip;
 import summit.build;
 import summit.dispatch.messaging;
+import summit.models;
 import summit.projects;
 import vibe.core.channel;
 import vibe.d;
@@ -169,6 +171,7 @@ private:
         foreach (builder, job; workerMapping)
         {
             logDiagnostic(format!"Builder %s will now build %s"(builder.id, job.entry.sourceID));
+            buildOne(builder, job);
         }
     }
 
@@ -187,6 +190,88 @@ private:
             return NoDatabaseError;
         });
         return endpoints;
+    }
+
+    /** 
+     * Build a single package
+     *
+     * This is sent via a specific endpoint using our issue token.
+     * Until such point as the build status returns, we consider the item
+     * building, and the builder as non-idle.
+     *
+     * Note: We have to check our tokens are up to date here
+     *
+     * Params:
+     *   endpoint = Endpoint that will take the build
+     *   job = Job to perform / build
+     */
+    void buildOne(ref AvalancheEndpoint endpoint, in JobMapper job) @safe
+    {
+        auto api = new RestInterfaceClient!AvalancheAPI(endpoint.hostAddress);
+        api.requestFilter = (req) {
+            req.headers["Authorization"] = format!"Bearer %s"(endpoint.apiToken);
+        };
+
+        PackageBuild buildDef;
+        Repository modRepo;
+        Project modProject;
+        Profile modProfile;
+
+        /* Install remote config */
+        foreach (i, rm; job.remotes)
+        {
+            auto c = BinaryCollection(rm, format!"repo%d"(i), (cast(uint) i) * 10);
+            buildDef.collections ~= c;
+        }
+
+        /* Look up the model to grab some deets */
+        immutable err = context.appDB.view((in tx) @safe {
+            auto e1 = modRepo.load(tx, job.task.repoID);
+            if (!e1.isNull)
+            {
+                return e1;
+            }
+            auto e2 = modProfile.load(tx, job.task.profileID);
+            if (!e2.isNull)
+            {
+                return e2;
+            }
+            return modProject.load(tx, job.task.projectID);
+        });
+        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
+
+        /* Construct full build definition */
+        auto project = projectManager.bySlug(modProject.slug);
+        auto profile = project.profile(modProfile.name);
+        buildDef.buildArchitecture = modProfile.arch;
+        buildDef.commitRef = job.task.commitRef;
+        buildDef.relativePath = job.task.sourcePath;
+        buildDef.uri = modRepo.originURI;
+        buildDef.buildID = job.task.id;
+
+        /* Defer status */
+        BuildTaskStatus newBuildStatus;
+        WorkStatus newWorkstatus;
+
+        try
+        {
+            /* Please work */
+            api.buildPackage(buildDef, NullableToken());
+            newBuildStatus = BuildTaskStatus.Building;
+            newWorkstatus = WorkStatus.Working;
+        }
+        catch (Exception ex)
+        {
+            /* TODO: Block dependents in the queue */
+            logError(format!"Exception in buildOne: %s"(ex.message));
+            newBuildStatus = BuildTaskStatus.Failed;
+            newWorkstatus = WorkStatus.Idle;
+        }
+
+        endpoint.workStatus = newWorkstatus;
+        auto err2 = context.appDB.update((scope tx) => endpoint.save(tx));
+        enforceHTTP(err2.isNull, HTTPStatus.internalServerError, err2.message);
+        buildQueue.updateTask(buildDef.buildID, newBuildStatus);
     }
 
     DispatchChannel controlChannel;
