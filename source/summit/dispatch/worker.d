@@ -21,9 +21,10 @@ import moss.service.interfaces.avalanche;
 import moss.service.models;
 import std.algorithm : filter;
 import std.array : array;
-import std.range : StoppingPolicy, zip;
+import std.range : front, popFront;
 import summit.build;
 import summit.dispatch.messaging;
+import summit.dispatch.tokens;
 import summit.models;
 import summit.projects;
 import vibe.core.channel;
@@ -159,19 +160,38 @@ private:
             return;
         }
 
-        /* TODO: Sort available builders + jobs by weight, filter inappropriate builders (architecture) */
-        /* Attempt to schedule via available builders */
-        auto workerMapping = zip(StoppingPolicy.shortest, availableBuilders, availableJobs);
-        if (workerMapping.empty)
+        auto builders = availableBuilders();
+        job_loop: foreach (job; availableJobs)
         {
-            logDiagnostic("No builder available right now");
-            return;
-        }
+            /* Copied slice to work with */
+            auto testBuilders = builders[0 .. $];
+            do
+            {
+                /* No more usable builders */
+                if (testBuilders.empty)
+                {
+                    break job_loop;
+                }
+                AvalancheEndpoint builder = testBuilders.front;
+                testBuilders.popFront();
 
-        foreach (builder, job; workerMapping)
-        {
-            logDiagnostic(format!"Builder %s will now build %s"(builder.id, job.entry.sourceID));
-            buildOne(builder, job);
+                /* Baad builder */
+                if (!builder.builderUsable(context))
+                {
+                    import std.algorithm : remove;
+
+                    builders = builders.remove!((b) => b.id == builder.id);
+                    testBuilders = builders[0 .. $];
+                    continue;
+                }
+                else
+                {
+                    buildOne(builder, job);
+                    break;
+                }
+            }
+            while (true);
+            builders = availableBuilders();
         }
     }
 
