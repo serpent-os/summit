@@ -136,5 +136,6 @@ bool obtainAvalancheAPIToken(ref AvalancheEndpoint endpoint, ServiceContext cont
 
     /* Update the model with usability status */
     immutable err = context.appDB.update((scope tx) => endpoint.save(tx));
+    enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
     return !endpoint.apiToken.empty;
 }
