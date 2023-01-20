@@ -47,7 +47,7 @@ bool builderUsable(ref AvalancheEndpoint endpoint, ServiceContext context) @safe
     }
     else
     {
-        /* check validity if the token, preempting by 30 minutes */
+        /* check validity if the token, preempting by 15 minutes */
         needRefresh = Token.decode(encodedApiToken)
             .match!((Token tk) => timeNow + tolerableDiff >= tk.payload.exp, (_) => false);
     }
