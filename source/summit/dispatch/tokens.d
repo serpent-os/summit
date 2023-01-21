@@ -103,14 +103,14 @@ static bool obtainToken(E, bool bearer)(ref E endpoint, ServiceContext context) 
             }
             catch (Exception ex)
             {
-                logError(format!"[apitoken] Illegal signature from %s instance '%s': %s"(E.stringof,
-                    endpoint.id, ex.message));
+                logError(format!"[%s] Illegal signature from %s instance '%s': %s"(tokenDescriptor,
+                    E.stringof, endpoint.id, ex.message));
                 endpoint.statusText = "Illegal signature";
                 return false;
             }
         }, (TokenError err) {
-            logError(format!"[apitoken] Invalid token issued by %s instance '%s': %s"(E.stringof,
-                endpoint.id, err.message));
+            logError(format!"[%s] Invalid token issued by %s instance '%s': %s"(tokenDescriptor,
+                E.stringof, endpoint.id, err.message));
             endpoint.statusText = "Invalid token";
             return false;
         });
@@ -132,7 +132,7 @@ static bool obtainToken(E, bool bearer)(ref E endpoint, ServiceContext context) 
             {
                 endpoint.apiToken = assignedToken;
             }
-            logInfo(format!"[%s] New API token issued by %s instance '%s'"(tokenDescriptor,
+            logInfo(format!"[%s] New token issued by %s instance '%s'"(tokenDescriptor,
                     E.stringof, endpoint.id));
         }
     }
