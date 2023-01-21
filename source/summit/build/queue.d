@@ -228,7 +228,8 @@ public final class BuildQueue
         {
             /* Find commonality: All items whose publication index matches our input "remotes" */
             auto commonQueue = mappedEntries.values
-                .filter!((q) => q.task.id != currentItem.task.id)
+                .filter!((q) => q.task.id != currentItem.task.id
+                        && q.task.architecture == currentItem.task.architecture)
                 .filter!((q) => currentItem.remotes.canFind!((a) => a == q.indexURI));
 
             /* For all of our deps, find a provider in the commonQueue to link these foreign items */
@@ -298,6 +299,7 @@ private:
         model.id = 0;
         model.status = BuildTaskStatus.New;
         model.slug = format!"~/%s/%s/%s"(project.slug, repository.name, sourceEntry.name);
+        model.architecture = profile.arch;
         model.projectID = project.id;
         model.profileID = profile.id;
         model.description = description;

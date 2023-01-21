@@ -93,6 +93,11 @@ public @Model struct BuildTask
     string pkgID;
 
     /**
+     * Target architecture - ensure no dependencies between foreign arches
+     */
+    string architecture;
+
+    /**
      * Buildable ID for display use
      */
     @Indexed string buildID;
