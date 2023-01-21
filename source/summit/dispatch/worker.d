@@ -282,7 +282,6 @@ private:
         }
         catch (Exception ex)
         {
-            /* TODO: Block dependents in the queue */
             logError(format!"Exception in buildOne: %s"(ex.message));
             newBuildStatus = BuildTaskStatus.Failed;
             newWorkstatus = WorkStatus.Idle;
