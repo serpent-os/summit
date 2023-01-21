@@ -21,32 +21,24 @@ import moss.service.interfaces.endpoints;
 import moss.service.tokens;
 import vibe.d;
 
-/**
- * Determine if the API token is usable or not
+/** 
+ * Check if a token is within a given validity range
  *
  * Params:
- *      endpoint = Avalanche endpoint in question
- *      context = Global service context
- * Returns: True if our API token is in a usable state
+ *   encodedAPIToken = Some encoded token string
+ *   tolerableDiff = How fresh we need the token
+ * Returns: true if the token is within the expressed range
  */
-static bool builderAPITokenUsable(ref AvalancheEndpoint endpoint, ServiceContext context) @safe
+static bool tokenWithinRange(string encodedAPIToken, ulong tolerableDiff) @safe
 {
-    auto tolerableDiff = 15 * 60;
     auto timeNow = Clock.currTime(UTC()).toUnixTime;
-    string encodedApiToken = endpoint.apiToken;
-    bool needRefresh;
-    if (encodedApiToken.empty)
+    if (encodedAPIToken.empty)
     {
-        needRefresh = true;
-    }
-    else
-    {
-        /* check validity if the token, preempting by 15 minutes */
-        needRefresh = Token.decode(encodedApiToken)
-            .match!((Token tk) => timeNow + tolerableDiff >= tk.payload.exp, (_) => false);
+        return true;
     }
 
-    return needRefresh;
+    return Token.decode(encodedAPIToken)
+        .match!((Token tk) => timeNow + tolerableDiff >= tk.payload.exp, (_) => false);
 }
 
 /**
@@ -146,9 +138,16 @@ static bool obtainAvalancheAPIToken(ref AvalancheEndpoint endpoint, ServiceConte
  */
 bool builderUsable(ref AvalancheEndpoint endpoint, ServiceContext context) @safe
 {
-    if (builderAPITokenUsable(endpoint, context))
+    immutable static validity = 15 * 60;
+
+    /* Ensure bearer token is valid */
+    if (!tokenWithinRange(endpoint.bearerToken, validity))
     {
-        return true;
+        return false;
     }
-    return obtainAvalancheAPIToken(endpoint, context);
+    if (!tokenWithinRange(endpoint.apiToken, validity))
+    {
+        return obtainAvalancheAPIToken(endpoint, context);
+    }
+    return true;
 }
