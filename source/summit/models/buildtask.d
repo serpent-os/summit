@@ -55,6 +55,13 @@ public enum BuildTaskStatus : uint8_t
      * Job successfully completed!
      */
     Completed,
+
+    /**
+     * This build must remain blocked until its block
+     * criteria have been met, i.e. the dependent that
+     * caused the failure has been fixed.
+     */
+    Blocked,
 }
 
 /**
@@ -136,4 +143,11 @@ public @Model struct BuildTask
      * UTC Unix Timestamp: Ended
      */
     uint64_t tsEnded;
+
+    /**
+     * Blocked by:
+     *
+     *  sourceID_arch@project/repo
+     */
+    string[] blockedBy;
 }
