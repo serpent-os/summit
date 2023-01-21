@@ -42,42 +42,55 @@ static bool tokenWithinRange(string encodedAPIToken, ulong tolerableDiff) @safe
 }
 
 /**
- * Obtain an API token from an endpoint instance.
- *
- * Note, if we're suffering clock desync issues and our bearer token is invalid,
- * we may end up marking an endpoint unreachable to keep the implementation
- * simpler.
- *
- * Params:
- *      E = Some Endpoint type in moss-service
- *      endpoint = Endpoint we're getting an API token for
- *      context = Global service context
- * Returns: True if we retreived a usable API token
+ * Internal helper to assist with getting bearer + issue tokens
  */
-static bool obtainAPIToken(E)(ref E endpoint, ServiceContext context) @safe
+static bool obtainToken(E, bool bearer)(ref E endpoint, ServiceContext context) @safe
 {
     auto api = new RestInterfaceClient!ServiceEnrolmentAPI(endpoint.hostAddress);
     api.requestFilter = (req) {
         req.headers["Authorization"] = format!"Bearer %s"(endpoint.bearerToken);
     };
 
-    logInfo(format!"[apitoken] Refreshing %s instance '%s'"(E.stringof, endpoint.id));
+    static if (bearer)
+    {
+        string tokenDescriptor = "bearerToken";
+    }
+    else
+    {
+        string tokenDescriptor = "apiToken";
+    }
+
+    logInfo(format!"[%s] Refreshing %s instance '%s'"(tokenDescriptor, E.stringof, endpoint.id));
     string assignedToken;
     try
     {
-        assignedToken = api.refreshToken(NullableToken());
+        static if (bearer)
+        {
+            assignedToken = api.refreshIssueToken(NullableToken());
+        }
+        else
+        {
+            assignedToken = api.refreshToken(NullableToken());
+        }
     }
     catch (Exception ex)
     {
-        logError(format!"[apitoken] Failed to refresh %s '%s': %s"(E.stringof,
-                endpoint.id, ex.message));
+        logError(format!"[%s] Failed to refresh %s '%s': %s"(tokenDescriptor,
+                E.stringof, endpoint.id, ex.message));
     }
 
     if (assignedToken.empty)
     {
         endpoint.status = EndpointStatus.Unreachable;
-        endpoint.statusText = "Failed to get an API token";
-        endpoint.apiToken = null;
+        static if (bearer)
+        {
+            endpoint.statusText = "Failed to refresh bearer token";
+        }
+        else
+        {
+            endpoint.statusText = "Failed to refresh API token";
+            endpoint.apiToken = null;
+        }
     }
     else
     {
@@ -111,9 +124,16 @@ static bool obtainAPIToken(E)(ref E endpoint, ServiceContext context) @safe
         else
         {
             endpoint.status = EndpointStatus.Operational;
-            endpoint.apiToken = assignedToken;
-            logInfo(format!"[apitoken] New API token issued by %s instance '%s'"(E.stringof,
-                    endpoint.id));
+            static if (bearer)
+            {
+                endpoint.bearerToken = assignedToken;
+            }
+            else
+            {
+                endpoint.apiToken = assignedToken;
+            }
+            logInfo(format!"[%s] New API token issued by %s instance '%s'"(tokenDescriptor,
+                    E.stringof, endpoint.id));
         }
     }
 
@@ -121,6 +141,42 @@ static bool obtainAPIToken(E)(ref E endpoint, ServiceContext context) @safe
     immutable err = context.appDB.update((scope tx) => endpoint.save(tx));
     enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
     return !endpoint.apiToken.empty;
+}
+
+/**
+ * Obtain a fresh bearer token from an endpoint instance
+ *
+ * Note, if we're suffering clock desync issues and our bearer token is invalid,
+ * we may end up marking an endpoint unreachable to keep the implementation
+ * simpler.
+ *
+ * Params:
+ *      E = Some Endpoint type in moss-service
+ *      endpoint = Endpoint we're getting a bearer token for
+ *      context = Global service context
+ * Returns: True if we retreived a usable bearer token
+ */
+static bool obtainBearerToken(E)(ref E endpoint, ServiceContext context) @safe
+{
+    return obtainToken!(E, true)(endpoint, context);
+}
+
+/**
+ * Obtain an API token from an endpoint instance.
+ *
+ * Note, if we're suffering clock desync issues and our bearer token is invalid,
+ * we may end up marking an endpoint unreachable to keep the implementation
+ * simpler.
+ *
+ * Params:
+ *      E = Some Endpoint type in moss-service
+ *      endpoint = Endpoint we're getting an API token for
+ *      context = Global service context
+ * Returns: True if we retreived a usable API token
+ */
+static bool obtainAPIToken(E)(ref E endpoint, ServiceContext context) @safe
+{
+    return obtainToken!(E, false)(endpoint, context);
 }
 
 /**
@@ -150,7 +206,10 @@ bool endpointUsable(E)(ref E endpoint, ServiceContext context) @safe
     /* Ensure bearer token is valid */
     if (!tokenWithinRange(endpoint.bearerToken, validity))
     {
-        return false;
+        if (!obtainBearerToken(endpoint, context))
+        {
+            return false;
+        }
     }
     if (!tokenWithinRange(endpoint.apiToken, validity))
     {
