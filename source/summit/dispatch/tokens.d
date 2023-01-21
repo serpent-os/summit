@@ -22,20 +22,14 @@ import moss.service.tokens;
 import vibe.d;
 
 /**
- * Ascertain the builder usability
+ * Determine if the API token is usable or not
  *
- * If we have an unexpired issue token, we'll consider this as
- * usable and proceed. Otherwise, attempt various forms of token
- * refresh.
- *
- * If token refresh fails, the endpoint is unusable. At that point
- * the job needs to be failed and rescheduled, while marking the
- * builder as down.
- *
- * The builder will need to send a heartbeat event again to be marked
- * reachable once more.
+ * Params:
+ *      endpoint = Avalanche endpoint in question
+ *      context = Global service context
+ * Returns: True if our API token is in a usable state
  */
-bool builderUsable(ref AvalancheEndpoint endpoint, ServiceContext context) @safe
+static bool builderAPITokenUsable(ref AvalancheEndpoint endpoint, ServiceContext context) @safe
 {
     auto tolerableDiff = 15 * 60;
     auto timeNow = Clock.currTime(UTC()).toUnixTime;
@@ -52,12 +46,7 @@ bool builderUsable(ref AvalancheEndpoint endpoint, ServiceContext context) @safe
             .match!((Token tk) => timeNow + tolerableDiff >= tk.payload.exp, (_) => false);
     }
 
-    if (!needRefresh)
-    {
-        return true;
-    }
-
-    return obtainAvalancheAPIToken(endpoint, context);
+    return needRefresh;
 }
 
 /**
@@ -69,9 +58,10 @@ bool builderUsable(ref AvalancheEndpoint endpoint, ServiceContext context) @safe
  *
  * Params:
  *      endpoint = Endpoint we're getting an API token for
+ *      context = Global service context
  * Returns: True if we retreived a usable API token
  */
-bool obtainAvalancheAPIToken(ref AvalancheEndpoint endpoint, ServiceContext context) @safe
+static bool obtainAvalancheAPIToken(ref AvalancheEndpoint endpoint, ServiceContext context) @safe
 {
     auto api = new RestInterfaceClient!ServiceEnrolmentAPI(endpoint.hostAddress);
     api.requestFilter = (req) {
@@ -138,4 +128,27 @@ bool obtainAvalancheAPIToken(ref AvalancheEndpoint endpoint, ServiceContext cont
     immutable err = context.appDB.update((scope tx) => endpoint.save(tx));
     enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
     return !endpoint.apiToken.empty;
+}
+
+/**
+ * Ascertain the builder usability
+ *
+ * If we have an unexpired issue token, we'll consider this as
+ * usable and proceed. Otherwise, attempt various forms of token
+ * refresh.
+ *
+ * If token refresh fails, the endpoint is unusable. At that point
+ * the job needs to be failed and rescheduled, while marking the
+ * builder as down.
+ *
+ * The builder will need to send a heartbeat event again to be marked
+ * reachable once more.
+ */
+bool builderUsable(ref AvalancheEndpoint endpoint, ServiceContext context) @safe
+{
+    if (builderAPITokenUsable(endpoint, context))
+    {
+        return true;
+    }
+    return obtainAvalancheAPIToken(endpoint, context);
 }
