@@ -245,6 +245,8 @@ public final class BuildQueue
         orderedQueue = null;
         dag.breakCycles();
         dag.topologicalSort((d) { orderedQueue ~= mappedEntries[d]; });
+
+        logWarn(format!"Current build queue: %s"(orderedQueue.map!((o) => o.task)));
     }
 
 private:
