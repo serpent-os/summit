@@ -1,26 +1,27 @@
-nav.navbar.navbar-expand-lg.navbar-light
-    div.container-lg
-        div.collapse.navbar-collapse(id="primaryNavigation")
-            form
-                div.input-icon
-                    span.input-icon-addon: svg(width="24px", height="24px", stroke-width="2"): use(xlink:href="/static/tabler/tabler-sprite-nostroke.svg#tabler-search")    
-                    input.form-control(type="text", placeholder="Search…", disabled="true", aria-label="Search the dashboard")    
+div
+    nav.navbar.navbar-expand-lg.navbar-light
+        div.container-lg
+            div.collapse.navbar-collapse(id="primaryNavigation")
+                form
+                    div.input-icon
+                        span.input-icon-addon: svg(width="24px", height="24px", stroke-width="2"): use(xlink:href="/static/tabler/tabler-sprite-nostroke.svg#tabler-search")    
+                        input.form-control(type="text", placeholder="Search…", disabled="true", aria-label="Search the dashboard")    
 
-        div.d-flex
-            a.px-4.nav-link#themeSwitcher(href="#")
-                svg#themeSwitcherIcon(width="16px", height="16px")
-                    use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-moon")
+            div.d-flex
+                a.px-4.nav-link#themeSwitcher(href="#")
+                    svg#themeSwitcherIcon(width="16px", height="16px")
+                        use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-moon")
 
-            - string username = req.session ? req.session.get!string("accountName", null) : null;
-            - if (username is null)
-            - {
-                a.nav-link(href="/accounts/login") Login
-            - } else {
-                div.nav-item.dropdown
-                    a.nav-link(href="#", data-bs-toggle="dropdown", aria-expanded="false", aria-label="Open account menu")
-                        svg.mx-2#themeSwitcherIcon(width="16px", height="16px")
-                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-user")
-                        span=username
-                    div.dropdown-menu.dropdown-menu-start.dropdown-menu-arrow
-                        a.dropdown-item(href="/accounts/logout") Logout…
-            - }
+                - string username = req.session ? req.session.get!string("accountName", null) : null;
+                - if (username is null)
+                - {
+                    a.nav-link(href="/accounts/login") Login
+                - } else {
+                    div.nav-item.dropdown
+                        a.nav-link(href="#", data-bs-toggle="dropdown", aria-expanded="false", aria-label="Open account menu")
+                            svg.mx-2#themeSwitcherIcon(width="16px", height="16px")
+                                use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-user")
+                            span=username
+                        div.dropdown-menu.dropdown-menu-start.dropdown-menu-arrow
+                            a.dropdown-item(href="/accounts/logout") Logout…
+                - }
