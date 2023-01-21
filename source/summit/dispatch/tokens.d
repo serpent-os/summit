@@ -42,7 +42,7 @@ static bool tokenWithinRange(string encodedAPIToken, ulong tolerableDiff) @safe
 }
 
 /**
- * Obtain an API token from an Avalanche instance.
+ * Obtain an API token from an endpoint instance.
  *
  * Note, if we're suffering clock desync issues and our bearer token is invalid,
  * we may end up marking an endpoint unreachable to keep the implementation
@@ -54,7 +54,7 @@ static bool tokenWithinRange(string encodedAPIToken, ulong tolerableDiff) @safe
  *      context = Global service context
  * Returns: True if we retreived a usable API token
  */
-static bool obtainAvalancheAPIToken(E)(ref E endpoint, ServiceContext context) @safe
+static bool obtainAPIToken(E)(ref E endpoint, ServiceContext context) @safe
 {
     auto api = new RestInterfaceClient!ServiceEnrolmentAPI(endpoint.hostAddress);
     api.requestFilter = (req) {
@@ -124,7 +124,7 @@ static bool obtainAvalancheAPIToken(E)(ref E endpoint, ServiceContext context) @
 }
 
 /**
- * Ascertain the builder usability
+ * Ascertain the endpoint usability
  *
  * If we have an unexpired issue token, we'll consider this as
  * usable and proceed. Otherwise, attempt various forms of token
@@ -134,10 +134,16 @@ static bool obtainAvalancheAPIToken(E)(ref E endpoint, ServiceContext context) @
  * the job needs to be failed and rescheduled, while marking the
  * builder as down.
  *
- * The builder will need to send a heartbeat event again to be marked
+ * The endpoint will need to send a heartbeat event again to be marked
  * reachable once more.
+ *
+ * Params:
+ *      E = Endpoit type
+ *      endpoint = valid endpoint
+ *      context = global shared context
+ * Returns: True if the endpoint is usable (may be forced to be)
  */
-bool builderUsable(ref AvalancheEndpoint endpoint, ServiceContext context) @safe
+bool endpointUsable(E)(ref E endpoint, ServiceContext context) @safe
 {
     immutable static validity = 15 * 60;
 
@@ -148,7 +154,7 @@ bool builderUsable(ref AvalancheEndpoint endpoint, ServiceContext context) @safe
     }
     if (!tokenWithinRange(endpoint.apiToken, validity))
     {
-        return obtainAvalancheAPIToken(endpoint, context);
+        return obtainAPIToken(endpoint, context);
     }
     return true;
 }
