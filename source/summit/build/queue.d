@@ -21,14 +21,14 @@ import moss.deps.dependency;
 import moss.deps.digraph;
 import moss.deps.registry;
 import moss.service.context;
-import std.algorithm : canFind, each, filter, map;
+import std.algorithm : canFind, each, filter, find, map;
+import std.algorithm : any;
 import std.range : chain, empty, front;
 import summit.models.profile;
 import summit.models.project;
 import summit.models.repository;
 import summit.projects;
 import vibe.d;
-import std.algorithm : any;
 
 /**
  * The BuildQueue contains the logic required to form queues of
@@ -118,12 +118,17 @@ public final class BuildQueue
         });
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
-        /* If its completed or failed, remove from the execution queue now */
-        if (any!((a) => a == status)([
-                BuildTaskStatus.Failed, BuildTaskStatus.Completed
-            ]))
+        /* Resolve blocking situation */
+        if (status == BuildTaskStatus.Failed)
         {
             queue.remove(taskID);
+            addBlockers(taskID);
+            recomputeQueue();
+        }
+        else if (status == BuildTaskStatus.Completed)
+        {
+            queue.remove(taskID);
+            removeBlockers(taskID);
             recomputeQueue();
         }
     }
@@ -387,6 +392,71 @@ private:
         auto mRepo = mProject.bySlug(repo.name);
         auto entry = mRepo.db.byID(task.pkgID);
         return JobMapper(entry, task, [profile.volatileIndexURI], profile.volatileIndexURI);
+    }
+
+    /**
+     * Find all tasks depending on this one, mark them as blocked.
+     */
+    void addBlockers(BuildTaskID taskID) @safe
+    {
+        auto currentJob = orderedQueue.find!((o) => o.task.id == taskID).front;
+        immutable blockID = blockerID(currentJob);
+
+        /* Find all jobs that depend on us */
+        foreach (ref job; orderedQueue.filter!((j) => j.task.id != taskID
+                && j.deps.canFind!((d) => d == taskID)))
+        {
+            job.task.blockedBy ~= blockID;
+            job.task.tsUpdated = Clock.currTime(UTC()).toUnixTime();
+            job.task.status = BuildTaskStatus.Blocked;
+            BuildTask model = job.task;
+            immutable err = context.appDB.update((scope tx) => model.save(tx));
+            enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+
+            logError(format!"[build] %s is now blocked by %s"(job.task.id, currentJob.task.id));
+            queue[job.task.id] = model;
+        }
+    }
+
+    /**
+     * Find all tasks depending on this one, and try to unblock them
+     */
+    void removeBlockers(BuildTaskID taskID) @safe
+    {
+        import std.algorithm : remove;
+
+        auto currentJob = orderedQueue.find!((o) => o.task.id == taskID).front;
+        immutable blockID = blockerID(currentJob);
+
+        /* Find all pool jobs that depended on us */
+        foreach (ref task; queue.byValue.filter!((i) => i.status == BuildTaskStatus.Blocked
+                && i.blockedBy.canFind!((i) => blockID)))
+        {
+            task.blockedBy = task.blockedBy.remove!((b) => b == blockID);
+            task.status = task.blockedBy.empty ? BuildTaskStatus.New : BuildTaskStatus.Blocked;
+            task.tsUpdated = Clock.currTime(UTC()).toUnixTime();
+
+            immutable err = context.appDB.update((scope tx) => task.save(tx));
+            enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+
+            if (task.status == BuildTaskStatus.New)
+            {
+                logInfo(format!"[build] Task %s now unblocked"(task.id));
+            }
+            else
+            {
+                logInfo(format!"[build] Task %s still blocked by %s"(task.id, task.blockedBy));
+            }
+        }
+    }
+
+    /**
+     * Retrieve the unique blocker ID for a build
+     */
+    static auto blockerID(ref JobMapper job) @safe
+    {
+        return format!"%s_%s@%s/%s"(job.entry.sourceID, job.task.architecture,
+                job.task.projectID, job.task.repoID);
     }
 
     ServiceContext context;

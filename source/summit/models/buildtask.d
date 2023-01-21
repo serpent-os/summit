@@ -147,7 +147,7 @@ public @Model struct BuildTask
     /**
      * Blocked by:
      *
-     *  sourceID_arch@project/repo
+     *  sourceID_arch@projectID/repoID
      */
     string[] blockedBy;
 }
