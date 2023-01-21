@@ -49,18 +49,19 @@ static bool tokenWithinRange(string encodedAPIToken, ulong tolerableDiff) @safe
  * simpler.
  *
  * Params:
+ *      E = Some Endpoint type in moss-service
  *      endpoint = Endpoint we're getting an API token for
  *      context = Global service context
  * Returns: True if we retreived a usable API token
  */
-static bool obtainAvalancheAPIToken(ref AvalancheEndpoint endpoint, ServiceContext context) @safe
+static bool obtainAvalancheAPIToken(E)(ref E endpoint, ServiceContext context) @safe
 {
     auto api = new RestInterfaceClient!ServiceEnrolmentAPI(endpoint.hostAddress);
     api.requestFilter = (req) {
         req.headers["Authorization"] = format!"Bearer %s"(endpoint.bearerToken);
     };
 
-    logInfo(format!"[apitoken] Refreshing Avalanche instance '%s'"(endpoint.id));
+    logInfo(format!"[apitoken] Refreshing %s instance '%s'"(E.stringof, endpoint.id));
     string assignedToken;
     try
     {
@@ -68,8 +69,8 @@ static bool obtainAvalancheAPIToken(ref AvalancheEndpoint endpoint, ServiceConte
     }
     catch (Exception ex)
     {
-        logError(format!"[apitoken] Failed to refresh Avalanche instance '%s': %s"(endpoint.id,
-                ex.message));
+        logError(format!"[apitoken] Failed to refresh %s '%s': %s"(E.stringof,
+                endpoint.id, ex.message));
     }
 
     if (assignedToken.empty)
@@ -89,14 +90,14 @@ static bool obtainAvalancheAPIToken(ref AvalancheEndpoint endpoint, ServiceConte
             }
             catch (Exception ex)
             {
-                logError(format!"[apitoken] Illegal signature from Avalanche instance '%s': %s"(endpoint.id,
-                    ex.message));
+                logError(format!"[apitoken] Illegal signature from %s instance '%s': %s"(E.stringof,
+                    endpoint.id, ex.message));
                 endpoint.statusText = "Illegal signature";
                 return false;
             }
         }, (TokenError err) {
-            logError(format!"[apitoken] Invalid token issued by Avalanche instance '%s': %s"(endpoint.id,
-                err.message));
+            logError(format!"[apitoken] Invalid token issued by %s instance '%s': %s"(E.stringof,
+                endpoint.id, err.message));
             endpoint.statusText = "Invalid token";
             return false;
         });
@@ -111,7 +112,7 @@ static bool obtainAvalancheAPIToken(ref AvalancheEndpoint endpoint, ServiceConte
         {
             endpoint.status = EndpointStatus.Operational;
             endpoint.apiToken = assignedToken;
-            logInfo(format!"[apitoken] New API token issued by Avalanche instance '%s'"(
+            logInfo(format!"[apitoken] New API token issued by %s instance '%s'"(E.stringof,
                     endpoint.id));
         }
     }
