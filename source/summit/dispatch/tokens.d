@@ -194,7 +194,7 @@ static bool obtainAPIToken(E)(ref E endpoint, ServiceContext context) @safe
  * reachable once more.
  *
  * Params:
- *      E = Endpoit type
+ *      E = Endpoint type
  *      endpoint = valid endpoint
  *      context = global shared context
  * Returns: True if the endpoint is usable (may be forced to be)
