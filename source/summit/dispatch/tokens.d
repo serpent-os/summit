@@ -34,7 +34,7 @@ static bool tokenWithinRange(string encodedAPIToken, ulong tolerableDiff) @safe
     auto timeNow = Clock.currTime(UTC()).toUnixTime;
     if (encodedAPIToken.empty)
     {
-        return true;
+        return false;
     }
 
     return Token.decode(encodedAPIToken)
