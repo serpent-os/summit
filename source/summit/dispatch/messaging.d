@@ -18,6 +18,7 @@ module summit.dispatch.messaging;
 public import taggedalgebraic.taggedalgebraic;
 import std.datetime : Duration;
 import vibe.d;
+public import summit.models.buildtask : BuildTaskID;
 
 /** 
  * A TimerInterruptEvent is sent by a core timer.
@@ -46,6 +47,24 @@ public struct AllocateBuildsEvent
 }
 
 /**
+ * A build managed to succeed - reindexing required
+ */
+public struct BuildSucceededEvent
+{
+    BuildTaskID taskID;
+    string builderID;
+}
+
+/**
+ * A build failed - no reindexing necessary
+ */
+public struct BuildFailedEvent
+{
+    BuildTaskID taskID;
+    string builderID;
+}
+
+/**
  * Define the types supported by our algebraic event type
  */
 public union DispatchEventTypes
@@ -59,6 +78,16 @@ public union DispatchEventTypes
      * Time to allocate some builds
      */
     AllocateBuildsEvent allocateBuilds;
+
+    /**
+     * Build failure (Avalanche)
+     */
+    BuildFailedEvent buildFailed;
+
+    /**
+     * Build succeeded (Avalanche)
+     */
+    BuildSucceededEvent buildSucceeded;
 }
 
 /** 

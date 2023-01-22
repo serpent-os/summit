@@ -101,6 +101,12 @@ private:
             case DispatchEvent.Kind.allocateBuilds:
                 handleBuildAllocations(cast(AllocateBuildsEvent) event);
                 break;
+            case DispatchEvent.Kind.buildFailed:
+                handleBuildFailure(cast(BuildFailedEvent) event);
+                break;
+            case DispatchEvent.Kind.buildSucceeded:
+                handleBuildSuccess(cast(BuildSucceededEvent) event);
+                break;
             case DispatchEvent.Kind.timer:
                 handleTimer(cast(TimerInterruptEvent) event);
                 break;
@@ -291,6 +297,27 @@ private:
         auto err2 = context.appDB.update((scope tx) => endpoint.save(tx));
         enforceHTTP(err2.isNull, HTTPStatus.internalServerError, err2.message);
         buildQueue.updateTask(buildDef.buildID, newBuildStatus);
+    }
+
+    /** 
+     * Avalanche reports a build has failed - deal with it.
+     *
+     * Params:
+     *   event = build event
+     */
+    void handleBuildFailure(BuildFailedEvent event) @safe
+    {
+
+    }
+
+    /** 
+     * Avalanche reports a build has succeeded - deal with it
+     * Params:
+     *   event = build evnt
+     */
+    void handleBuildSuccess(BuildSucceededEvent event) @safe
+    {
+
     }
 
     DispatchChannel controlChannel;
