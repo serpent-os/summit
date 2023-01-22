@@ -38,7 +38,7 @@ static bool tokenWithinRange(string encodedAPIToken, ulong tolerableDiff) @safe
     }
 
     return Token.decode(encodedAPIToken)
-        .match!((Token tk) => timeNow + tolerableDiff >= tk.payload.exp, (_) => false);
+        .match!((Token tk) => timeNow + tolerableDiff <= tk.payload.exp, (_) => false);
 }
 
 /**
