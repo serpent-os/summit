@@ -199,7 +199,7 @@ static bool obtainAPIToken(E)(ref E endpoint, ServiceContext context) @safe
  *      context = global shared context
  * Returns: True if the endpoint is usable (may be forced to be)
  */
-bool endpointUsable(E)(ref E endpoint, ServiceContext context) @safe
+bool ensureEndpointUsable(E)(ref E endpoint, ServiceContext context) @safe
 {
     immutable static validity = 15 * 60;
 

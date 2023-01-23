@@ -182,7 +182,7 @@ private:
                 testBuilders.popFront();
 
                 /* Baad builder */
-                if (!builder.endpointUsable(context))
+                if (!builder.ensureEndpointUsable(context))
                 {
                     import std.algorithm : remove;
 
