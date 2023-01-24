@@ -244,12 +244,17 @@ public final class BuildQueue
                         (p) => p.target == dep.target && dep.type == p.type));
                 metDeps.each!((e) => dag.addEdge(currentItem.task.id, e.task.id));
             }
-            currentItem.deps = dag.edges(currentItem.task.id);
         }
 
         orderedQueue = null;
         dag.breakCycles();
         dag.topologicalSort((d) { orderedQueue ~= mappedEntries[d]; });
+
+        /* Now install edges post cycle break */
+        foreach (ref item; orderedQueue)
+        {
+            item.deps = dag.edges(item.task.id);
+        }
 
         logWarn(format!"Current build queue: %s"(orderedQueue.map!((o) => o.task)));
     }
