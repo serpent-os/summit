@@ -198,6 +198,8 @@ private:
             }
             while (true);
             builders = availableBuilders();
+            availableJobs = buildQueue.availableJobs;
+
         }
     }
 
