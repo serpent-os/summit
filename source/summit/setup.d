@@ -16,8 +16,8 @@
 module summit.setup;
 
 import moss.service.context;
+import moss.service.server;
 import summit.models;
-import vibe.core.channel;
 import vibe.d;
 import vibe.web.validation;
 
@@ -25,19 +25,17 @@ import vibe.web.validation;
  * SetupApplication is only constructed when we actually
  * need first run configuration
  */
-public final class SetupApplication
+public final class SetupApplication : Application
 {
-    @disable this();
-
-    /**
-     * Construct a new SetupApplication
-     */
-    this(ServiceContext context, Channel!(bool, 1) notifier) @safe
+    override void initialize(ServiceContext context) @safe
     {
         this.context = context;
-        this.notifier = notifier;
         _router = new URLRouter();
         _router.registerWebInterface(this);
+    }
+
+    override void close() @safe
+    {
     }
 
     /**
@@ -99,14 +97,14 @@ public final class SetupApplication
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
         /* Done! */
-        notifier.put(true);
+        completed.emit;
         redirect("/");
     }
 
     /**
      * Returns: the underlying URLRouter
      */
-    @noRoute pragma(inline, true) pure @property URLRouter router() @safe @nogc nothrow
+    @noRoute override pure @property URLRouter router() @safe @nogc nothrow
     {
         return _router;
     }
@@ -114,6 +112,5 @@ public final class SetupApplication
 private:
 
     URLRouter _router;
-    Channel!(bool, 1) notifier;
     ServiceContext context;
 }

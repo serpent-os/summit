@@ -28,22 +28,15 @@ import summit.projects;
 import summit.web;
 import vibe.d;
 import summit.dispatch;
+import moss.service.server;
 
 /**
  * SummitApplication provides the main dashboard application
  * seen by users after the setup app is complete.
  */
-public final class SummitApplication
+public final class SummitApplication : Application
 {
-    @disable this();
-
-    /**
-     * Construct new App 
-     *
-     * Params:
-     *      context = application context
-     */
-    this(ServiceContext context) @safe
+    override void initialize(ServiceContext context) @safe
     {
         this.context = context;
         this.projectManager = new ProjectManager(context);
@@ -65,7 +58,7 @@ public final class SummitApplication
     /**
      * Returns: mapped router
      */
-    pragma(inline, true) pure @property URLRouter router() @safe @nogc nothrow
+    @noRoute override pure @property URLRouter router() @safe @nogc nothrow
     {
         return _router;
     }
@@ -73,7 +66,7 @@ public final class SummitApplication
     /**
      * Close down the app/instance
      */
-    void close() @safe
+    override void close() @safe
     {
         projectManager.close();
         worker.stop();
