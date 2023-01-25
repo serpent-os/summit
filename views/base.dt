@@ -1,17 +1,15 @@
 extends root
 
 block body
-    block banner
-    main
-        div.container-fluid.py-0.px-0.my-0.mx-0
-            include sidebar_navigation
-            div.container-fluid.py-0.px-0.mx-0.my-0
-                include header_navigation
-                div.container.py-4
-                    block content
-                        div.container
-                            h1 undefined content
-    include footer
+    div.page
+        include sidebar_navigation
+        include header_navigation
+        div.page-wrapper
+            div.container-xl
+                block content
+                    div.container
+                        h1 undefined content
+            include footer
 
     block dialogs
         // Add dialogs in this here
