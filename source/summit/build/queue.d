@@ -65,11 +65,11 @@ public final class BuildQueue
     }
 
     /** 
-     * Returns: All enqueued jobs with numDeps == 0 and in build order.
+     * Returns: All enqueued, buildable jobs with numDeps == 0 and in build order.
      */
     auto availableJobs() @safe @nogc const nothrow
     {
-        return orderedQueue.filter!((j) => j.deps.empty);
+        return orderedQueue.filter!((j) => j.deps.empty && j.task.status == BuildTaskStatus.New);
     }
 
     /**
