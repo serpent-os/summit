@@ -47,7 +47,7 @@ public final class SummitApplication : Application
 
         _router = new URLRouter();
         web = new SummitWeb(context, projectManager, router);
-        service = new RESTService(context, projectManager, router);
+        service = new RESTService(context, projectManager, worker.channel, router);
 
         loadFixtures(context, projectManager);
 

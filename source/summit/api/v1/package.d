@@ -27,6 +27,7 @@ import summit.api.v1.recipes;
 import summit.api.v1.reporting;
 import summit.api.v1.repositories;
 import summit.api.v1.tasks;
+import summit.dispatch.worker : DispatchChannel;
 import summit.projects;
 
 /**
@@ -42,9 +43,11 @@ public final class RESTService : SummitAPIv1
      * Params:
      *      context = global context
      *      projectManager = Project management
+     *      channel = Dispatch workers bus
      *      router = nested router
      */
-    this(ServiceContext context, ProjectManager projectManager, URLRouter router) @safe
+    this(ServiceContext context, ProjectManager projectManager,
+            DispatchChannel channel, URLRouter router) @safe
     {
         router.registerRestInterface(this);
         router.registerRestInterface(new BuildersService(context));
@@ -52,7 +55,7 @@ public final class RESTService : SummitAPIv1
         router.registerRestInterface(new EndpointsService(context));
         router.registerRestInterface(new RepositoriesService(context, projectManager));
         router.registerRestInterface(new RecipesService(context, projectManager));
-        router.registerRestInterface(new ReportingService(context));
+        router.registerRestInterface(new ReportingService(context, channel));
         router.registerRestInterface(new PairingService(context));
         router.registerRestInterface(new TasksService(context));
     }

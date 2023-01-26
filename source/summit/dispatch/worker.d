@@ -81,6 +81,14 @@ public final class DispatchWorker
         systemTimer.stop();
     }
 
+    /** 
+     * Returns: Control Channel
+     */
+    pure @property auto channel() @safe @nogc nothrow
+    {
+        return controlChannel;
+    }
+
 private:
 
     /** 
@@ -309,7 +317,24 @@ private:
      */
     void handleBuildFailure(BuildFailedEvent event) @safe
     {
+        AvalancheEndpoint endpoint;
 
+        /* First thing, make the builder available again */
+        immutable err = context.appDB.update((scope tx) @safe {
+            auto err = endpoint.load(tx, event.builderID);
+            if (!err.isNull)
+            {
+                return err;
+            }
+            endpoint.workStatus = WorkStatus.Idle;
+            logDiagnostic(format!"Avalanche builder now idle: %s"(endpoint.id));
+            return endpoint.save(tx);
+        });
+
+        logError(format!"Avalanche instance '%s' reports task failure for #%s"(endpoint.id,
+                event.taskID));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+        buildQueue.updateTask(event.taskID, BuildTaskStatus.Failed);
     }
 
     /** 

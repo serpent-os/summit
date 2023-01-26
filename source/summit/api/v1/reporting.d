@@ -18,6 +18,8 @@ import moss.service.interfaces.summit;
 import moss.service.context;
 import summit.models.buildtask : BuildTaskID;
 import vibe.d;
+import summit.dispatch.worker : DispatchChannel;
+import summit.dispatch.messaging;
 
 /** 
  * The reporting service is communicated with by Avalanche + Vessel
@@ -34,17 +36,22 @@ public final class ReportingService : SummitAPI
      *
      * Params:
      *   context = global shared context
+     *   channel = Control channel to integrate with DispatchWorker
      */
-    this(ServiceContext context) @safe
+    this(ServiceContext context, DispatchChannel channel) @safe
     {
         this.context = context;
+        this.channel = channel;
     }
 
     override void buildFailed(BuildTaskID taskID, NullableToken token) @safe
     {
         enforceHTTP(!token.isNull, HTTPStatus.forbidden);
         enforceHTTP(token.payload.aud == "avalanche", HTTPStatus.forbidden);
-        logError(format!"Avalanche reports the build has failed: #%s"(taskID));
+
+        /* Dispatch to the worker */
+        DispatchEvent event = BuildFailedEvent(taskID, token.payload.sub);
+        channel.put(event);
     }
 
     override void buildSucceeded(BuildTaskID taskID, NullableToken token) @safe
@@ -52,9 +59,14 @@ public final class ReportingService : SummitAPI
         enforceHTTP(!token.isNull, HTTPStatus.forbidden);
         enforceHTTP(token.payload.aud == "avalanche", HTTPStatus.forbidden);
         logInfo(format!"Avalanche reports the build has succeeded: #%s"(taskID));
+
+        /* Dispatch to the worker */
+        DispatchEvent event = BuildSucceededEvent(taskID, token.payload.sub);
+        channel.put(event);
     }
 
 private:
 
     ServiceContext context;
+    DispatchChannel channel;
 }
