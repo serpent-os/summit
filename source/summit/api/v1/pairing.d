@@ -21,6 +21,7 @@ import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import moss.service.context;
 import moss.service.models;
+import moss.service.tokens;
 import vibe.d;
 
 /**
@@ -45,9 +46,27 @@ public final class PairingService : ServiceEnrolmentAPI
         throw new HTTPStatusException(HTTPStatus.notImplemented, "Summit does not support .enrol()");
     }
 
+    /** 
+     * Handle client request to re-issue an API token
+     *
+     * Client auth is already handled via moss-service via AppAuthenticatorContext
+     *
+     * Params:
+     *   token = The client token
+     * Returns: A new API token if possible
+     */
     override string refreshToken(NullableToken token) @safe
     {
-        return "";
+        enforceHTTP(!token.isNull, HTTPStatus.forbidden);
+        TokenPayload payload;
+        payload.iss = "summit";
+        payload.sub = token.payload.sub;
+        payload.aud = token.payload.aud;
+        payload.admin = token.payload.admin;
+        payload.uid = token.payload.uid;
+        payload.act = token.payload.act;
+        Token refreshedToken = context.tokenManager.createAPIToken(payload);
+        return context.tokenManager.signToken(refreshedToken).tryMatch!((string s) => s);
     }
 
     override string refreshIssueToken(NullableToken token) @safe
