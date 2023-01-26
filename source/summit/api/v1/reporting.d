@@ -44,12 +44,14 @@ public final class ReportingService : SummitAPI
     {
         enforceHTTP(!token.isNull, HTTPStatus.forbidden);
         enforceHTTP(token.payload.aud == "avalanche", HTTPStatus.forbidden);
+        logError(format!"Avalanche reports the build has failed: #%s"(taskID));
     }
 
     override void buildSucceeded(BuildTaskID taskID, NullableToken token) @safe
     {
         enforceHTTP(!token.isNull, HTTPStatus.forbidden);
         enforceHTTP(token.payload.aud == "avalanche", HTTPStatus.forbidden);
+        logInfo(format!"Avalanche reports the build has succeeded: #%s"(taskID));
     }
 
 private:
