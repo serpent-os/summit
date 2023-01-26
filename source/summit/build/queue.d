@@ -114,6 +114,16 @@ public final class BuildQueue
 
             /* Save the model. */
             auto e = task.save(tx);
+
+            /* Update live model */
+            foreach (ref entry; orderedQueue)
+            {
+                if (entry.task.id == taskID)
+                {
+                    entry.task = task;
+                }
+            }
+            queue[taskID] = task;
             return e;
         });
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
