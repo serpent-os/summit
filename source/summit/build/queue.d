@@ -114,15 +114,6 @@ public final class BuildQueue
 
             /* Save the model. */
             auto e = task.save(tx);
-
-            /* Update live model */
-            foreach (ref entry; orderedQueue)
-            {
-                if (entry.task.id == taskID)
-                {
-                    entry.task = task;
-                }
-            }
             queue[taskID] = task;
             return e;
         });
@@ -133,14 +124,15 @@ public final class BuildQueue
         {
             queue.remove(taskID);
             addBlockers(taskID);
-            recomputeQueue();
         }
         else if (status == BuildTaskStatus.Completed)
         {
             queue.remove(taskID);
             removeBlockers(taskID);
-            recomputeQueue();
         }
+
+        /* Rebuild queue due to some status change */
+        recomputeQueue();
     }
 
     /**
