@@ -44,7 +44,7 @@ public final class ReportingService : SummitAPI
         this.channel = channel;
     }
 
-    override void buildFailed(BuildTaskID taskID, NullableToken token) @safe
+    override void buildFailed(BuildTaskID taskID, Collectable[] collectables, NullableToken token) @safe
     {
         enforceHTTP(!token.isNull, HTTPStatus.forbidden);
         enforceHTTP(token.payload.aud == "avalanche", HTTPStatus.forbidden);
@@ -54,7 +54,7 @@ public final class ReportingService : SummitAPI
         channel.put(event);
     }
 
-    override void buildSucceeded(BuildTaskID taskID, NullableToken token) @safe
+    override void buildSucceeded(BuildTaskID taskID, Collectable[] collectables, NullableToken token) @safe
     {
         enforceHTTP(!token.isNull, HTTPStatus.forbidden);
         enforceHTTP(token.payload.aud == "avalanche", HTTPStatus.forbidden);
@@ -63,6 +63,18 @@ public final class ReportingService : SummitAPI
         /* Dispatch to the worker */
         DispatchEvent event = BuildSucceededEvent(taskID, token.payload.sub);
         channel.put(event);
+    }
+
+    override void importFailed(BuildTaskID taskID, NullableToken token) @safe
+    {
+        throw new HTTPStatusException(HTTPStatus.notImplemented,
+                "importFailed: Not yet implemented");
+    }
+
+    override void importSucceeded(BuildTaskID taskID, NullableToken token) @safe
+    {
+        throw new HTTPStatusException(HTTPStatus.notImplemented,
+                "importSucceeded: Not yet implemented");
     }
 
 private:
