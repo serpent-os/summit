@@ -344,7 +344,7 @@ private:
      */
     void handleBuildSuccess(BuildSucceededEvent event) @safe
     {
-
+        logWarn("SUCCESS BUILD: %s", event);
     }
 
     DispatchChannel controlChannel;
