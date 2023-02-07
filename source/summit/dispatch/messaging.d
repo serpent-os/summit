@@ -19,6 +19,7 @@ public import taggedalgebraic.taggedalgebraic;
 import std.datetime : Duration;
 import vibe.d;
 public import summit.models.buildtask : BuildTaskID;
+public import moss.service.interfaces : Collectable;
 
 /** 
  * A TimerInterruptEvent is sent by a core timer.
@@ -53,6 +54,7 @@ public struct BuildSucceededEvent
 {
     BuildTaskID taskID;
     string builderID;
+    Collectable[] collectables;
 }
 
 /**
@@ -62,6 +64,7 @@ public struct BuildFailedEvent
 {
     BuildTaskID taskID;
     string builderID;
+    Collectable[] collectables;
 }
 
 /**

@@ -50,7 +50,7 @@ public final class ReportingService : SummitAPI
         enforceHTTP(token.payload.aud == "avalanche", HTTPStatus.forbidden);
 
         /* Dispatch to the worker */
-        DispatchEvent event = BuildFailedEvent(taskID, token.payload.sub);
+        DispatchEvent event = BuildFailedEvent(taskID, token.payload.sub, collectables);
         channel.put(event);
     }
 
@@ -61,7 +61,7 @@ public final class ReportingService : SummitAPI
         logInfo(format!"Avalanche reports the build has succeeded: #%s"(taskID));
 
         /* Dispatch to the worker */
-        DispatchEvent event = BuildSucceededEvent(taskID, token.payload.sub);
+        DispatchEvent event = BuildSucceededEvent(taskID, token.payload.sub, collectables);
         channel.put(event);
     }
 
