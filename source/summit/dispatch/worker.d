@@ -344,7 +344,26 @@ private:
      */
     void handleBuildSuccess(BuildSucceededEvent event) @safe
     {
-        logWarn("SUCCESS BUILD: %s", event);
+        AvalancheEndpoint endpoint;
+
+        /* First thing, make the builder available again */
+        immutable err = context.appDB.update((scope tx) @safe {
+            auto err = endpoint.load(tx, event.builderID);
+            if (!err.isNull)
+            {
+                return err;
+            }
+            endpoint.workStatus = WorkStatus.Idle;
+            logDiagnostic(format!"Avalanche builder now idle: %s"(endpoint.id));
+            return endpoint.save(tx);
+        });
+
+        logInfo(format!"Avalanche instanxce '%s' reports task succeess for #%s (%s)"(endpoint.id,
+                event.taskID, event.collectables));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+
+        /* TOOD: Mark as publishing */
+        buildQueue.updateTask(event.taskID, BuildTaskStatus.Completed);
     }
 
     DispatchChannel controlChannel;
