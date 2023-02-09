@@ -340,7 +340,7 @@ private:
     /** 
      * Avalanche reports a build has succeeded - deal with it
      * Params:
-     *   event = build evnt
+     *   event = build event
      */
     void handleBuildSuccess(BuildSucceededEvent event) @safe
     {
