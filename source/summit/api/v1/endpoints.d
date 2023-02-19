@@ -54,7 +54,7 @@ public final class EndpointsService : EndpointsAPIv1
      * Params:
      *      request = Creation request
      */
-    override void create(AttachVessel request) @safe
+    override void create(AttachEndpoint request) @safe
     {
         throw new HTTPStatusException(HTTPStatus.notImplemented, "DERP");
     }

@@ -171,9 +171,9 @@ public struct CreateRepository
 }
 
 /**
- * Request used to attach an Avalanche instance
+ * Request used to attach an endpoint instance
  */
-public struct AttachAvalanche
+public struct AttachEndpoint
 {
     /**
      * Unique identifier within Summit
@@ -207,32 +207,6 @@ public struct AttachAvalanche
 }
 
 /**
- * Request to attach vessel instance
- */
-public struct AttachVessel
-{
-    /**
-     * Unique identifier within summit
-     */
-    string id;
-
-    /**
-     * Where do we find it
-     */
-    string instanceURI;
-
-    /**
-     * Public key for the instance (verification)
-     */
-    string pubkey;
-
-    /**
-     * Useful description for the vessel endpoint
-     */
-    string summary;
-}
-
-/**
  * Root API node
  */
 @path("/api/v1")
@@ -258,7 +232,7 @@ public interface BuildersAPIv1
     /**
      * Create a new builder attachment
      */
-    @path("create") @method(HTTPMethod.POST) void create(AttachAvalanche request) @safe;
+    @path("create") @method(HTTPMethod.POST) void create(AttachEndpoint request) @safe;
 }
 
 /**
@@ -323,7 +297,7 @@ public interface EndpointsAPIv1
     /**
      * Create an endpoint attachment
      */
-    @path("create") @method(HTTPMethod.POST) void create(AttachVessel request) @safe;
+    @path("create") @method(HTTPMethod.POST) void create(AttachEndpoint request) @safe;
 }
 
 /**

@@ -78,7 +78,7 @@ public final class BuildersService : BuildersAPIv1
      *      request = Incoming request
      * Throws: HTTPStatusException on credential failure
      */
-    override void create(AttachAvalanche request) @safe
+    override void create(AttachEndpoint request) @safe
     {
         logDiagnostic(format!"Incoming avalanche attachment: %s"(request));
 
