@@ -15,18 +15,20 @@
 module summit.api.v1.builders;
 
 public import summit.api.v1.interfaces;
+import moss.core.errors;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import moss.service.context;
 import moss.service.interfaces;
 import moss.service.models.bearertoken;
 import moss.service.models.endpoints;
+import moss.service.pairing;
 import moss.service.tokens;
 import std.algorithm : map;
 import std.array : array;
+import std.sumtype;
 import summit.models.settings;
 import vibe.d;
-import moss.service.pairing;
 
 /**
  * Implements the BuildersService
@@ -78,85 +80,33 @@ public final class BuildersService : BuildersAPIv1
      */
     override void create(AttachAvalanche request) @safe
     {
-        logDiagnostic(format!"Incoming attachment: %s"(request));
+        logDiagnostic(format!"Incoming avalanche attachment: %s"(request));
 
-        /* OK - first up we need a service account */
-        immutable serviceUser = format!"%s%s"(serviceAccountPrefix, request.id);
-        Account serviceAccount;
-        context.accountManager.registerService(serviceUser, request.adminEmail).match!((Account u) {
-            serviceAccount = u;
-        }, (DatabaseError e) {
-            throw new HTTPStatusException(HTTPStatus.forbidden, e.message);
-        });
-
-        logInfo(format!"Constructed new service account '%s': %s"(serviceAccount.id, serviceUser));
-
-        /**
-         * Construct the bearer token
-         * NOTE:
-         *  aud = avalanche ALWAYS
-         *  sub = `request.id` - so we can map to AvalancheEndpoint in the DB
-         * This varies from user accounts where `sub` = `username`
-         */
-        string encodedToken;
-        TokenPayload payload;
-        payload.iss = "summit";
-        payload.sub = request.id;
-        payload.uid = serviceAccount.id;
-        payload.act = serviceAccount.type;
-        payload.aud = "avalanche";
-        Token bearer = context.tokenManager.createBearerToken(payload);
-        context.tokenManager.signToken(bearer).match!((TokenError err) {
-            throw new HTTPStatusException(HTTPStatus.internalServerError, err.message);
-        }, (string s) { encodedToken = s; });
-
-        /* Set the bearer token in the DB now */
-        BearerToken storedToken;
-        storedToken.id = serviceAccount.id;
-        storedToken.rawToken = encodedToken;
-        storedToken.expiryUTC = bearer.payload.exp;
-        immutable bErr = context.accountManager.setBearerToken(serviceAccount, storedToken);
-
-        /* Create the endpoint model */
         AvalancheEndpoint endpoint;
-        endpoint.serviceAccount = serviceAccount.id;
-        endpoint.status = EndpointStatus.AwaitingAcceptance;
-        endpoint.statusText = "Newly added";
         endpoint.adminEmail = request.adminEmail;
         endpoint.adminName = request.adminName;
         endpoint.hostAddress = request.instanceURI;
+        endpoint.id = request.id;
         endpoint.publicKey = request.pubkey;
         endpoint.description = request.summary;
-        endpoint.id = request.id;
-        immutable err = context.appDB.update((scope tx) => endpoint.save(tx));
-        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
-        /* Sort out the enrolment request */
-        const settings = context.appDB.getSettings().tryMatch!((Settings s) => s);
-        ServiceEnrolmentRequest req;
-        req.role = EnrolmentRole.Builder;
-        req.issueToken = encodedToken;
-        req.issuer.publicKey = context.tokenManager.publicKey;
-        req.issuer.role = EnrolmentRole.Hub;
-        req.issuer.url = settings.instanceURI;
-
-        /* This may take some time, timeout, etc, so don't block the response waiting for
-         * something to happen. */
-        runTask({
-            auto api = new RestInterfaceClient!ServiceEnrolmentAPI(endpoint.hostAddress);
-            try
-            {
-                api.enrol(req);
-                endpoint.status = EndpointStatus.AwaitingAcceptance;
-                endpoint.statusText = "Awaiting acceptance";
-            }
-            catch (RestException rx)
-            {
-                endpoint.status = EndpointStatus.Failed;
-                endpoint.statusText = format!"Negotiation failure: %s"(rx.message);
-            }
-            immutable err = context.appDB.update((scope tx) => endpoint.save(tx));
-            enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+        /* Begin by creating an account */
+        pairingManager.createEndpointAccount(endpoint).match!((Account serviceAccount) {
+            /* Assign a bearer token */
+            pairingManager.createBearerToken(endpoint, serviceAccount,
+                "avalanche").match!((BearerToken bearerToken) {
+                /* Send the enrolment */
+                pairingManager.enrolWith(endpoint, bearerToken,
+                EnrolmentRole.Hub, EnrolmentRole.Builder).match!((Success _) {
+                    logInfo(format!"Builder Enrolment sent to %s"(endpoint.hostAddress));
+                }, (Failure f) {
+                    logInfo(format!"Failed to enrol builder '%s': %s"(endpoint.id, f.message));
+                });
+            }, (Failure f) {
+                logError(format!"Failed to create bearer token: %s"(f.message));
+            });
+        }, (DatabaseError err) {
+            logError(format!"Failed to create service account %s"(err.message));
         });
     }
 
