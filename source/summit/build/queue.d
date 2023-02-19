@@ -248,9 +248,18 @@ public final class BuildQueue
             }
         }
 
-        orderedQueue = null;
         dag.breakCycles();
-        dag.topologicalSort((d) { orderedQueue ~= mappedEntries[d]; });
+        JobMapper[] newQueue;
+        try
+        {
+            dag.topologicalSort((d) { newQueue ~= mappedEntries[d]; });
+            orderedQueue = newQueue;
+        }
+        catch (Exception ex)
+        {
+            // TODO: Mark the queue as BROKEN
+            logError(format!"Build queue cannot be computed: %s"(ex.message));
+        }
 
         /* Now install edges post cycle break */
         foreach (ref item; orderedQueue)
@@ -258,7 +267,7 @@ public final class BuildQueue
             item.deps = dag.edges(item.task.id);
         }
 
-        logWarn(format!"Current build queue: %s"(orderedQueue.map!((o) => o.task)));
+        logDiagnostic(format!"Current build queue: %s"(orderedQueue.map!((o) => o.task)));
     }
 
 private:
