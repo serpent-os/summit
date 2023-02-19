@@ -94,8 +94,8 @@ public final class EndpointsService : EndpointsAPIv1
             pairingManager.createBearerToken(endpoint, serviceAccount,
                 "vessel").match!((BearerToken bearerToken) {
                 /* Send the enrolment */
-                pairingManager.enrolWith(endpoint, bearerToken,
-                EnrolmentRole.Hub, EnrolmentRole.Builder).match!((Success _) {
+                pairingManager.enrolWith(endpoint, bearerToken, EnrolmentRole.Hub,
+                EnrolmentRole.RepositoryManager).match!((Success _) {
                     logInfo(format!"Vessel Enrolment sent to %s"(endpoint.hostAddress));
                 }, (Failure f) {
                     logInfo(format!"Failed to enrol vessel '%s': %s"(endpoint.id, f.message));
