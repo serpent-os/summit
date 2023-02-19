@@ -53,7 +53,7 @@ public final class RESTService : SummitAPIv1
         router.registerRestInterface(this);
         router.registerRestInterface(new BuildersService(context, pairingManager));
         router.registerRestInterface(new ProjectsService(context, projectManager));
-        router.registerRestInterface(new EndpointsService(context));
+        router.registerRestInterface(new EndpointsService(context, pairingManager));
         router.registerRestInterface(new RepositoriesService(context, projectManager));
         router.registerRestInterface(new RecipesService(context, projectManager));
         router.registerRestInterface(new ReportingService(context, channel));
