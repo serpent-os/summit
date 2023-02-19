@@ -18,6 +18,9 @@ public import summit.api.v1.interfaces;
 import moss.db.keyvalue;
 import moss.db.keyvalue.orm;
 import moss.service.context;
+import moss.service.models.endpoints;
+import std.algorithm : map;
+import std.array : array;
 import vibe.d;
 
 /**
@@ -45,7 +48,22 @@ public final class EndpointsService : EndpointsAPIv1
      */
     override ListItem[] enumerate() @safe
     {
-        return null;
+        ListItem[] ret;
+        context.appDB.view((in tx) @safe {
+            auto items = tx.list!VesselEndpoint
+                .map!((i) {
+                    ListItem v;
+                    v.context = ListContext.Endpoints;
+                    v.id = i.id;
+                    v.title = i.id;
+                    v.subtitle = i.description;
+                    v.status = i.status;
+                    return v;
+                });
+            ret = () @trusted { return items.array; }();
+            return NoDatabaseError;
+        });
+        return ret;
     }
 
     /**
