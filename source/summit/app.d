@@ -28,6 +28,7 @@ import summit.projects;
 import summit.web;
 import vibe.d;
 import summit.dispatch;
+import moss.service.pairing;
 import moss.service.server;
 
 /**
@@ -39,6 +40,11 @@ public final class SummitApplication : Application
     override void initialize(ServiceContext context) @safe
     {
         this.context = context;
+
+        /* Initialise pairing support */
+        const settings = context.appDB.getSettings().tryMatch!((Settings s) => s);
+        this.pairingManager = new PairingManager(context, "summit", settings.instanceURI);
+
         this.projectManager = new ProjectManager(context);
         immutable err = projectManager.connect();
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
@@ -47,7 +53,7 @@ public final class SummitApplication : Application
 
         _router = new URLRouter();
         web = new SummitWeb(context, projectManager, router);
-        service = new RESTService(context, projectManager, worker.channel, router);
+        service = new RESTService(context, projectManager, pairingManager, worker.channel, router);
 
         loadFixtures(context, projectManager);
 
@@ -81,4 +87,5 @@ private:
     RESTService service;
     URLRouter _router;
     SummitWeb web;
+    PairingManager pairingManager;
 }

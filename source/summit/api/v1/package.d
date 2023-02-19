@@ -19,6 +19,7 @@ public import vibe.d;
 public import summit.api.v1.interfaces;
 
 import moss.service.context;
+import moss.service.pairing;
 import summit.api.v1.builders;
 import summit.api.v1.endpoints;
 import summit.api.v1.pairing;
@@ -47,16 +48,16 @@ public final class RESTService : SummitAPIv1
      *      router = nested router
      */
     this(ServiceContext context, ProjectManager projectManager,
-            DispatchChannel channel, URLRouter router) @safe
+            PairingManager pairingManager, DispatchChannel channel, URLRouter router) @safe
     {
         router.registerRestInterface(this);
-        router.registerRestInterface(new BuildersService(context));
+        router.registerRestInterface(new BuildersService(context, pairingManager));
         router.registerRestInterface(new ProjectsService(context, projectManager));
         router.registerRestInterface(new EndpointsService(context));
         router.registerRestInterface(new RepositoriesService(context, projectManager));
         router.registerRestInterface(new RecipesService(context, projectManager));
         router.registerRestInterface(new ReportingService(context, channel));
-        router.registerRestInterface(new PairingService(context));
+        router.registerRestInterface(new PairingService(context, pairingManager));
         router.registerRestInterface(new TasksService(context));
     }
 

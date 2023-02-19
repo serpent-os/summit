@@ -26,6 +26,7 @@ import std.algorithm : map;
 import std.array : array;
 import summit.models.settings;
 import vibe.d;
+import moss.service.pairing;
 
 /**
  * Implements the BuildersService
@@ -37,9 +38,10 @@ public final class BuildersService : BuildersAPIv1
     /**
      * Construct new BuildersService
      */
-    this(ServiceContext context) @safe
+    this(ServiceContext context, PairingManager pairingManager) @safe
     {
         this.context = context;
+        this.pairingManager = pairingManager;
     }
 
     /**
@@ -161,4 +163,5 @@ public final class BuildersService : BuildersAPIv1
 private:
 
     ServiceContext context;
+    PairingManager pairingManager;
 }

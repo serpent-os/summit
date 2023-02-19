@@ -23,6 +23,7 @@ import moss.service.context;
 import moss.service.models;
 import moss.service.tokens;
 import vibe.d;
+import moss.service.pairing;
 
 /**
  * Implementation of the hub-aspect enrolment API
@@ -36,9 +37,10 @@ public final class PairingService : ServiceEnrolmentAPI
     /** 
      * Construct new pairing API
      */
-    this(ServiceContext context) @safe
+    this(ServiceContext context, PairingManager pairingManager) @safe
     {
         this.context = context;
+        this.pairingManager = pairingManager;
     }
 
     override void enrol(ServiceEnrolmentRequest request) @safe
@@ -124,4 +126,5 @@ private:
     }
 
     ServiceContext context;
+    PairingManager pairingManager;
 }
