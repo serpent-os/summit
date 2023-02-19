@@ -23,7 +23,7 @@ import moss.deps.registry;
 import moss.service.context;
 import std.algorithm : canFind, each, filter, find, map;
 import std.algorithm : any;
-import std.range : chain, empty, front;
+import std.range : empty, front;
 import summit.models.profile;
 import summit.models.project;
 import summit.models.repository;
@@ -240,7 +240,7 @@ public final class BuildQueue
                 .filter!((q) => currentItem.remotes.canFind!((a) => a == q.indexURI));
 
             /* For all of our deps, find a provider in the commonQueue to link these foreign items */
-            foreach (dep; currentItem.entry.buildDependencies.chain(currentItem.entry.dependencies))
+            foreach (dep; currentItem.entry.buildDependencies)
             {
                 auto metDeps = commonQueue.filter!((d) => d.entry.providers.canFind!(
                         (p) => p.target == dep.target && dep.type == p.type));
