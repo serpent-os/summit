@@ -81,13 +81,11 @@ public final class PairingService : ServiceEnrolmentAPI
         {
         case "avalanche":
             AvalancheEndpoint endpoint;
-            immutable err = context.appDB.view((in tx) => endpoint.load(tx, token.payload.sub));
-            enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
-            endpoint.status = EndpointStatus.Operational;
-            endpoint.bearerToken = request.issueToken;
-            immutable errStore = context.appDB.update((scope tx) => endpoint.save(tx));
-            enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
-            logInfo(format!"Completed pairing of %s via token %s"(request, token.get));
+            acceptEndpoint(endpoint, request, token);
+            break;
+        case "vessel":
+            VesselEndpoint endpoint;
+            acceptEndpoint(endpoint, request, token);
             break;
         default:
             throw new HTTPStatusException(HTTPStatus.badRequest, "Unsupported token audience");
@@ -113,6 +111,17 @@ public final class PairingService : ServiceEnrolmentAPI
     }
 
 private:
+
+    void acceptEndpoint(E)(ref E endpoint, ServiceEnrolmentRequest request, NullableToken token) @safe
+    {
+        immutable err = context.appDB.view((in tx) => endpoint.load(tx, token.payload.sub));
+        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
+        endpoint.status = EndpointStatus.Operational;
+        endpoint.bearerToken = request.issueToken;
+        immutable errStore = context.appDB.update((scope tx) => endpoint.save(tx));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+        logInfo(format!"Completed pairing of %s via token %s"(request, token.get));
+    }
 
     ServiceContext context;
 }
