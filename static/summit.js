@@ -310,6 +310,7 @@ function renderElement(context, element, idx)
     </div>
 </div>`;
         case SummitContext.Builders:
+        case SummitContext.Endpoints:
                 return `
                 <div class="list-group-item list-group-hoverable">
                 <div class="row align-items-center">
