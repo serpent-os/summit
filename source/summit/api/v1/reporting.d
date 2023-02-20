@@ -67,14 +67,24 @@ public final class ReportingService : SummitAPI
 
     override void importFailed(BuildTaskID taskID, NullableToken token) @safe
     {
-        throw new HTTPStatusException(HTTPStatus.notImplemented,
-                "importFailed: Not yet implemented");
+        enforceHTTP(!token.isNull, HTTPStatus.forbidden);
+        enforceHTTP(token.payload.aud == "vessel", HTTPStatus.forbidden);
+        logInfo(format!"Vessel reports the import has failed: #%s"(taskID));
+
+        /* Dispatch to the worker */
+        DispatchEvent event = ImportFailedEvent(taskID, token.payload.sub);
+        channel.put(event);
     }
 
     override void importSucceeded(BuildTaskID taskID, NullableToken token) @safe
     {
-        throw new HTTPStatusException(HTTPStatus.notImplemented,
-                "importSucceeded: Not yet implemented");
+        enforceHTTP(!token.isNull, HTTPStatus.forbidden);
+        enforceHTTP(token.payload.aud == "vessel", HTTPStatus.forbidden);
+        logInfo(format!"Vessel reports the import has succeeded: #%s"(taskID));
+
+        /* Dispatch to the worker */
+        DispatchEvent event = ImportSucceededEvent(taskID, token.payload.sub);
+        channel.put(event);
     }
 
 private:
