@@ -29,6 +29,8 @@ import summit.models;
 import summit.projects;
 import vibe.core.channel;
 import vibe.d;
+import core.stdc.ctype;
+import moss.service.interfaces.vessel;
 
 /** 
  * Dispatch event channel
@@ -358,12 +360,51 @@ private:
             return endpoint.save(tx);
         });
 
-        logInfo(format!"Avalanche instanxce '%s' reports task succeess for #%s (%s)"(endpoint.id,
+        logInfo(format!"Avalanche instance '%s' reports task succeess for #%s (%s)"(endpoint.id,
                 event.taskID, event.collectables));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
 
-        /* TOOD: Mark as publishing */
-        buildQueue.updateTask(event.taskID, BuildTaskStatus.Completed);
+        /* Get it published */
+        buildQueue.updateTask(event.taskID, BuildTaskStatus.Publishing);
+        publishBuild(event);
+    }
+
+    /** 
+     * Send the build off to vessel for import.
+     *
+     * Params:
+     *   event = The build success event with collectables
+     */
+    void publishBuild(BuildSucceededEvent event) @safe
+    {
+        /* Filter incoming assets for whatever we need to get vessel happy */
+        auto remoteCollectables = () @trusted {
+            return event.collectables.filter!((c) => c.type == CollectableType.Package).array;
+        }();
+
+        /* TODO: Find the right endpoint */
+        VesselEndpoint publisher;
+        immutable err = context.appDB.view((in tx) => publisher.load(tx, "official"));
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+        enforceHTTP(publisher.ensureEndpointUsable(context),
+                HTTPStatus.forbidden, "Failed to update vessel endpoint");
+
+        runTask({
+            auto rapi = new RestInterfaceClient!VesselAPI(publisher.hostAddress);
+            rapi.requestFilter = (req) {
+                req.headers["Authorization"] = format!"Bearer %s"(publisher.apiToken);
+            };
+            try
+            {
+                /* Await success */
+                rapi.importBinaries(event.taskID, remoteCollectables, NullableToken());
+            }
+            catch (Exception ex)
+            {
+                buildQueue.updateTask(event.taskID, BuildTaskStatus.Failed);
+                logError(format!"Failed to importBinaries '%s': %s"(publisher.id, ex.message));
+            }
+        });
     }
 
     DispatchChannel controlChannel;
