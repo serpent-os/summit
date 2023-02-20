@@ -67,6 +67,23 @@ public struct BuildFailedEvent
     Collectable[] collectables;
 }
 
+/** 
+ * A build has been imported - reindexing necessary
+ */
+public struct ImportSucceededEvent
+{
+    BuildTaskID taskID;
+    string vesselID;
+}
+
+/** 
+ * A build failed to import - no reindexing necessary
+ */
+public struct ImportFailedEvent
+{
+    BuildTaskID taskID;
+    string vesselID;
+}
 /**
  * Define the types supported by our algebraic event type
  */
@@ -91,6 +108,16 @@ public union DispatchEventTypes
      * Build succeeded (Avalanche)
      */
     BuildSucceededEvent buildSucceeded;
+
+    /** 
+     * Import failed (vessel)
+     */
+    ImportFailedEvent importFailed;
+
+    /** 
+     * Import succeeded (vessel)
+     */
+    ImportSucceededEvent importSucceeded;
 }
 
 /** 

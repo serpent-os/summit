@@ -117,6 +117,12 @@ private:
             case DispatchEvent.Kind.buildSucceeded:
                 handleBuildSuccess(cast(BuildSucceededEvent) event);
                 break;
+            case DispatchEvent.Kind.importSucceeded:
+                handleImportSuccess(cast(ImportSucceededEvent) event);
+                break;
+            case DispatchEvent.Kind.importFailed:
+                handleImportFailed(cast(ImportFailedEvent) event);
+                break;
             case DispatchEvent.Kind.timer:
                 handleTimer(cast(TimerInterruptEvent) event);
                 break;
@@ -405,6 +411,28 @@ private:
                 logError(format!"Failed to importBinaries '%s': %s"(publisher.id, ex.message));
             }
         });
+    }
+
+    /** 
+     * Import worked!
+     *
+     * Params:
+     *   event = success event
+     */
+    void handleImportSuccess(ImportSucceededEvent event) @safe
+    {
+        buildQueue.updateTask(event.taskID, BuildTaskStatus.Completed);
+    }
+
+    /** 
+     * Import didnt work, fail the build
+     *
+     * Params:
+     *   event = fail event
+     */
+    void handleImportFailed(ImportFailedEvent event) @safe
+    {
+        buildQueue.updateTask(event.taskID, BuildTaskStatus.Failed);
     }
 
     DispatchChannel controlChannel;
