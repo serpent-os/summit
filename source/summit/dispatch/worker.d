@@ -150,9 +150,6 @@ private:
             buildQueue.checkMissingWithinRepo(repo.project, repo);
         }
 
-        DispatchEvent builder = AllocateBuildsEvent();
-        controlChannel.put(builder);
-
         /* Reinstall the timer? */
         if (event.recurring)
         {
