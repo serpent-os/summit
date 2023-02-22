@@ -340,6 +340,8 @@ private:
                 event.taskID));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
         buildQueue.updateTask(event.taskID, BuildTaskStatus.Failed);
+
+        scheduleAvailableBuilds();
     }
 
     /** 
@@ -419,6 +421,7 @@ private:
     void handleImportSuccess(ImportSucceededEvent event) @safe
     {
         buildQueue.updateTask(event.taskID, BuildTaskStatus.Completed);
+        scheduleAvailableBuilds();
     }
 
     /** 
@@ -430,6 +433,23 @@ private:
     void handleImportFailed(ImportFailedEvent event) @safe
     {
         buildQueue.updateTask(event.taskID, BuildTaskStatus.Failed);
+        scheduleAvailableBuilds();
+    }
+
+    /** 
+     * Schedule a look at available builds
+     *
+     * This only happens when a build fails, or import fails or succeeds.
+     * Build success is not enough, completion is required.
+     */
+    void scheduleAvailableBuilds() @safe
+    {
+        if (buildQueue.availableJobs.empty)
+        {
+            return;
+        }
+        DispatchEvent event = AllocateBuildsEvent();
+        controlChannel.put(event);
     }
 
     DispatchChannel controlChannel;
