@@ -29,7 +29,6 @@ import summit.models;
 import summit.projects;
 import vibe.core.channel;
 import vibe.d;
-import core.stdc.ctype;
 import moss.service.interfaces.vessel;
 
 /** 
@@ -421,6 +420,36 @@ private:
     void handleImportSuccess(ImportSucceededEvent event) @safe
     {
         buildQueue.updateTask(event.taskID, BuildTaskStatus.Completed);
+
+        /* grab all the necessaries */
+        BuildTask task;
+        Project modProject;
+        Profile modProfile;
+        immutable err = context.appDB.view((in tx) {
+            /* Find the task */
+            auto e = task.load(tx, event.taskID);
+            if (!e.isNull)
+            {
+                return e;
+            }
+            /* project */
+            auto e2 = modProject.load(tx, task.projectID);
+            if (!e2.isNull)
+            {
+                return e2;
+            }
+            /* profile */
+            return modProfile.load(tx, task.profileID);
+        });
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+        ManagedProject project = projectManager.bySlug(modProject.name);
+        enforceHTTP(project !is null, HTTPStatus.notFound, "no such project");
+        ManagedProfile profile = project.profile(modProfile.name);
+        enforceHTTP(profile !is null, HTTPStatus.notFound, "no such profile");
+
+        /* Reload the profile */
+        profile.refresh();
+
         scheduleAvailableBuilds();
     }
 
