@@ -148,17 +148,6 @@ public final class ProjectManager
         return result ? *result : null;
     }
 
-    /**
-     * Iterate all projects and request they update themselves, and obviously, their repos
-     */
-    auto updateProjects() @safe
-    {
-        auto now = Clock.currTime();
-        logInfo(format!"Updating projects at %s"(now));
-
-        return joiner(managed.values.map!((o) => o.refresh()));
-    }
-
 private:
     ServiceContext context;
     ManagedProject[string] managed;

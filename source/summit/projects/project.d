@@ -237,42 +237,6 @@ package:
         return NoDatabaseError;
     }
 
-    /**
-     * Refresh all of the repositories
-     *
-     * Returns: a slice of repositories that updated
-     */
-    auto refresh() @safe
-    {
-        auto reportChannel = createChannel!(bool, 1);
-        ulong awaitingReturn = 0;
-        bool unusedRet;
-        ManagedRepository[] updated;
-
-        /* Iterate and close on last refresh, tracking updated status */
-        foreach (slug, repo; managedRepos)
-        {
-            runTask({
-                if (repo.refresh())
-                {
-                    updated ~= repo;
-                }
-                ++awaitingReturn;
-                if (awaitingReturn == managedRepos.length)
-                {
-                    reportChannel.close();
-                }
-            });
-        }
-
-        while (!reportChannel.empty)
-        {
-            reportChannel.tryConsumeOne(unusedRet);
-        }
-
-        return updated;
-    }
-
 private:
 
     ServiceContext context;
