@@ -152,6 +152,12 @@ private:
             buildQueue.checkMissingWithinRepo(repo.project, repo);
         }
 
+        /* Something changed, let's fire off a schedule */
+        if (!changedRepositories.empty)
+        {
+            scheduleAvailableBuilds();
+        }
+
         /* Reinstall the timer? */
         if (event.recurring)
         {
