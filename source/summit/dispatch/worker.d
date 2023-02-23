@@ -445,7 +445,7 @@ private:
             return modProfile.load(tx, task.profileID);
         });
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
-        ManagedProject project = projectManager.bySlug(modProject.name);
+        ManagedProject project = projectManager.bySlug(modProject.slug);
         enforceHTTP(project !is null, HTTPStatus.notFound, "no such project");
         ManagedProfile profile = project.profile(modProfile.name);
         enforceHTTP(profile !is null, HTTPStatus.notFound, "no such profile");
