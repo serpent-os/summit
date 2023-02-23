@@ -144,16 +144,21 @@ private:
      */
     void handleTimer(TimerInterruptEvent event) @safe
     {
-        /* TODO: For all changed projects, notify the build manager */
-        auto changedRepositories = projectManager.updateProjects();
-        foreach (repo; changedRepositories)
+        bool haveChanges;
+
+        foreach (project; projectManager.projects)
         {
-            logDiagnostic(format!"Checking %s for builds"(repo.model));
-            buildQueue.checkMissingWithinRepo(repo.project, repo);
+            foreach (repo; project.repositories)
+            {
+                if (repo.refresh())
+                {
+                    buildQueue.checkMissingWithinRepo(project, repo);
+                    haveChanges = true;
+                }
+            }
         }
 
-        /* Something changed, let's fire off a schedule */
-        if (!changedRepositories.empty)
+        if (haveChanges)
         {
             scheduleAvailableBuilds();
         }
@@ -482,10 +487,6 @@ private:
      */
     void scheduleAvailableBuilds() @safe
     {
-        if (buildQueue.availableJobs.empty)
-        {
-            return;
-        }
         DispatchEvent event = AllocateBuildsEvent();
         controlChannel.put(event);
     }
