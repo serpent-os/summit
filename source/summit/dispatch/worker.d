@@ -71,6 +71,9 @@ public final class DispatchWorker
         /* Immediately create a timer event to update the projects */
         DispatchEvent time = TimerInterruptEvent(30.seconds, true);
         controlChannel.put(time);
+
+        DispatchEvent build = AllocateBuildsEvent();
+        controlChannel.put(build);
     }
 
     /** 
