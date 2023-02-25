@@ -5,7 +5,7 @@ block body
         include header_navigation
         include secondary_navigation
         div.page-wrapper
-            div.container-xl
+            div.container
                 block content
                     div.container
                         h1 undefined content
