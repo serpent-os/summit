@@ -6,7 +6,7 @@ block title
 block content
     div.container
 
-        div.row
+        div.row.p-2
             div.page-header
                 div.row.align-items-center
                     div.col
@@ -17,29 +17,36 @@ block content
                             li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{project.model.slug}/#{repository.model.name}") #{repository.model.name}
 
                         h2.page-title #{repository.model.summary}
-                    div.col-auto
+
+        // main content
+        div.card
+            div.card-header
+                // control tabs
+                ul.nav.nav-tabs.card-header-tabs(data-bs-toggle="tabs")
+                    li.nav-item: a.nav-link.active(href="#recipesTab", data-bs-toggle="tab")
+                        svg.primaryLogo.logo.text-muted.mx-2(width="16px", height="16px")
+                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-package")
+                        | Package recipes
+                    li.nav-item: a.nav-link(href="#readmeTab", data-bs-toggle="tab")
+                        svg.primaryLogo.logo.text-muted.mx-2(width="16px", height="16px")
+                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-book")
+                        | README.md
+                    // show git commit
+                    li.nav-item.ms-auto
                         svg.mx-2.primaryLogo.logo.text-muted(width="16px", height="16px")
                             use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-git-merge")
-                        span.text-muted #{repository.model.commitRef}
-        div.row.d-flex.pt-4
-            div.col-lg-6.col-6.col-sm-3
-                div.card
-                    div.card-header
-                        svg.primaryLogo.logo.text-muted(width="16px", height="16px")
-                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-package")
-                        h5.mx-2.card-title Package recipes
-                    div.card-body.p-0
+                        span.text-muted: code #{repository.model.commitRef}
+
+            div.card-body.p-0
+                div.tab-content
+                    // recipe listing
+                    div.tab-pane.active.show.p-0(id="recipesTab")
                         div#summitList.list-group.list-group-flush(summit:context="recipes", summit:mode="enumerate", summit:parent="#{project.model.slug}/#{repository.model.name}")
                         div#summitPaginator
-            div.col-lg-6.col-6.col-sm-3
-                div.card
-                    div.card-header
-                        svg.primaryLogo.logo.text-muted(width="16px", height="16px")
-                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-book")
-                        h5.mx-2.card-title README.md
-                    div.card-body
+                    // readme tab
+                    div.tab-pane.p-3(id="readmeTab")
                         - import vibe.textfilter.markdown : filterMarkdown;
-                        div
-                            div.markdown!=filterMarkdown(repository.model.description)
+                        div.markdown.p-4!=filterMarkdown(repository.model.description)
+
 block scripts
     script(src="/static/summit.js", defer, async)
