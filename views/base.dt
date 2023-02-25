@@ -2,8 +2,8 @@ extends root
 
 block body
     div.page
-        include sidebar_navigation
         include header_navigation
+        include secondary_navigation
         div.page-wrapper
             div.container-xl
                 block content

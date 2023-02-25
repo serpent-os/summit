@@ -1,0 +1,30 @@
+- import std.string : startsWith;
+- static struct SidebarNavItem { string path; string name; string icon; }
+- static immutable sidebarItems = [
+-   SidebarNavItem("/", "Overview", "tabler-home"),
+-   SidebarNavItem("/~", "Projects", "tabler-archive"),
+-   SidebarNavItem("/tasks", "Tasks", "tabler-list-check"),
+-   SidebarNavItem("/builders", "Builders", "tabler-bulldozer"),
+-   SidebarNavItem("/endpoints", "Endpoints", "tabler-trolley"),
+-   SidebarNavItem("/users", "Users", "tabler-users"),
+-   SidebarNavItem("/log", "Event log", "tabler-calendar-event")
+- ];
+
+header.navbar-expand-md
+    div.collapse.navbar-collapse(id="secondaryNavigation")
+        div.navbar.navbar-light
+            div.container-xl
+                ul.navbar-nav
+                    - static foreach (item; sidebarItems)
+                    - { {
+                        - string className = (req.path == item.path || req.path.startsWith(item.path ~ "/")) ? "nav-item active" : "nav-item";
+                        li(class=className)
+                            a.nav-link(aria-current="page", href=item.path)
+                                span.nav-link-icon.d-md-none.d-lg-inline-block: svg(width="24px", height="24px"): use(xlink:href="/static/tabler/tabler-sprite.svg##{item.icon}")
+                                span.nav-link-title=item.name
+                    - } }
+
+                form
+                    div.input-icon
+                        span.input-icon-addon: svg(width="24px", height="24px", stroke-width="2"): use(xlink:href="/static/tabler/tabler-sprite-nostroke.svg#tabler-search")    
+                        input.form-control(type="text", placeholder="Search…", disabled="true", aria-label="Search the dashboard")    

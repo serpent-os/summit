@@ -1,11 +1,14 @@
 header.navbar.navbar-expand-md.navbar-light
-    div.container-lg
-        div.collapse.navbar-collapse(id="primaryNavigation")
-            form
-                div.input-icon
-                    span.input-icon-addon: svg(width="24px", height="24px", stroke-width="2"): use(xlink:href="/static/tabler/tabler-sprite-nostroke.svg#tabler-search")    
-                    input.form-control(type="text", placeholder="Search…", disabled="true", aria-label="Search the dashboard")    
+    div.container-xl
 
+        button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#secondaryNavigation", aria-controls="secondaryNavigation", aria-expanded="false")
+            span.navbar-toggler-icon
+        h1.navbar-brand.navbar-brand-autodark
+            a.navbar-brand.logo(href="/")
+                svg.primaryLogo.logo.text-azure(width="24px", height="24px")
+                    use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-dashboard")
+                span.logo.px-2 #[span.subtitle.opacity-75 Summit] Dashboard
+    
         div.d-flex
             a.px-4.nav-link#themeSwitcher(href="#")
                 svg#themeSwitcherIcon(width="16px", height="16px")
