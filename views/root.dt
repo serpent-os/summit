@@ -19,7 +19,7 @@ html
         - {
             link(rel="icon", type="image/png", sizes="#{size}x#{size}", href="/static/img/favicon-#{size}x#{size}.png")   
         - }
-    body.flex.flex-column.min-vh-100
+    body.min-vh-100
         block body
             h1 add a body
 
