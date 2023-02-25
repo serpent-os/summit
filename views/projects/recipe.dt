@@ -6,7 +6,7 @@ block title
 block content
     div.container
 
-        div.row
+        div.row.p-2
             div.page-header
                 div.row.align-items-center
                     div.col
@@ -20,72 +20,47 @@ block content
 
                         h2.page-title #{recipe.summary}
 
-        div.row.py-3
+        div.card
+            div.card-header
+                ul.nav.nav-tabs.card-header-tabs(data-bs-toggle="tabs")
+                    // Metadata tab
+                    li.nav-item: a.nav-link.active(href="#metaTab", data-bs-toggle="tab")
+                        svg.primaryLogo.logo.text-muted.mx-2(width="16px", height="16px")
+                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-file-info")
+                        | Metadata
 
-            div.card.col.mx-1
-                div.card-body
-                    div.row.pt-2.pb-4
-                        div.datagrid
-                            // Description 
-                            div.datagrid-item
-                                div.datagrid-title Description
-                                div.datagrid-content
-                                    p.markdown=recipe.description
-                            // Recipe
-                            div.datagrid-item
-                                div.datagrid-title Recipe
-                                div.datagrid-content: code=recipe.sourcePath
-                    div.row
-                        div.datagrid
-                            // Version
-                            div.datagrid-item
-                                div.datagrid-title Version
-                                div.datagrid-content=recipe.versionIdentifier
-                            div.datagrid-item
-                                div.datagrid-title Release
-                                div.datagrid-content=recipe.sourceRelease
+                    // Builddeps tab
+                    li.nav-item: a.nav-link(href="#buildDepsTab", data-bs-toggle="tab")
+                        svg.primaryLogo.logo.text-muted.mx-2(width="16px", height="16px")
+                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-bulldozer")
+                        | Build dependencies
 
-                            // Homepage
-                            div.datagrid-item
-                                div.datagrid-title Homepage
-                                div.datagrid-content: a(href=recipe.homepage)=recipe.homepage
+                    // Rundeps tab
+                    li.nav-item: a.nav-link(href="#runDepsTab", data-bs-toggle="tab")
+                        svg.primaryLogo.logo.text-muted.mx-2(width="16px", height="16px")
+                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-database-import")
+                        | Runtime dependencies
 
-                            // Licensing
-                            div.datagrid-item
-                                div.datagrid-title Licensing
-                                div.datagrid-content
-                                    ul
-                                        - foreach (l; recipe.licenses)
-                                        - {
-                                            li: a(href="https://spdx.org/licenses/#{l}.html")=l
-                                        - }
+                    // Providers tab
+                    li.nav-item: a.nav-link(href="#providersTab", data-bs-toggle="tab")
+                        svg.primaryLogo.logo.text-muted.mx-2(width="16px", height="16px")
+                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-database-export")
+                        | Providers
 
-        div.row.py-3
-
-            div.card.col.mx-1
-                div.card-body
-                    h5.card-title.opacity-75 Build dependencies
-                    div.row.g-3
-                        - foreach (b; recipe.buildDependencies) {
-                            div.col-6.g-3
-                                code=b
-                        - }
-
-            div.card.col.mx-1
-                div.card-body
-                    h5.card-title.opacity-75 Runtime dependencies
-                    div.row.g-3
-                        - foreach (b; recipe.dependencies) {
-                            div.col-6.g-3
-                                code=b
-                        - }
-        div.row.py-3
-
-            div.card.col.mx-1
-                div.card-body
-                    h5.card-title.opacity-75 Provides
-                    div.row.g-3
-                        - foreach (b; recipe.providers) {
-                            div.col-3.g-3
-                                code=b
-                        - }
+            div.card-body.p-0
+                div.tab-content.p-0
+                    // Metadata tab content
+                    div.tab-pane.p-3.active.show(id="metaTab")
+                        include projects/recipes/metadata
+                    
+                    // Builddeps tab content
+                    div.tab-pane.p-0(id="buildDepsTab")
+                        include projects/recipes/builddeps
+                    
+                    // Rundeps tab content
+                    div.tab-pane(id="runDepsTab")
+                        include projects/recipes/rundeps
+        
+                    // Providers tab content
+                    div.tab-pane(id="providersTab")
+                        include projects/recipes/providers

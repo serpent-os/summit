@@ -1,0 +1,30 @@
+// metadata card
+table.table.table-borderless
+    tr
+        th Name
+        td=recipe.name
+    tr
+        th Version
+        td=recipe.versionIdentifier
+    tr
+        th Release
+        td=recipe.sourceRelease
+    tr
+        th Summary
+        td=recipe.summary
+    tr
+        th Description
+        td=recipe.description
+    tr
+        th Homepage
+        td=recipe.homepage
+    tr
+        th Licensing
+        td
+            - foreach (l; recipe.licenses)
+            - {
+                a(href="https://spdx.org/licenses/#{l}.html")=l
+            - }
+    tr
+        th Path
+        td: code=recipe.sourcePath

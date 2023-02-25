@@ -1,0 +1,8 @@
+- import std.algorithm : multiSort;
+- import moss.deps.dependency;
+
+// Sort provides for rendering
+- {
+    - auto deps = recipe.providers.multiSort!((a, b) => a.type > b.type, (a, b) => a.target < b.target);
+    include projects/recipes/render_deps
+- }
