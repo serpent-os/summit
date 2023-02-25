@@ -1,42 +1,50 @@
 // Render everything in `deps` set.
 
-div.list-group.list-group-flush
-- DependencyType lastType = DependencyType.PackageName;
-- foreach (b; deps)
+- if (deps.empty)
 - {
-    // render new header if the type changes
-    - if (b.type != lastType || b == deps.front)
+    div.empty
+        div.empty-title Nothing found
+        div.empty-subtitle.text-muted No dependencies or providers found for this category
+
+- } else {
+    div.list-group.list-group-flush
+    - DependencyType lastType = DependencyType.PackageName;
+    - foreach (b; deps)
     - {
-        // Set appropriate display string
-        - final switch (b.type)
+        // render new header if the type changes
+        - if (b.type != lastType || b == deps.front)
         - {
-            - case DependencyType.BinaryName:
-                div.list-group-header Binary
-                - break;
-            - case DependencyType.SystemBinaryName:
-                div.list-group-header System binary
-                - break;
-            - case DependencyType.PackageName:
-                div.list-group-header Package name
-                - break;
-            - case DependencyType.SharedLibraryName:
-                div.list-group-header Shared library
-                - break;
-            - case DependencyType.PkgconfigName:
-                div.list-group-header PkgConfig
-                - break;
-            - case DependencyType.CmakeName:
-                div.list-group-header CMake
-                - break;
-            - case DependencyType.PythonName:
-                div.list-group-header Pythonic
-                - break;
-            - case DependencyType.Interpreter:
-                div.list-group-header Interpreter
-                - break;
+            // Set appropriate display string
+            - final switch (b.type)
+            - {
+                - case DependencyType.BinaryName:
+                    div.list-group-header.border-top Binary
+                    - break;
+                - case DependencyType.SystemBinaryName:
+                    div.list-group-header.border-top System binary
+                    - break;
+                - case DependencyType.PackageName:
+                    div.list-group-header.border-top Package name
+                    - break;
+                - case DependencyType.SharedLibraryName:
+                    div.list-group-header.border-top Shared library
+                    - break;
+                - case DependencyType.PkgconfigName:
+                    div.list-group-header.border-top PkgConfig
+                    - break;
+                - case DependencyType.CmakeName:
+                    div.list-group-header.border-top CMake
+                    - break;
+                - case DependencyType.PythonName:
+                    div.list-group-header.border-top Pythonic
+                    - break;
+                - case DependencyType.Interpreter:
+                    div.list-group-header.border-top Interpreter
+                    - break;
+            - }
+            - lastType = b.type;
         - }
-        - lastType = b.type;
+        div.list-group-item.p-2
+            code=b
     - }
-    div.list-group-item.p-2
-        code=b
 - }
