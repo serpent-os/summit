@@ -69,28 +69,6 @@ public final class RepositoriesService : RepositoriesAPIv1
         return () @trusted { return ret.array; }();
     }
 
-    /**
-     * Create new repo within project
-     *
-     * Params:
-     *      _project: Project slug
-     *      request: JSON Request
-     */
-    override void create(string _project, CreateRepository request) @safe
-    {
-        ManagedProject project = projectManager.bySlug(_project);
-        enforceHTTP(projectManager !is null, HTTPStatus.notFound);
-
-        Repository repo;
-        repo.name = request.id;
-        repo.description = "not yet loaded";
-        repo.summary = request.summary;
-        repo.originURI = request.originURI;
-        immutable err = project.addRepository(repo);
-        enforceHTTP(err.isNull, HTTPStatus.forbidden, err.message);
-        logInfo(format!"Create at %s: %s"(_project, request));
-    }
-
 private:
     ServiceContext context;
     ProjectManager projectManager;

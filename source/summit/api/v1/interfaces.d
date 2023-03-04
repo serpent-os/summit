@@ -246,10 +246,6 @@ public interface ProjectsAPIv1
      */
     @path("enumerate") @method(HTTPMethod.GET) ListItem[] enumerate() @safe;
 
-    /**
-     * Create a new project with the given release URI
-     */
-    @path("create") @method(HTTPMethod.POST) void create(CreateProject request) @safe;
 }
 
 /**
@@ -262,12 +258,6 @@ public interface RepositoriesAPIv1
      * Enumerate all items within the given project
      */
     @path("enumerate/:project") @method(HTTPMethod.GET) ListItem[] enumerate(string _project) @safe;
-
-    /**
-     * Create new repo within the given project
-     */
-    @path("create/:project") @method(HTTPMethod.POST) void create(string _project,
-            CreateRepository request) @safe;
 }
 
 /**

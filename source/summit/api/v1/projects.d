@@ -63,23 +63,6 @@ public final class ProjectsService : ProjectsAPIv1
         return () @trusted { return ret.array; }();
     }
 
-    /**
-     * Create a new project
-     *
-     * Params:
-     *      request = Creation request
-     */
-    override void create(CreateProject request) @safe
-    {
-        logInfo(format!"Constructing new project: %s"(request));
-        auto c = Project();
-        c.name = request.name;
-        c.slug = request.slug;
-        c.summary = request.summary;
-        immutable err = projectManager.addProject(c);
-        enforceHTTP(err.isNull, HTTPStatus.badRequest, err.message);
-    }
-
 private:
     ServiceContext context;
     ProjectManager projectManager;
