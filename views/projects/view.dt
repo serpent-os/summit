@@ -16,20 +16,12 @@ block content
                             li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{project.model.slug}") #{project.model.name}
 
                         h2.page-title #{project.model.summary}
-                    div.col-auto
-                        div.btn-list
-                            button.btn-azure.btn.d-none.d-md-inline-flex(data-bs-toggle="modal", data-bs-target="#creationDialog")
-                                svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-plus")
-                                | Add a repository
 
         div.row.py-3
 
             div.py-1
                 div.card
                     div.list-group.list-group-flush#summitList.row(summit:context="repositories", summit:mode="add", summit:parent=project.model.slug)
-
-block dialogs
-    include projects/add_repo
 
 block scripts
     script(src="/static/summit.js", defer, async)
