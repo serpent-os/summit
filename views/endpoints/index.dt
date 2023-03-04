@@ -14,11 +14,14 @@ block content
                             li.breadcrumb-item: a(href="/") Home
                             li.breadcrumb-item.active(aria-current="page"): a(href="/endpoints") Endpoints
                         h2.page-title Endpoints
-                    div.col-auto
-                        div.btn-list
-                            button.btn-azure.btn.d-none.d-md-inline-flex(data-bs-toggle="modal", data-bs-target="#creationDialog")
-                                svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-plus")
-                                | Add an endpoint
+                    - if (req.session && req.session.get!string("accountName", null) !is null)
+                    - {
+                        div.col-auto
+                            div.btn-list
+                                button.btn-azure.btn.d-none.d-md-inline-flex(data-bs-toggle="modal", data-bs-target="#creationDialog")
+                                    svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-plus")
+                                    | Add an endpoint
+                    - }
 
         div.row.py-3
             div.py-1
@@ -29,7 +32,10 @@ block content
 
 block dialogs
 
-    include endpoints/add_endpoint
+    - if (req.session && req.session.get!string("accountName", null) !is null)
+    - {
+        include endpoints/add_endpoint
+    - }
 
 block scripts
 
