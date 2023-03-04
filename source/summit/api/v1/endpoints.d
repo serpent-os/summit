@@ -45,6 +45,8 @@ public final class EndpointsService : EndpointsAPIv1
         this.pairingManager = pairingManager;
     }
 
+    mixin AppAuthenticatorContext;
+
     /**
      * Enumerate all of the endpoints
      *

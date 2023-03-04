@@ -16,7 +16,7 @@
 module summit.api.v1.interfaces;
 
 public import vibe.d;
-
+import vibe.web.auth;
 import std.range : take, drop;
 
 /**
@@ -222,16 +222,17 @@ public interface SummitAPIv1
  * Base API for the Builders
  */
 @path("/api/v1/builders")
-public interface BuildersAPIv1
+@requiresAuth public interface BuildersAPIv1
 {
     /**
      * Enumerate all items within the builders API
      */
-    @path("enumerate") @method(HTTPMethod.GET) ListItem[] enumerate() @safe;
+    @noAuth @path("enumerate") @method(HTTPMethod.GET) ListItem[] enumerate() @safe;
 
     /**
      * Create a new builder attachment
      */
+    @auth(Role.notExpired & Role.Web & Role.admin & Role.userAccount)
     @path("create") @method(HTTPMethod.POST) void create(AttachEndpoint request) @safe;
 }
 
@@ -277,16 +278,17 @@ public interface RecipesAPIv1
  * Base API for the Endpoints (Vessel)
  */
 @path("/api/v1/endpoints")
-public interface EndpointsAPIv1
+@requiresAuth public interface EndpointsAPIv1
 {
     /**
      * Enumerate endpoint attachments
      */
-    @path("enumerate") @method(HTTPMethod.GET) ListItem[] enumerate() @safe;
+    @noAuth @path("enumerate") @method(HTTPMethod.GET) ListItem[] enumerate() @safe;
 
     /**
      * Create an endpoint attachment
      */
+    @auth(Role.notExpired & Role.Web & Role.admin & Role.userAccount)
     @path("create") @method(HTTPMethod.POST) void create(AttachEndpoint request) @safe;
 }
 

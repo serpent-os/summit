@@ -46,6 +46,8 @@ public final class BuildersService : BuildersAPIv1
         this.pairingManager = pairingManager;
     }
 
+    mixin AppAuthenticatorContext;
+
     /**
      * Enumerate all of the builders
      *
