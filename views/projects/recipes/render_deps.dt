@@ -30,8 +30,10 @@
                     div.list-group-header.border-top Shared library
                     - break;
                 - case DependencyType.PkgconfigName:
-                - case DependencyType.Pkgconfig32Name:
                     div.list-group-header.border-top PkgConfig
+                    - break;
+                - case DependencyType.Pkgconfig32Name:
+                    div.list-group-header.border-top PkgConfig (emul32)
                     - break;
                 - case DependencyType.CmakeName:
                     div.list-group-header.border-top CMake
