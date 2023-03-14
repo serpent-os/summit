@@ -40,6 +40,7 @@ public final class SummitApplication : Application
     override void initialize(ServiceContext context) @safe
     {
         this.context = context;
+        this.context.accountManager.userRegistrationsAllowed = false;
 
         /* Initialise pairing support */
         const settings = context.appDB.getSettings().tryMatch!((Settings s) => s);
