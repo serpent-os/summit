@@ -25,6 +25,7 @@ import moss.service.server;
 import vibe.d;
 import summit.app;
 import summit.setup;
+import std.getopt;
 
 /**
  * Main entry for summit
@@ -35,6 +36,20 @@ import summit.setup;
  */
 int main(string[] args) @safe
 {
+    ushort portNumber = 8081;
+    string[] addresses = ["::", "0.0.0.0"];
+
+    auto opts = () @trusted {
+        return getopt(args, config.bundling, "p|port", "Specific port to serve on",
+                &portNumber, "a|address", "Host address to bind to", &addresses);
+    }();
+
+    if (opts.helpWanted)
+    {
+        defaultGetoptPrinter("avalanche", opts.options);
+        return 1;
+    }
+
     logInfo("Initialising libsodium");
     immutable sret = () @trusted { return sodium_init(); }();
     enforce(sret == 0, "Failed to initialise libsodium");
@@ -47,7 +62,8 @@ int main(string[] args) @safe
     {
         server.close();
     }
-    server.serverSettings.port = 8081;
+    server.serverSettings.bindAddresses = addresses;
+    server.serverSettings.port = portNumber;
     server.serverSettings.serverString = "summit/0.0.1";
     server.serverSettings.sessionIdCookie = "summit.session_id";
 
