@@ -55,8 +55,6 @@ int main(string[] args) @safe
     enforce(sret == 0, "Failed to initialise libsodium");
 
     immutable rootDir = ".".absolutePath.asNormalizedPath.to!string;
-    setLogLevel(LogLevel.trace);
-
     auto server = new Server!(SetupApplication, SummitApplication)(rootDir);
     scope (exit)
     {
