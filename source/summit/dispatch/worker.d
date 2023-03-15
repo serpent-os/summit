@@ -506,6 +506,8 @@ private:
     void stashLogs(R)(BuildTaskID taskID, R logFiles) @safe
             if (isInputRange!R && is(ElementType!R : Collectable))
     {
+        auto setLogURI = false;
+
         foreach (log; logFiles)
         {
             immutable logPath = context.statePath.buildPath("logs",
@@ -520,6 +522,15 @@ private:
             {
                 logError(format!"Failed to download log for %s: %s"(taskID, ex.message));
             }
+
+            if (setLogURI)
+            {
+                continue;
+            }
+
+            /* Set the log file location */
+            buildQueue.setLogURI(taskID, "logs".buildPath(to!string(taskID), log.uri.baseName));
+            setLogURI = true;
         }
     }
 
