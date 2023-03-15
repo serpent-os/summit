@@ -17,6 +17,8 @@ let formSubmitting = false;
 
 import { renderTask  } from './tasks.js';
 
+window.summitRefreshList = refreshList;
+
 const colors = [
     "bg-blue-lt",
     "bg-azure-lt",
@@ -261,7 +263,7 @@ function renderPlaceholder()
 /**
  * Lets get the list updated
  */
-function refreshList(context, mode, pageNumber=0)
+export function refreshList(context, mode, pageNumber=0)
 {
     console.log(context, mode, pageNumber);
     let uri = constructURI('enumerate');
@@ -400,7 +402,7 @@ function renderPaginator(context, obj)
                 pageClass += " active";
             }
             return `<li class="${pageClass}">
-                <a class="page-link" ${aria} href="#${SummitWidgets.Paginator}" onclick="javascript:refreshList('${context}', 'enumerate', ${i});">${i+1}</a>
+                <a class="page-link" ${aria} href="#${SummitWidgets.Paginator}" onclick="javascript:summitRefreshList('${context}', 'enumerate', ${i});">${i+1}</a>
             </li>`;
         });
     const nextClass = obj.hasNext ? "" : "disabled";
@@ -410,7 +412,7 @@ function renderPaginator(context, obj)
     return `
 <ul class="pagination justify-content-center border-top pt-3">
     <li class="page-item ${prevClass}">
-        <a class="page-link" ${prevAria} href="#${SummitWidgets.Paginator}" onclick="javascript:refreshList('${context}', 'enumerate', ${obj.page-1});">
+        <a class="page-link" ${prevAria} href="#${SummitWidgets.Paginator}" onclick="javascript:summitRefreshList('${context}', 'enumerate', ${obj.page-1});">
             <svg class="icon">
                 <use xlink:href="/static/tabler/tabler-sprite.svg#tabler-chevron-left" />
             </svg>
@@ -419,7 +421,7 @@ function renderPaginator(context, obj)
     </li>
     ${pageHTML.join("")}
     <li class="page-item ${nextClass}">
-        <a class="page-link" ${nextAria} href="#${SummitWidgets.Paginator}" onclick="javascript:refreshList('${context}', 'enumerate', ${obj.page+1});">
+        <a class="page-link" ${nextAria} href="#${SummitWidgets.Paginator}" onclick="javascript:summitRefreshList('${context}', 'enumerate', ${obj.page+1});">
             <svg class="icon">
                 <use xlink:href="/static/tabler/tabler-sprite.svg#tabler-chevron-right" />
             </svg>
