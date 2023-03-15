@@ -24,4 +24,5 @@ block content
                         div#summitList.list-group.list-group-flush(summit:context="tasks", summit:mode="enumerate")
                         div#summitPaginator
 block scripts
-    script(src="/static/summit.js", defer, async)
+    script(src="/static/tasks.js", type="module")
+    script(src="/static/summit.js", type="module")
