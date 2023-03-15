@@ -22,7 +22,9 @@ import moss.service.models;
 import moss.service.tokens.refresh;
 import std.algorithm : filter;
 import std.array : array;
+import std.file : mkdirRecurse;
 import std.range : front, popFront;
+import std.range.primitives;
 import summit.build;
 import summit.dispatch.messaging;
 import summit.models;
@@ -30,6 +32,7 @@ import summit.projects;
 import vibe.core.channel;
 import vibe.d;
 import moss.service.interfaces.vessel;
+import std.path : baseName, buildPath, dirName;
 
 /** 
  * Dispatch event channel
@@ -354,6 +357,9 @@ private:
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
         buildQueue.updateTask(event.taskID, BuildTaskStatus.Failed);
 
+        auto logs = event.collectables.filter!((c) => c.type == CollectableType.Log);
+        stashLogs(event.taskID, logs);
+
         scheduleAvailableBuilds();
     }
 
@@ -381,6 +387,9 @@ private:
         logInfo(format!"Avalanche instance '%s' reports task succeess for #%s (%s)"(endpoint.id,
                 event.taskID, event.collectables));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+
+        auto logs = event.collectables.filter!((c) => c.type == CollectableType.Log);
+        stashLogs(event.taskID, logs);
 
         /* Get it published */
         buildQueue.updateTask(event.taskID, BuildTaskStatus.Publishing);
@@ -489,6 +498,29 @@ private:
     {
         DispatchEvent event = AllocateBuildsEvent();
         controlChannel.put(event);
+    }
+
+    /**
+     * Stash log files from the given range of collectables
+     */
+    void stashLogs(R)(BuildTaskID taskID, R logFiles) @safe
+            if (isInputRange!R && is(ElementType!R : Collectable))
+    {
+        foreach (log; logFiles)
+        {
+            immutable logPath = context.statePath.buildPath("logs",
+                    to!string(taskID), log.uri.baseName);
+            immutable logDir = logPath.dirName;
+            try
+            {
+                logDir.mkdirRecurse();
+                log.uri.download(logPath);
+            }
+            catch (Exception ex)
+            {
+                logError(format!"Failed to download log for %s: %s"(taskID, ex.message));
+            }
+        }
     }
 
     DispatchChannel controlChannel;
