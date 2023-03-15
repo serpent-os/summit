@@ -7,7 +7,7 @@ block content
     div.container
 
         div.row
-            div.page-header
+            div.page-header.pb-2
                 div.row.align-items-center
                     div.col
                         ol.breadcrumb.breadcrumb-arrows.py-1(aria-label="breadcrumbs")
