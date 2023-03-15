@@ -17,6 +17,10 @@ block content
                             li.breadcrumb-item.active(aria-current="page"): a(href="/~/#{project.model.slug}/#{repository.model.name}") #{repository.model.name}
 
                         h2.page-title #{repository.model.summary}
+                    div.col-auto
+                        svg.mx-2.primaryLogo.logo.text-muted(width="16px", height="16px")
+                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-git-merge")
+                        span.text-muted: small #{repository.model.commitRef}
 
         // main content
         div.card
@@ -31,11 +35,6 @@ block content
                         svg.primaryLogo.logo.text-muted.mx-2(width="16px", height="16px")
                             use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-book")
                         | README.md
-                    // show git commit
-                    li.nav-item.ms-auto
-                        svg.mx-2.primaryLogo.logo.text-muted(width="16px", height="16px")
-                            use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-git-merge")
-                        span.text-muted: code #{repository.model.commitRef}
 
             div.card-body.p-0
                 div.tab-content
