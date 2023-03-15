@@ -39,4 +39,4 @@ block dialogs
 
 block scripts
 
-    script(src="/static/summit.js", defer, async)
+    script(src="/static/summit.js", type="module")
