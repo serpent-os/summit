@@ -150,4 +150,9 @@ public @Model struct BuildTask
      *  sourceID_arch@projectID/repoID
      */
     string[] blockedBy;
+
+    /**
+     * Where is the log file stored?
+     */
+    string logPath;
 }

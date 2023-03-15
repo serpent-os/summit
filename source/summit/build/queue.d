@@ -136,6 +136,27 @@ public final class BuildQueue
     }
 
     /**
+     * Update the log URI (relative) for a build upon build completion
+     */
+    void setLogURI(BuildTaskID taskID, string logURI) @safe
+    {
+        immutable err = context.appDB.update((scope tx) @safe {
+            /* Ensure task exists */
+            BuildTask task;
+            auto err = task.load(tx, taskID);
+            if (!err.isNull)
+            {
+                return err;
+            }
+            task.logPath = logURI;
+            auto e = task.save(tx);
+            queue[taskID] = task;
+            return e;
+        });
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+    }
+
+    /**
      * Walk through all of the projects, fire off a check
      * for missing builds globally.
      */
