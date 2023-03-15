@@ -34,13 +34,8 @@ block content
             // Latest doc?
             div.col-6
                 div.card: div.card-body
-                    h5.card-title.opacity-75 Here be dragons
-                    p Summit provides a dashboard to monitor the build infrastructure of Serpent OS.
-                    p All builds are performed automatically when the packaging recipes are modified in our git repositories.
-                    p Currently, we're in an early bootstrap phase. Our tooling is in a very early stage
-                    | and this dashboard software is completely new. There may be bugs and we want to work
-                    | through them to streamline the contribution process before we open it up to the general
-                    | public.
+                    - import vibe.textfilter.markdown : filterMarkdown;
+                    div.markdown!=filterMarkdown(import("home.md"))
 
             // Recent events
             div.col:
