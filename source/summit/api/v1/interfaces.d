@@ -18,6 +18,7 @@ module summit.api.v1.interfaces;
 public import vibe.d;
 import vibe.web.auth;
 import std.range : take, drop;
+import summit.models.buildtask;
 
 /**
  * A ListItem can be represented using a specific ListContext
@@ -301,5 +302,5 @@ public interface TasksAPIV1
     /**
      * Enumerate all tasks
      */
-    @path("enumerate") @method(HTTPMethod.GET) Paginator!ListItem enumerate(ulong pageNumber = 0) @safe;
+    @path("enumerate") @method(HTTPMethod.GET) Paginator!BuildTask enumerate(ulong pageNumber = 0) @safe;
 }

@@ -43,25 +43,16 @@ public final class TasksService : TasksAPIV1
      *
      * Returns: ListItem[] of all tasks
      */
-    override Paginator!ListItem enumerate(ulong pageNumber) @safe
+    override Paginator!BuildTask enumerate(ulong pageNumber) @safe
     {
-        ListItem[] ret;
+        BuildTask[] tasks;
         context.appDB.view((in tx) @safe {
-            auto items = tx.list!BuildTask
-                .map!((i) {
-                    ListItem v;
-                    v.context = ListContext.Tasks;
-                    v.id = to!string(i.id);
-                    v.title = i.buildID;
-                    v.slug = i.slug;
-                    v.subtitle = i.description;
-                    return v;
-                });
-            ret = () @trusted { return items.array; }();
+            auto ret = tx.list!BuildTask;
+            tasks = () @trusted { return ret.array; }();
             return NoDatabaseError;
         });
-        ret.sort!((a, b) => to!uint64_t(a.id) > to!uint64_t(b.id));
-        return Paginator!ListItem(ret, pageNumber);
+        tasks.sort!"a.id > b.id";
+        return Paginator!BuildTask(tasks, pageNumber);
     }
 
 private:
