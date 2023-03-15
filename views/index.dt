@@ -6,30 +6,32 @@ block title
 block content
     div.container
 
-        // Live graphs
-        div.row.p-2
-            // First graph
-            div.col: div.card: div.card-body
+        div.row.pb-4
 
-            // Second graph
-            div.col: div.card: div.card-body
+            // graphs
+            div.row.row-cards
+                // First graph
+                div.col: div.card: div.card-body
 
-            // Third graph
-            div.col: div.card: div.card-body
+                // Second graph
+                div.col: div.card: div.card-body
 
-        // Statistics
-        div.row.p-2
-            // First stat
-            div.col: div.card: div.card-body
+                // Third graph
+                div.col: div.card: div.card-body
 
-            // Second stat
-            div.col: div.card: div.card-body
+            // Statistics
+            div.row.row-cards
+                // First stat
+                div.col: div.card: div.card-body
 
-            // Third stat
-            div.col: div.card: div.card-body
+                // Second stat
+                div.col: div.card: div.card-body
+
+                // Third stat
+                div.col: div.card: div.card-body
 
         // Main view
-        div.row.p-2
+        div.row.pb-4
 
             // Latest doc?
             div.col-6
