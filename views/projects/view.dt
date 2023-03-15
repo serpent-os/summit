@@ -24,4 +24,4 @@ block content
                     div.list-group.list-group-flush#summitList.row(summit:context="repositories", summit:mode="add", summit:parent=project.model.slug)
 
 block scripts
-    script(src="/static/summit.js", defer, async)
+    script(src="/static/summit.js", type="module")
