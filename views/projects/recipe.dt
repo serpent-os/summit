@@ -6,7 +6,7 @@ block title
 block content
     div.container
 
-        div.row.p-2
+        div.row
             div.page-header
                 div.row.align-items-center
                     div.col
