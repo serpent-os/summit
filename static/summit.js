@@ -297,6 +297,8 @@ export function refreshList(context, mode, pageNumber=0)
 function renderElement(context, element, idx)
 {
     const color = isNaN(element.id) ?  colors[idx % colors.length] : colors[parseInt(element.id) % colors.length];
+    // HACK: eventually encode in model
+    const icon = element.slug == "/~/serpent-os" ? "tabler-certificate" : "tabler-building-community"
 
     switch (context)
     {
@@ -304,10 +306,21 @@ function renderElement(context, element, idx)
         case SummitContext.Projects:
             return `
 <div class="mb-3 col-6 col-md-6 col-lg-6">
-    <div class="card">
+    <div class="card shadow-md">
         <div class="card-body">
-            <h5 class="card-title"><a href="${element.slug}" class="text-reset">${element.title}</a></h5>
-            <p>${element.subtitle}</p>
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <span class="avatar ${color}">
+                        <svg class="icon">
+                            <use xlink:href="/static/tabler/tabler-sprite.svg#${icon}" />
+                        </svg>
+                    </span>
+                </div>
+                <div class="col">
+                    <div class="font-weight-medium"><a href="${element.slug}" class="text-reset">${element.title}</a></div>
+                    <div class="text-muted">${element.subtitle}</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>`;
