@@ -6,8 +6,8 @@
 -   SidebarNavItem("/tasks", "Tasks", "tabler-list-check"),
 -   SidebarNavItem("/builders", "Builders", "tabler-bulldozer"),
 -   SidebarNavItem("/endpoints", "Endpoints", "tabler-trolley"),
--   SidebarNavItem("/users", "Users", "tabler-users"),
--   SidebarNavItem("/log", "Event log", "tabler-calendar-event")
+-   //SidebarNavItem("/users", "Users", "tabler-users"),
+-   //SidebarNavItem("/log", "Event log", "tabler-calendar-event")
 - ];
 
 header.navbar-expand-md
