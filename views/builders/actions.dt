@@ -1,0 +1,13 @@
+// bad bad
+- import std.string : format;
+- import vibe.d : urlEncode;
+- if (req.session && req.session.get!bool("accountAdmin", false))
+- {
+    a.btn.btn-danger(href=format!"/builders/%s/delete"(endpoint.id))
+        svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-trash")
+        | Delete
+- } else {
+    a.btn.btn-danger.disabled(href="#")
+        svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-trash")
+        | Delete
+- }

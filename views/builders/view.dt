@@ -1,0 +1,26 @@
+extends base
+
+block title
+    title Builder - #{endpoint.id}
+
+block content
+    - import std.string : format;
+    - import vibe.d : urlEncode;
+    div.container
+
+        div.row
+            div.page-header.pb-2
+                div.row.align-items-center
+                    div.col
+                        ol.breadcrumb.breadcrumb-arrows.py-1(aria-label="breadcrumbs")
+                            li.breadcrumb-item: a(href="/") Home
+                            li.breadcrumb-item: a(href="/builders") Builders
+                            li.breadcrumb-item.active(aria-current="page"): a(href=format!"/builders/%s"(urlEncode(endpoint.id)))=endpoint.id
+                        h2.page-title Builder Overview
+                    div.col-auto
+                        include builders/actions
+        div.row.py-3
+            div.py-1
+
+                div.card
+                    include builders/info

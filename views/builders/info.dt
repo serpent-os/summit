@@ -1,0 +1,30 @@
+// basic information
+- bool hasPerms = req.session && req.session.get!bool("accountAdmin", false);
+table.table.table-borderless.table-responsive
+    tbody
+        tr
+            th ID
+            td=endpoint.id
+        tr
+            th Summary
+            td=endpoint.description
+        tr
+            th Pairing Status
+            td: span.badge=endpoint.status
+        tr
+            th Work status
+            td: span.badge=endpoint.workStatus
+        tr
+            th Host address
+            td: code=hasPerms ? endpoint.hostAddress : "redacted"
+        tr
+            th Public key
+            td: code=hasPerms ? endpoint.publicKey : "redacted"
+        tr
+            th Administrator
+            - if (hasPerms)
+            - {
+                td: a(href="mailto:" ~ endpoint.adminEmail)=endpoint.adminName
+            - } else {
+                td=endpoint.adminName
+            - }
