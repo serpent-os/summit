@@ -20,6 +20,7 @@ import summit.projects;
 import summit.web.accounts;
 import summit.web.builders;
 import summit.web.projects;
+import summit.web.tasks;
 import vibe.d;
 
 /**
@@ -44,6 +45,7 @@ public final class SummitWeb
         root.registerWebInterface(cast(AccountsWeb) new SummitAccountsWeb(context));
         root.registerWebInterface(new BuilderWeb(context));
         root.registerWebInterface(new ProjectsWeb(context, projectManager));
+        root.registerWebInterface(new TasksWeb(context));
     }
 
     /**
@@ -61,14 +63,5 @@ public final class SummitWeb
     void endpointsPage() @safe
     {
         render!"endpoints/index.dt";
-    }
-
-    /**
-     * Render the /tasks page
-     */
-    @path("tasks") @method(HTTPMethod.GET)
-    void tasksPage() @safe
-    {
-        render!"tasks/index.dt";
     }
 }
