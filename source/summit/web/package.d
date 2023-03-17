@@ -18,6 +18,7 @@ module summit.web;
 import moss.service.context;
 import summit.projects;
 import summit.web.accounts;
+import summit.web.builders;
 import summit.web.projects;
 import vibe.d;
 
@@ -41,6 +42,7 @@ public final class SummitWeb
     {
         auto root = router.registerWebInterface(this);
         root.registerWebInterface(cast(AccountsWeb) new SummitAccountsWeb(context));
+        root.registerWebInterface(new BuilderWeb(context));
         root.registerWebInterface(new ProjectsWeb(context, projectManager));
     }
 
@@ -50,15 +52,6 @@ public final class SummitWeb
     void index() @safe
     {
         render!"index.dt";
-    }
-
-    /**
-     * Render the /builders page
-     */
-    @path("builders") @method(HTTPMethod.GET)
-    void buildersPage() @safe
-    {
-        render!"builders/index.dt";
     }
 
     /**
