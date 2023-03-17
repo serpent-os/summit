@@ -62,6 +62,35 @@ import moss.service.models.endpoints;
         render!("builders/view.dt", endpoint);
     }
 
+    /** 
+     * Delete a builder completely (account, endpoint + tokens)
+     *
+     * Params:
+     *   _id = Identifier for the AvalancheEndpoint
+     */
+    @auth(Role.notExpired & Role.web & Role.accessToken & Role.userAccount & Role.admin)
+    @method(HTTPMethod.GET) @path("/:id/delete")
+    void deleteBuilder(string _id) @safe
+    {
+        /* Make sure its alive */
+        AvalancheEndpoint endpoint;
+        immutable err = context.appDB.view((in tx) => endpoint.load(tx, _id));
+        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
+
+        logWarn(format!"Deleting endpoint: %s"(_id));
+        auto serviceAccount = endpoint.serviceAccount;
+
+        /* Remove the endpoint */
+        immutable e = context.appDB.update((scope tx) => endpoint.remove(tx));
+        enforceHTTP(e.isNull, HTTPStatus.internalServerError, err.message);
+
+        immutable e2 = context.accountManager.removeAccount(serviceAccount);
+        enforceHTTP(e2.isNull, HTTPStatus.internalServerError, e2.message);
+
+        /* Back to the builders view */
+        redirect("/builders");
+    }
+
 private:
 
     ServiceContext context;
