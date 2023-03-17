@@ -1,0 +1,27 @@
+extends base
+
+block title
+    title Summit - Task ##{task.id}
+
+block content
+    - import std.string : format;
+    div.container
+
+        div.row
+            div.page-header.pb-2
+                div.row.align-items-center
+                    div.col
+                        ol.breadcrumb.breadcrumb-arrows.py-1(aria-label="breadcrumbs")
+                            li.breadcrumb-item: a(href="/") Home
+                            li.breadcrumb-item: a(href="/tasks") Tasks
+                            li.breadcrumb-item.active(aria-current="page"): a(href=format!"/tasks/%s"(task.id)) Task ##{task.id}
+
+                        h2.page-title Task overview
+                    div.col-auto
+                        include tasks/actions
+        div.row.py-3
+            div.card
+                include tasks/info
+
+block scripts
+    script(src="/static/summit.js", type="module")

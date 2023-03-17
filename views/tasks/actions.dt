@@ -1,0 +1,12 @@
+// actions for task management available for ongoing builds only
+- import summit.models.buildtask;
+- import std.string : format;
+- if (task.status != BuildTaskStatus.Completed && task.status != BuildTaskStatus.Failed)
+- {
+    - if (req.session && req.session.get!string("accountName", null) !is null && req.session.get!bool("accountAdmin", false))
+    - {
+        a.btn.btn-danger(href=format!"/tasks/%s/cancel"(task.id)) Cancel
+    - } else {
+        a.btn.btn-danger.disabled(href="#") Cancel
+    - }
+- }

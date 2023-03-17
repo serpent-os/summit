@@ -1,0 +1,23 @@
+// basic metadata
+table.table.table-borderless.table-responsive
+    - import std.string : format;
+    tbody
+        tr
+            th ID
+            td=task.id
+        tr
+            th Status
+            td
+                include tasks/status
+        tr
+            th Architecture
+            td: span.badge=task.architecture
+        tr
+            th Recipe
+            td: a(href=format!"/%s"(task.slug))=task.slug
+        tr
+            th Commit
+            td: code=task.commitRef
+        tr
+            th Description
+            td=task.description
