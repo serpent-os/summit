@@ -19,6 +19,7 @@ import moss.service.context;
 import moss.service.accounts;
 import vibe.d;
 import summit.models.buildtask;
+import summit.build.queue;
 
 /** 
  * Task enumeration and interactions
@@ -36,9 +37,10 @@ public final class TasksWeb
      * Params:
      *   context = global shared context
      */
-    @noRoute this(ServiceContext context) @safe
+    @noRoute this(ServiceContext context, BuildQueue buildQueue) @safe
     {
         this.context = context;
+        this.buildQueue = buildQueue;
     }
 
     /** 
@@ -64,7 +66,29 @@ public final class TasksWeb
         render!("tasks/view.dt", task);
     }
 
+    /** 
+     * Handle task cancellation
+     *
+     * Params:
+     *   _id = Task to cancel
+     */
+    @auth(Role.notExpired & Role.web & Role.accessToken & Role.userAccount & Role.admin)
+    @method(HTTPMethod.GET) @path("/:id/cancel")
+    void cancelTask(uint64_t _id) @safe
+    {
+        BuildTask task;
+        immutable err = context.appDB.view((in tx) => task.load(tx, _id));
+        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
+
+        /* Set the task as failing */
+        buildQueue.updateTask(_id, BuildTaskStatus.Failed);
+
+        /* send back to the task page */
+        redirect(format!"/tasks/%s"(_id));
+    }
+
 private:
 
     ServiceContext context;
+    BuildQueue buildQueue;
 }

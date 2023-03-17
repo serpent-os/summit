@@ -22,6 +22,7 @@ import summit.web.builders;
 import summit.web.projects;
 import summit.web.tasks;
 import vibe.d;
+import summit.build.queue;
 
 /**
  * Root entry into our web service
@@ -39,13 +40,14 @@ public final class SummitWeb
      *      projectManager = project management
      *      router = nested routes
      */
-    this(ServiceContext context, ProjectManager projectManager, URLRouter router) @safe
+    this(ServiceContext context, ProjectManager projectManager,
+            BuildQueue buildQueue, URLRouter router) @safe
     {
         auto root = router.registerWebInterface(this);
         root.registerWebInterface(cast(AccountsWeb) new SummitAccountsWeb(context));
         root.registerWebInterface(new BuilderWeb(context));
         root.registerWebInterface(new ProjectsWeb(context, projectManager));
-        root.registerWebInterface(new TasksWeb(context));
+        root.registerWebInterface(new TasksWeb(context, buildQueue));
     }
 
     /**

@@ -53,7 +53,7 @@ public final class SummitApplication : Application
         worker = new DispatchWorker(context, buildQueue, projectManager);
 
         _router = new URLRouter();
-        web = new SummitWeb(context, projectManager, router);
+        web = new SummitWeb(context, projectManager, buildQueue, router);
         service = new RESTService(context, projectManager, pairingManager, worker.channel, router);
 
         loadFixtures(context, projectManager);
