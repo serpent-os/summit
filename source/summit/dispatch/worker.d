@@ -384,6 +384,16 @@ private:
             return endpoint.save(tx);
         });
 
+        /* Do not request publication if the task is actually failing! */
+        BuildTask prevention;
+        immutable e = context.appDB.view((in tx) => prevention.load(tx, event.taskID));
+        enforceHTTP(e.isNull, HTTPStatus.notFound, e.message);
+        if (prevention.status == BuildTaskStatus.Failed)
+        {
+            logError(format!"Blocking inclusion of failed build: %s"(event));
+            return;
+        }
+
         logInfo(format!"Avalanche instance '%s' reports task succeess for #%s (%s)"(endpoint.id,
                 event.taskID, event.collectables));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
