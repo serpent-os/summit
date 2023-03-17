@@ -119,6 +119,7 @@ private:
         immutable err = context.appDB.view((in tx) => endpoint.load(tx, token.payload.sub));
         enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
         endpoint.status = EndpointStatus.Operational;
+        endpoint.statusText = "Fully operational";
         endpoint.bearerToken = request.issueToken;
         immutable errStore = context.appDB.update((scope tx) => endpoint.save(tx));
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
