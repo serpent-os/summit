@@ -151,6 +151,11 @@ public @Model struct BuildTask
      */
     string[] blockedBy;
 
+    /** 
+     * Who handled the build?
+     */
+    string allocatedBuilder;
+
     /**
      * Where is the log file stored?
      */

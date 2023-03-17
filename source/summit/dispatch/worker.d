@@ -328,6 +328,7 @@ private:
         auto err2 = context.appDB.update((scope tx) => endpoint.save(tx));
         enforceHTTP(err2.isNull, HTTPStatus.internalServerError, err2.message);
         buildQueue.updateTask(buildDef.buildID, newBuildStatus);
+        buildQueue.setBuilder(buildDef.buildID, endpoint.id);
     }
 
     /** 

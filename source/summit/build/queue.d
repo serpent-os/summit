@@ -156,6 +156,30 @@ public final class BuildQueue
         enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
     }
 
+    /** 
+     * Set the builder performing the build
+     *
+     * Params:
+     *   taskID = Unique task ID
+     *   builder = ID of the builder taking on the build
+     */
+    void setBuilder(BuildTaskID taskID, string builder) @safe
+    {
+        immutable err = context.appDB.update((scope tx) @safe {
+            BuildTask task;
+            auto err = task.load(tx, taskID);
+            if (!err.isNull)
+            {
+                return err;
+            }
+            task.allocatedBuilder = builder;
+            auto e = task.save(tx);
+            queue[taskID] = task;
+            return e;
+        });
+        enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+    }
+
     /**
      * Walk through all of the projects, fire off a check
      * for missing builds globally.
