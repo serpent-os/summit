@@ -317,7 +317,7 @@ function renderElement(context, element, idx)
                     </span>
                 </div>
                 <div class="col">
-                    <div class="font-weight-medium"><a href="${element.slug}" class="text-reset">${element.title}</a></div>
+                    <div class="font-weight-medium"><a href="${element.slug}" class="text-reset stretched-link">${element.title}</a></div>
                     <div class="text-muted">${element.subtitle}</div>
                 </div>
             </div>
@@ -353,7 +353,7 @@ function renderElement(context, element, idx)
             <span class="avatar ${color}">${element.title[0]}</span>
         </div>
         <div class="col text-truncate">
-            <a href="${element.slug}" class="text-reset d-block">${element.title}</a>
+            <a href="${element.slug}" class="text-reset d-block stretched-link">${element.title}</a>
             <div class="d-block text-muted">${element.subtitle}</div>
         </div>
     </div>
