@@ -200,8 +200,8 @@ private:
             logError(format!"Failed to clone %s: %s"(model, statusCode));
             /* Set us back for cloning */
             _model.status = RepositoryStatus.Fresh;
-            immutable err = context.appDB.update((scope tx) => _model.save(tx));
-            enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+            immutable err2 = context.appDB.update((scope tx) => _model.save(tx));
+            enforceHTTP(err2.isNull, HTTPStatus.internalServerError, err2.message);
             return;
         }
 
