@@ -20,8 +20,11 @@ block content
                     div.col-auto
                         include tasks/actions
         div.row.py-3
-            div.card
-                include tasks/info
+            div.card.p-0
+                div.card-body.p-2
+                    include tasks/info
+                div.card-footer
+                    include tasks/log
 
 block scripts
     script(src="/static/summit.js", type="module")

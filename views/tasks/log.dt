@@ -1,0 +1,15 @@
+// links to log file
+- import std.string : endsWith;
+- import std.range : empty;
+- if (task.logPath.empty)
+- {
+    a.btn.disabled.btn-outline-azure(href="#"):
+        svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-file-code")
+        | View build log
+- } else {
+    // Server is configured to serve build.log.gz at build.log with transparent compression
+    - immutable logURI = task.logPath.endsWith(".gz") ? format!"/%s"(task.logPath[0..$-3]) : format!"/%s"(task.logPath);
+    a.btn.btn-outline-azure(href=logURI)
+        svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-file-code")
+        | View build log
+- }
