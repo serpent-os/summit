@@ -23,7 +23,6 @@ import moss.service.tokens.refresh;
 import std.algorithm : filter;
 import std.array : array;
 import std.file : mkdirRecurse;
-import std.random : randomShuffle;
 import std.range : front, popFront;
 import std.range.primitives;
 import summit.build;
@@ -196,26 +195,40 @@ private:
             return;
         }
 
-        /* For each job, find a corresponding builder */
-        foreach (job; availableJobs)
+        auto builders = availableBuilders();
+        job_loop: foreach (job; availableJobs)
         {
-            /* "Load balance" :P */
-            auto builders = availableBuilders.randomShuffle;
-            /* No point in keep iterating jobs now */
-            if (builders.empty)
+            /* Copied slice to work with */
+            auto testBuilders = builders[0 .. $];
+            do
             {
-                break;
-            }
-            /* Find a usable job, get this job fired off. */
-            foreach (builder; builders)
-            {
+                /* No more usable builders */
+                if (testBuilders.empty)
+                {
+                    break job_loop;
+                }
+                AvalancheEndpoint builder = testBuilders.front;
+                testBuilders.popFront();
+
+                /* Baad builder */
                 if (!builder.ensureEndpointUsable(context))
                 {
+                    import std.algorithm : remove;
+
+                    builders = builders.remove!((b) => b.id == builder.id);
+                    testBuilders = builders[0 .. $];
                     continue;
                 }
-                buildOne(builder, job);
-                break;
+                else
+                {
+                    buildOne(builder, job);
+                    break;
+                }
             }
+            while (true);
+            builders = availableBuilders();
+            availableJobs = buildQueue.availableJobs;
+
         }
     }
 
