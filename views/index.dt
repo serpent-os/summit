@@ -40,7 +40,11 @@ block content
                     div.markdown!=filterMarkdown(import("home.md"))
 
             // Recent events
-            div.col:
-                div.card: div.card-body
-                    h5.card-title.opacity-75 Recent events
-                    div.list-group.list-group-flush
+            div.col.mx-3:
+                h5.card-title Recent events
+                div.row.align-items-center.justify-content-center#summit-events
+                    div.spinner-border.text-azure(role="status")
+
+block scripts
+    script(src="/static/home.js", type="module", defer, async)
+    script(src="/static/tasks.js", type="module", defer, async)
