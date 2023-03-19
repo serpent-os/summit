@@ -4,21 +4,30 @@
  * Helpers for the task listing
  */
 
+export const BuildStatus = Object.freeze({
+    New: 0,
+    Failed: 1,
+    Building: 2,
+    Publishing: 3,
+    Completed: 4,
+    Blocked: 5
+});
+
 function renderStatus(status)
 {
     switch (status)
     {
-        case 0: /* new */
+        case BuildStatus.New: /* new */
             return `<span class="status status-sm status-yellow"><span class="status-dot"></span>Scheduled</span>`;
-        case 1: /* failed */
+        case BuildStatus.Failed: /* failed */
             return `<span class="status status-red"><span class="status-dot status-dot-animated"></span>Failed</span>`;
-        case 2: /* building */
+        case BuildStatus.Building: /* building */
             return `<span class="status status-lime"><span class="status-dot status-dot-animated"></span>Building</span>`;
-        case 3: /* publishing */
+        case BuildStatus.Publishing: /* publishing */
             return `<span class="status status-teal"><span class="status-dot status-dot-animated"></span>Publishing</span>`
-        case 4: /* completed */
+        case BuildStatus.Completed: /* completed */
             return `<span class="status status-purple"><span class="status-dot"></span>Completed</span>`;
-        case 5: /* blocked */
+        case BuildStatus.Blocked: /* blocked */
             return `<span class="status status-orange"><span class="status-dot"></span>Blocked</span>`
         default:
             return `<span class="status status-red"><span class="status-dot status-dot-animated"></span>ERROR IN JS</span>`;
