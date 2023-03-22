@@ -30,7 +30,7 @@ import summit.projects.project;
 import summit.models.repository;
 import vibe.core.channel;
 import vibe.core.process;
-import std.parallelism : task;
+import std.parallelism : task, taskPool;
 import vibe.d;
 
 /**
@@ -336,7 +336,7 @@ private:
         logDiagnostic("Begin updatePackagesThreaded");
         auto t = task!updatePackagesThreaded(notifyChannel, _db, workPath,
                 model.commitRef, model.originURI);
-        t.executeInNewThread();
+        taskPool.put(t);
 
         /* Await closure from recipient */
         while (!notifyChannel.empty)

@@ -19,7 +19,7 @@ import moss.client.metadb;
 import moss.core.errors;
 import moss.service.context;
 import std.file : mkdirRecurse;
-import std.parallelism : task;
+import std.parallelism : taskPool, task;
 import std.path : buildPath;
 import summit.models;
 import summit.projects.project;
@@ -126,8 +126,8 @@ public final class ManagedProfile
         Channel!(bool, 1) notifier = createChannel!(bool, 1);
         bool unusedRet;
         logInfo("Dispatch to refreshIndices");
-        auto testerTask = task!refreshIndices(indexPath, indexDB, notifier);
-        testerTask.executeInNewThread();
+        auto refreshTask = task!refreshIndices(indexPath, indexDB, notifier);
+        taskPool.put(refreshTask);
         while (!notifier.empty)
         {
             notifier.tryConsumeOne(unusedRet);
