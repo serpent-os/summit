@@ -1,13 +1,26 @@
 // bad bad
 - import std.string : format;
 - import vibe.d : urlEncode;
+- import moss.service.models.endpoints;
 - if (req.session && req.session.get!bool("accountAdmin", false))
 - {
     a.btn.btn-danger(href=format!"/builders/%s/delete"(endpoint.id))
         svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-trash")
         | Delete
+    - if (endpoint.status != EndpointStatus.Operational)
+    - {
+        a.btn.mx-2.btn-primary(href=format!"/builders/%s/repair"(endpoint.id))
+            svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-hammer")
+            | Repair
+    - }
 - } else {
     a.btn.btn-danger.disabled(href="#")
         svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-trash")
         | Delete
+    - if (endpoint.status != EndpointStatus.Operational)
+    - {
+        a.btn.mx-2.btn-primary.disabled(href="#")
+            svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-hammer")
+            | Repair
+    - }
 - }

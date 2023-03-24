@@ -91,6 +91,32 @@ import moss.service.models.endpoints;
         redirect("/builders");
     }
 
+    /** 
+     * Try to repair the builder.
+     *
+     * At the moment this simply marks it operational again, and subsequent builds may
+     * then cause it to fail.
+     *
+     * Params:
+     *   _id = unique builder ID
+     */
+    @auth(Role.notExpired & Role.web & Role.accessToken & Role.userAccount & Role.admin)
+    @method(HTTPMethod.GET) @path("/:id/repair")
+    void repairBuilder(string _id) @safe
+    {
+        /* Make sure its alive */
+        AvalancheEndpoint endpoint;
+        immutable err = context.appDB.view((in tx) => endpoint.load(tx, _id));
+        enforceHTTP(err.isNull, HTTPStatus.notFound, err.message);
+
+        endpoint.status = EndpointStatus.Operational;
+        endpoint.statusText = "Fully operational";
+        immutable svErr = context.appDB.update((scope tx) => endpoint.save(tx));
+        enforceHTTP(svErr.isNull, HTTPStatus.internalServerError, err.message);
+
+        redirect("/builders");
+    }
+
 private:
 
     ServiceContext context;
