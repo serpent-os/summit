@@ -7,8 +7,8 @@
 	],
 	"copyright": "Copyright © 2023, Serpent OS Developers",
 	"dependencies": {
-		"vibe-d": ">=0.9.5",
-		"vibe-d:tls": ">=0.9.5",
+		"vibe-d": "==0.9.5",
+		"vibe-d:tls": "==0.9.5",
 		"openssl": "~>3.1",
 		"moss-service": {
 			"path": "../moss-service"
