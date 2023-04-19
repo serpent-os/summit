@@ -51,9 +51,17 @@ public final class SetupApplication : Application
      * Real index page
      */
     @path("setup") @method(HTTPMethod.GET)
-    void setupIndex() @safe
+    void setupIndex(FormError _error = FormError.init, string instanceURI = null,
+            string description = null, string username = null, string emailAddress = null) @safe
     {
-        render!"setup/index.dt";
+        /* Throw internal error if not from field validation */
+        if (!_error.error.empty && _error.field.empty)
+        {
+            throw new HTTPStatusException(HTTPStatus.internalServerError, _error.error);
+
+        }
+
+        render!("setup/index.dt", _error, instanceURI, description, username, emailAddress);
     }
 
     /**
@@ -67,8 +75,9 @@ public final class SetupApplication : Application
      *      password = Admin password
      *      confirmPassword = Confirmation that password matches
      */
-    @path("setup/apply") @method(HTTPMethod.POST) void applySetup(string instanceURI,
-            string description, ValidUsername username,
+    @path("setup") @method(HTTPMethod.POST) @errorDisplay!setupIndex void applySetup(
+            string instanceURI, string description,
+            ValidUsername username,
             ValidEmail emailAddress, ValidPassword password, Confirm!"password" confirmPassword) @sanitizeUTF8
     {
         Settings appSettings;
@@ -113,4 +122,10 @@ private:
 
     URLRouter _router;
     ServiceContext context;
+}
+
+private struct FormError
+{
+    string error;
+    string field;
 }
