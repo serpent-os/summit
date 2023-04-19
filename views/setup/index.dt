@@ -16,7 +16,16 @@ block body
                     div.text-center.row.p-1: p.lead.opacity-75 Summit is a dashboard and controller for the Serpent OS build infrastructure. With it, packages are automatically scheduled across various builders for build and inclusion in repositories.
                     div.text-center.row.p-1: p.lead We just need to go through some basic details before we can get everything up and running.
 
-                    form#setupForm(autocomplete="off", action="/setup/apply", method="POST")
+                    - string formClass(string field)
+                        - return _error.field == field ? "form-control is-invalid" : "form-control";
+
+                    - void fieldError(string field)
+                        - if(_error.field == field) {
+                            div.is-invalid
+                            div.invalid-feedback #{_error.error}
+                        - }
+
+                    form#setupForm(autocomplete="off", action="/setup", method="POST")
                         input(type="hidden", autocomplete="off")
                         div.container.pt-2
                             div.row.p-2
@@ -27,13 +36,13 @@ block body
                                             label.opacity-75.form-label(for="instanceURI") Public URL
                                             div.input-icon
                                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-link")
-                                                input#instanceURI.form-control(name="instanceURI", type="text", placeholder="https://somehost:8082", required, minlength="4", value=req.fullURL.toString[0..$-"/setup".length])
+                                                input#instanceURI.form-control(name="instanceURI", type="text", placeholder="https://somehost:8082", required, minlength="4", value=instanceURI ? instanceURI : req.fullURL.toString[0..$-"/setup".length])
                                     div.row.mb-2
                                         div
                                             label.opacity-75.form-label(for="description") Description
                                             div.input-icon
                                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-ballpen")
-                                                input#description.form-control(name="description", type="text", placeholder="Unique public description", required, minlength="4")
+                                                input#description.form-control(name="description", type="text", placeholder="Unique public description", required, minlength="4", value=description)
 
                                 div.col-lg-6.col-md-12.px-4
                                     div.row.py-2: h3 Administrator
@@ -42,25 +51,29 @@ block body
                                         div
                                             div.input-icon
                                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-user")
-                                                input#username.form-control(name="username", type="text", placeholder="Pick a unique username", required, minlength="4")
+                                                input#username(class=formClass("username"), name="username", type="text", placeholder="Pick a unique username", required, minlength="4", value=username)
+                                            - fieldError("username");
                                     div.row.mb-2
                                         label.opacity-75.form-label(for="email") Email address
                                         div
                                             div.input-icon
                                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-mail")
-                                                input#emailAddress.form-control(name="emailAddress", type="email", placeholder="me@example.com", required)
+                                                input#emailAddress(class=formClass("emailAddress"), name="emailAddress", type="email", placeholder="me@example.com", required, value=emailAddress)
+                                            - fieldError("emailAddress");
                                     div.row.mb-2
                                         label.opacity-75.form-label(for="password") Password
                                         div
                                             div.input-icon
                                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-lock")
-                                                input#password.form-control(name="password", type="password", placeholder="Type your password", required, minlength="6")
+                                                input#password.form-control(class=formClass("password"), name="password", type="password", placeholder="Type your password", required, minlength="6")
+                                            - fieldError("password");
                                     div.row.mb-2
                                         label.opacity-75.form-label(for="confirmPassword") Confirm password
                                         div
                                             div.input-icon
                                                 span.input-icon-addon: svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-lock")
-                                                input#confirmPassword.form-control(name="confirmPassword", type="password", placeholder="And confirm your password", required, minlength="6")
+                                                input#confirmPassword.form-control(class=formClass("confirmPassword"), name="confirmPassword", type="password", placeholder="And confirm your password", required, minlength="6")
+                                            - fieldError("confirmPassword");
 
                 div.card-footer
                     div.d-flex
