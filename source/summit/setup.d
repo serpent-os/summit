@@ -54,12 +54,8 @@ public final class SetupApplication : Application
     void setupIndex(FormError _error = FormError.init, string instanceURI = null,
             string description = null, string username = null, string emailAddress = null) @safe
     {
-        /* Throw internal error if not from field validation */
-        if (!_error.error.empty && _error.field.empty)
-        {
-            throw new HTTPStatusException(HTTPStatus.internalServerError, _error.error);
-
-        }
+        /* Throw internal error if not a field validation error */
+        enforceHTTP(_error.isValid, HTTPStatus.internalServerError, _error.error);
 
         render!("setup/index.dt", _error, instanceURI, description, username, emailAddress);
     }
@@ -128,4 +124,14 @@ private struct FormError
 {
     string error;
     string field;
+
+    /**
+     * Returns true if the error is empty or a field validation error.
+     *
+     * Valid errors are safe to forward to a Diet template.
+     */
+    pure @property bool isValid() @safe
+    {
+        return error.empty || !field.empty;
+    }
 }
