@@ -20,13 +20,13 @@ html
             link(rel="icon", type="image/png", sizes="#{size}x#{size}", href="/static/img/favicon-#{size}x#{size}.png")   
         - }
     body.min-vh-100
+        script(src="/static/darkMode.js")
         block body
             h1 add a body
 
     
     // TODO: Use a site prefix
     script(src="/static/tabler/js/tabler.min.js", defer, async)
-    script(src="/static/darkMode.js")
 
     block scripts
         // add scripts here
