@@ -56,12 +56,43 @@ function nextThemePref(currentThemePref)
 }
 
 /**
+ * Updates the body element with the applicable theme class
+ * 
+ * @param {string} themePref New theme preference
+ */
+function updateBody(themePref)
+{
+    switch (themePref)
+    {
+        case 'system':
+            this.document.body.classList.remove('theme-dark');
+            this.document.body.classList.remove('theme-light');
+            this.document.body.classList.add('theme-dark-auto');
+            break;
+        case 'light':
+            this.document.body.classList.remove('theme-dark');
+            this.document.body.classList.remove('theme-dark-auto');
+            this.document.body.classList.add('theme-light');
+            break;
+        case 'dark':
+            this.document.body.classList.remove('theme-dark-auto');
+            this.document.body.classList.remove('theme-light');
+            this.document.body.classList.add('theme-dark');
+            break;
+        default:
+            break;
+    }
+}
+
+/**
  * Activate the theme preference
  * 
  * @param {string} themePref New theme preference
  */
 function activateTheme(themePref)
 {
+    updateBody(themePref);
+
     const svg = document.getElementById('themeSwitcherIcon');
     if (svg === null)
     {
@@ -71,21 +102,12 @@ function activateTheme(themePref)
     switch (themePref)
     {
         case 'system':
-            this.document.body.classList.remove('theme-dark');
-            this.document.body.classList.remove('theme-light');
-            this.document.body.classList.add('theme-dark-auto');
             useIcon.setAttribute('xlink:href', '/static/tabler/tabler-sprite.svg#tabler-moon');
             break;
         case 'light':
-            this.document.body.classList.remove('theme-dark');
-            this.document.body.classList.remove('theme-dark-auto');
-            this.document.body.classList.add('theme-light');
             useIcon.setAttribute('xlink:href', '/static/tabler/tabler-sprite.svg#tabler-moon');
             break;
         case 'dark':
-            this.document.body.classList.remove('theme-dark-auto');
-            this.document.body.classList.remove('theme-light');
-            this.document.body.classList.add('theme-dark');
             useIcon.setAttribute('xlink:href', '/static/tabler/tabler-sprite.svg#tabler-sun');
             break;
         default:
@@ -94,9 +116,13 @@ function activateTheme(themePref)
 }
 
 /**
- * On load we'll hook up the #themeSwitcher button for swaps
+ * On load we'll activate the theme and hook up 
+ * the #themeSwitcher button for swaps
  */
 window.addEventListener('DOMContentLoaded', function(ev) {
+    const themePref = currentThemePref();
+    activateTheme(themePref);
+
     const switcher = document.getElementById('themeSwitcher');
     if (switcher === null)
     {
