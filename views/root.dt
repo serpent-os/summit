@@ -8,7 +8,7 @@ html
             title Summit
     
         // TODO: Use a site prefix
-        link(rel="stylesheet", href="/static/tabler/css/tabler.min.css")
+        link(rel="stylesheet", href="/static/tabler/b17/css/tabler.min.css")
         link(rel="stylesheet", href="/static/custom.css")
 
         // Favicons
@@ -26,7 +26,7 @@ html
 
     
     // TODO: Use a site prefix
-    script(src="/static/tabler/js/tabler.min.js", defer, async)
+    script(src="/static/tabler/b17/js/tabler.min.js", defer, async)
 
     block scripts
         // add scripts here
