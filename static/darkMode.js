@@ -62,26 +62,19 @@ function nextThemePref(currentThemePref)
  */
 function updateBody(themePref)
 {
-    switch (themePref)
+    /* If we're in automatic mode, check if they prefer dark. */
+    if (themePref == 'system')
     {
-        case 'system':
-            this.document.body.classList.remove('theme-dark');
-            this.document.body.classList.remove('theme-light');
-            this.document.body.classList.add('theme-dark-auto');
-            break;
-        case 'light':
-            this.document.body.classList.remove('theme-dark');
-            this.document.body.classList.remove('theme-dark-auto');
-            this.document.body.classList.add('theme-light');
-            break;
-        case 'dark':
-            this.document.body.classList.remove('theme-dark-auto');
-            this.document.body.classList.remove('theme-light');
-            this.document.body.classList.add('theme-dark');
-            break;
-        default:
-            break;
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+        {
+            themePref = 'dark';
+        } else {
+            themePref = 'light';
+        }
     }
+
+    console.log("new pref ", themePref);
+    this.document.documentElement.setAttribute('data-bs-theme', themePref);
 }
 
 /**
@@ -128,7 +121,9 @@ window.addEventListener('DOMContentLoaded', function(ev) {
     {
         return;
     }
+
     switcher.addEventListener('click', function(ev) {
+        ev.preventDefault();
         const themePref = currentThemePref();
         const newPref = nextThemePref(themePref);
         window.sessionStorage.setItem('theme-pref', newPref);
