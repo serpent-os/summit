@@ -27,6 +27,15 @@ import summit.models;
 import summit.setup;
 import vibe.d;
 
+/* Enable fork conservative GC and ensure it finalizes, not only collects
+ * On linux this actually uses clone() and COW memory
+ */
+extern (C) __gshared string[] rt_options = [
+    "gcopt=fork:1 gc:conservative cleanup:finalize parallel:0"
+];
+extern (C) __gshared bool rt_cmdline_enabled = false;
+extern (C) __gshared bool rt_envvars_enabled = false;
+
 /**
  * Main entry for summit
  *
