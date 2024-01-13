@@ -23,30 +23,10 @@
             "repos":
             [
                 {
-                    "name": "main",
-                    "summary": "Main recipes",
-                    "uri": "https://github.com/snekpit/main.git"
+                    "name": "recipes",
+                    "summary": "Serpent OS Recipes",
+                    "uri": "https://github.com/serpent-os/recipes.git"
                 },
-                {
-                    "name": "toolchain",
-                    "summary": "Toolchain recipes",
-                    "uri": "https://github.com/snekpit/toolchain.git"
-                },
-                {
-                    "name": "kernel",
-                    "summary": "Kernel recipes",
-                    "uri": "https://github.com/snekpit/kernel.git"
-                },
-                {
-                    "name": "gnome",
-                    "summary": "GNOME recipes",
-                    "uri": "https://github.com/snekpit/gnome.git"
-                },
-                {
-                    "name": "plasma",
-                    "summary": "Plasma recipes",
-                    "uri": "https://github.com/snekpit/plasma.git"
-                }
             ]
         },
         {
