@@ -391,7 +391,7 @@ private:
         MetaPayload mp = new MetaPayload();
         mp.addRecord(RecordType.String, RecordTag.SourceRef, commitRef);
         mp.addRecord(RecordType.String, RecordTag.SourceURI, originURI);
-        immutable ymlPath = manifestPath.dirName.buildPath("stone.yml");
+        immutable ymlPath = manifestPath.dirName.buildPath("stone.yaml");
         immutable checksum = computeSHA256(manifestPath, true);
         mp.addRecord(RecordType.String, RecordTag.PackageHash, checksum);
         mp.addRecord(RecordType.String, RecordTag.SourcePath, ymlPath.relativePath(workPath));
