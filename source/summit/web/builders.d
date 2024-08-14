@@ -20,7 +20,7 @@ import moss.service.accounts;
 import vibe.d;
 import moss.service.models.endpoints;
 
-/** 
+/**
  * BuilderWeb management
  */
 @requiresAuth @path("/builders") public final class BuilderWeb
@@ -29,7 +29,7 @@ import moss.service.models.endpoints;
 
     mixin AppAuthenticatorContext;
 
-    /** 
+    /**
      * Construct new BuilderWeb
      *
      * Params:
@@ -40,7 +40,7 @@ import moss.service.models.endpoints;
         this.context = context;
     }
 
-    /** 
+    /**
      * Landing page for builders, rendered mostly with JS
      */
     @noAuth void index() @safe
@@ -48,7 +48,7 @@ import moss.service.models.endpoints;
         render!"builders/index.dt";
     }
 
-    /** 
+    /**
      * View an avalanche endpoint.
      *
      * Params:
@@ -62,7 +62,7 @@ import moss.service.models.endpoints;
         render!("builders/view.dt", endpoint);
     }
 
-    /** 
+    /**
      * Delete a builder completely (account, endpoint + tokens)
      *
      * Params:
@@ -91,7 +91,7 @@ import moss.service.models.endpoints;
         redirect("/builders");
     }
 
-    /** 
+    /**
      * Try to repair the builder.
      *
      * At the moment this simply marks it operational again, and subsequent builds may
@@ -111,6 +111,7 @@ import moss.service.models.endpoints;
 
         endpoint.status = EndpointStatus.Operational;
         endpoint.statusText = "Fully operational";
+        endpoint.workStatus = WorkStatus.Idle;
         immutable svErr = context.appDB.update((scope tx) => endpoint.save(tx));
         enforceHTTP(svErr.isNull, HTTPStatus.internalServerError, err.message);
 

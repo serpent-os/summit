@@ -7,7 +7,7 @@
     a.btn.btn-danger(href=format!"/builders/%s/delete"(endpoint.id))
         svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-trash")
         | Delete
-    - if (endpoint.status != EndpointStatus.Operational)
+    - if (endpoint.status != EndpointStatus.Operational || endpoint.workStatus != WorkStatus.Idle)
     - {
         a.btn.mx-2.btn-primary(href=format!"/builders/%s/repair"(endpoint.id))
             svg.icon: use(xlink:href="/static/tabler/tabler-sprite.svg#tabler-hammer")
