@@ -19,6 +19,8 @@ import { renderTask  } from './tasks.js';
 
 window.summitRefreshList = refreshList;
 
+const maxPaginationLenth = 10;
+
 const colors = [
     "bg-blue-lt",
     "bg-azure-lt",
@@ -405,23 +407,46 @@ function renderList(context, mode, obj)
  */
 function renderPaginator(context, obj)
 {
-    console.log(obj);
-    var pageHTML = Array(obj.numPages).fill(0).map(
-        (_, i) => {
+    const maxMid = Math.ceil(maxPaginationLenth / 2);
+    const leftStart = obj.page - maxMid < 0 ? 0 : obj.page - maxMid;
+    const rightEnd = obj.page + maxMid > obj.numPages ? obj.numPages - 1 : obj.page + maxMid;
+    const leftFarthest = leftStart > 0 ? 0 : null;
+    const rightFarthest = rightEnd < obj.numPages - 1 ? obj.numPages - 1 : null;
+
+    var pageHTML = Array.from({ length: rightEnd - leftStart }, (_, i) => i + leftStart)
+        .map((v) => {
             let pageClass = "page-item";
             let aria = '';
-            if (i == obj.page)
-            {
+
+            if (v == obj.page) {
                 pageClass += " active";
             }
+
             return `<li class="${pageClass}">
-                <a class="page-link" ${aria} href="#${SummitWidgets.Paginator}" onclick="javascript:summitRefreshList('${context}', 'enumerate', ${i});">${i+1}</a>
+                <a class="page-link" ${aria} href="#${SummitWidgets.Paginator}" onclick="javascript:summitRefreshList('${context}', 'enumerate', ${v});">${v+1}</a>
             </li>`;
         });
+
     const nextClass = obj.hasNext ? "" : "disabled";
     const nextAria = obj.hasNext ? "" : "aria-disabled='true'";
     const prevClass = obj.hasPrevious ? "" : "disabled";
     const prevAria = obj.hasPrevious ? "" : "aria-disabled='true'";
+
+    let leftFurthestHtml = '';
+    let rightFurthestHtml = '';
+
+    if (leftFarthest !== null) {
+        leftFurthestHtml = `<li class="page-item">
+            <a class="page-link" href="#${SummitWidgets.Paginator}" onclick="javascript:summitRefreshList('${context}', 'enumerate', ${leftFarthest});">${leftFarthest+1} ...</a>
+        </li>`
+    }
+
+    if (rightFarthest !== null) {
+        rightFurthestHtml = `<li class="page-item">
+            <a class="page-link" href="#${SummitWidgets.Paginator}" onclick="javascript:summitRefreshList('${context}', 'enumerate', ${rightFarthest});">... ${rightFarthest+1}</a>
+        </li>`
+    }
+
     return `
 <ul class="pagination justify-content-center border-top pt-3">
     <li class="page-item ${prevClass}">
@@ -432,7 +457,9 @@ function renderPaginator(context, obj)
         Previous
         </a>
     </li>
+    ${leftFurthestHtml}
     ${pageHTML.join("")}
+    ${rightFurthestHtml}
     <li class="page-item ${nextClass}">
         <a class="page-link" ${nextAria} href="#${SummitWidgets.Paginator}" onclick="javascript:summitRefreshList('${context}', 'enumerate', ${obj.page+1});">
             <svg class="icon">
