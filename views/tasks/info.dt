@@ -10,6 +10,9 @@ table.table.table-borderless.table-responsive
             td
                 include tasks/status
         tr
+            th Builder
+            td=task.allocatedBuilder
+        tr
             th Architecture
             td: span.badge=task.architecture
         tr
