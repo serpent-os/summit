@@ -46,15 +46,7 @@ export function renderTask(task)
     const ended = task.tsEnded != 0 ? new Date(task.tsEnded * 1000).toLocaleString() : "--";
     const status = renderStatus(task.status);
 
-    if (task.tsEnded != 0) {
-        const difference = started - ended;
-        //Arrange the difference of date in hours, minutes, and seconds format
-        const hours = Math.floor((difference / (1000 * 60 * 60)));
-        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-        const duration = hours + "h" + minutes + "m" + seconds + "s";
-    }
-    const timestamp = task.tsEnded != 0 ? "Ended @ " + ended + " (" + duration + " on " + task.allocatedBuilder + ")" : "Started @ " + started + " on " + task.allocatedBuilder;
+    const timestamp = task.tsEnded != 0 ? "Ended @ " + ended : "Started @ " + started;
     return `
 <div class="list-group-item list-group-item-hoverable">
     <div class="row align-items-center">
