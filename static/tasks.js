@@ -1,6 +1,6 @@
 /**
  * tasks.js
- * 
+ *
  * Helpers for the task listing
  */
 
@@ -37,16 +37,33 @@ function renderStatus(status)
 /**
  * Render a task as a list group item
  *
- * @param {JSON} task The task to be rendered 
- * @returns 
+ * @param {JSON} task The task to be rendered
+ * @returns
  */
 export function renderTask(task)
 {
-    const started = new Date(task.tsStarted * 1000).toLocaleString();
-    const ended = task.tsEnded != 0 ? new Date(task.tsEnded * 1000).toLocaleString() : "--";
-    const status = renderStatus(task.status);
+    const hasEnded = task.tsEnded != 0;
+    const start = new Date(task.tsStarted * 1000);
+    const end = hasEnded ? new Date(task.tsEnded * 1000) : null;
+    let duration = "--";
 
-    const timestamp = task.tsEnded != 0 ? "Ended @ " + ended : "Started @ " + started;
+    if (hasEnded) {
+        const difference = Math.abs(start.getTime() - end.getTime());
+        const hours = Math.floor(difference / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        duration =
+          (hours ? hours + "h " : "") +
+          (minutes ? minutes + "m " : "") +
+          seconds +
+          "s";
+    }
+
+    const timestamp = hasEnded
+      ? `Ended @ ${end.toLocaleString()} (${duration} on ${task.allocatedBuilder})`
+      : `Started @ ${start.toLocaleString()} on ${task.allocatedBuilder}`;
+
     return `
 <div class="list-group-item list-group-item-hoverable">
     <div class="row align-items-center">
