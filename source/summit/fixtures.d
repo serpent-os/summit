@@ -89,6 +89,14 @@ static void loadFixtures(ServiceContext context, ProjectManager projectManager) 
             auto l = project.bySlug(repo.name);
             if (l !is null)
             {
+                // Check if URI needs updating
+                if (l.model.originURI != repo.uri)
+                {
+                    auto m = l.model;
+                    m.originURI = repo.uri;
+                    immutable err = project.updateRepository(m);
+                    enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+                }
                 continue;
             }
             Repository r;
@@ -105,6 +113,14 @@ static void loadFixtures(ServiceContext context, ProjectManager projectManager) 
             auto l = project.profile(profile.name);
             if (l !is null)
             {
+                // Check if URI needs updating
+                if (l.profile.volatileIndexURI != profile.indexURI)
+                {
+                    auto m = l.profile;
+                    m.volatileIndexURI = profile.indexURI;
+                    immutable err = project.updateProfile(m);
+                    enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
+                }
                 continue;
             }
 

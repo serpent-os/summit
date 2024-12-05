@@ -36,7 +36,7 @@ public final class ManagedProject
 {
     @disable this();
 
-    /** 
+    /**
      * Construct a new ManagedProject
      *
      * Params:
@@ -75,7 +75,7 @@ public final class ManagedProject
         return managedProfiles.values;
     }
 
-    /** 
+    /**
      * Returns: Repository within this project
      *
      * Params:
@@ -161,6 +161,34 @@ public final class ManagedProject
     }
 
     /**
+     * Update a repository in this project
+     *
+     * Params:
+     *      model = Input model
+     * Returns: Nullable database error
+     */
+    DatabaseResult updateRepository(Repository model) @safe
+    {
+        /* Try to store the model */
+        immutable err = context.appDB.update((scope tx) => model.save(tx));
+        if (!err.isNull)
+        {
+            return err;
+        }
+
+        /* Get it managed */
+        auto managedRepository = managedRepos.get(model.name, null);
+        if (managedRepository is null)
+        {
+            return DatabaseResult(DatabaseError(DatabaseErrorCode.BucketNotFound,
+                    "Repository not found"));
+        }
+
+        runTask({ managedRepository.refresh(); });
+        return NoDatabaseError;
+    }
+
+    /**
      * Add a profile to this project
      *
      *      model = Input model
@@ -191,6 +219,34 @@ public final class ManagedProject
             return NoDatabaseError;
         }, (Failure f) => DatabaseResult(DatabaseError(cast(DatabaseErrorCode) f.specifier,
                 f.message)));
+    }
+
+    /**
+     * Update a profile in this project
+     *
+     * Params:
+     *      model = Input model
+     * Returns: Nullable database error
+     */
+    DatabaseResult updateProfile(Profile model) @safe
+    {
+        /* Try to store the model */
+        immutable err = context.appDB.update((scope tx) => model.save(tx));
+        if (!err.isNull)
+        {
+            return err;
+        }
+
+        /* Get it managed */
+        auto managedProfile = managedProfiles.get(model.name, null);
+        if (managedProfile is null)
+        {
+            return DatabaseResult(DatabaseError(DatabaseErrorCode.BucketNotFound,
+                    "Profile not found"));
+        }
+
+        runTask({ managedProfile.refresh(); });
+        return NoDatabaseError;
     }
 
 package:
