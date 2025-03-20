@@ -10,12 +10,12 @@
                 {
                     "name": "serpent-x86_64",
                     "arch": "x86_64",
-                    "indexURI": "https://packages.serpentos.com/volatile/x86_64/stone.index",
+                    "indexURI": "https://packages.aerynos.dev/volatile/x86_64/stone.index",
                     "remotes": [
                         {
                             "name": "Volatile repo",
                             "priority": 0,
-                            "uri": "https://packages.serpentos.com/x86_64/stone.index"
+                            "uri": "https://packages.aerynos.dev/x86_64/stone.index"
                         }
                     ]
                 }
