@@ -17,6 +17,9 @@ module summit.fixtures;
 
 import moss.service.context;
 import std.path : buildPath;
+import std.algorithm.sorting : sort;
+import std.algorithm.iteration : map;
+import std.array : array;
 import summit.models;
 import summit.projects;
 import vibe.core.file : readFileUTF8;
@@ -129,6 +132,10 @@ static void loadFixtures(ServiceContext context, ProjectManager projectManager) 
             p.name = profile.name;
             p.arch = profile.arch;
             p.volatileIndexURI = profile.indexURI;
+            p.remotes = profile.remotes
+                .sort!((a, b) => a.priority < b.priority)
+                .map!(a => a.uri)
+                .array;
             immutable err = project.addProfile(p);
             enforceHTTP(err.isNull, HTTPStatus.internalServerError, err.message);
         }

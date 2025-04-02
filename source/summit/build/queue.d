@@ -452,7 +452,9 @@ private:
         auto mProject = projectManager.bySlug(project.slug);
         auto mRepo = mProject.bySlug(repo.name);
         auto entry = mRepo.db.byID(task.pkgID);
-        return JobMapper(entry, task, [profile.volatileIndexURI], profile.volatileIndexURI);
+
+        return JobMapper(entry, task,
+                profile.remotes ~ [profile.volatileIndexURI], profile.volatileIndexURI);
     }
 
     /**
