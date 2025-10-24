@@ -1,3 +1,7 @@
+**This project is no longer active**
+
+---
+
 # summit
 
 Web dashboard for Serpent OS
